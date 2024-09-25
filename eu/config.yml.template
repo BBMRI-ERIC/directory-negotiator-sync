@@ -1,0 +1,3 @@
+directory_client:
+  directory_emx2_endpoint: "https://directory.bbmri-eric.eu/ERIC/directory/graphql"
+  negotiator_api_url: "http://localhost:8081/api/v3"
