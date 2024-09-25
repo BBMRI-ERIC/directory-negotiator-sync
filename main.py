@@ -2,13 +2,13 @@ import time
 import schedule
 from datetime import datetime
 
-from eu.bbmri.sync_service import sync_all_resources
+from eu.bbmri.sync_service import sync_all
 from eu.config import LOG
 
 # Define the task that you want to run every X days
 def cron_job():
     LOG.info(f"Starting cron job at: {datetime.now()}")
-    sync_all_resources()
+    sync_all()
 
 # Schedule the job to run every 2 days
 def sync_directory():

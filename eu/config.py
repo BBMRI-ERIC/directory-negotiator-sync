@@ -20,7 +20,6 @@ def setup_logger(log_level=logging.INFO):
 
     # Avoid adding multiple handlers if the logger is already configured
     if len(logger.handlers) == 0:
-        print("creating logger...")
         logger.setLevel(log_level)
 
         # Create a console handler

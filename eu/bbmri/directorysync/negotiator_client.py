@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from eu.bbmri.directorysync.models.dto.network import NegotiatorNetworkDTO
 from eu.bbmri.directorysync.models.dto.organization import NegotiatorOrganizationDTO, OrganizationDirectoryDTO
-from eu.bbmri.directorysync.models.dto.resource import NegotiatorResourceDTO
+from eu.bbmri.directorysync.models.dto.resource import NegotiatorResourceDTO, ResourceDirectoryDTO
 from eu.config import NEGOTIATOR_TOKEN, NEGOTIATOR_API_URL, LOG
 from eu.utils import dump
 
@@ -32,3 +32,23 @@ def add_organizations (organizations: list[OrganizationDirectoryDTO]):
 
 def update_organization_name(id, name, external_id):
     requests.put(f'{NEGOTIATOR_API_URL}/organizations/{id}', data=json.dumps({'name': name, 'externalId': external_id}), headers=get_auth_header())
+
+
+def create_resource_add_DTO(resource: ResourceDirectoryDTO, organization_id):
+    return {
+        'name': resource.name,
+        'sourceId': resource.id,
+        'description': resource.description,
+        'organizationId': organization_id,
+        'accessFormId' : 1,
+        'discoveryServiceId': 1
+    }
+
+def add_resources (resources: list):
+    requests.post(f'{NEGOTIATOR_API_URL}/resources', data=json.dumps(resources), headers=get_auth_header())
+
+
+def update_resource_name_or_description(id, name, description):
+    response = requests.patch(f'{NEGOTIATOR_API_URL}/resources/{id}', data=json.dumps({'name': name, 'description': description }), headers=get_auth_header())
+    print(response.status_code)
+

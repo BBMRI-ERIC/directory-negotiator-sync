@@ -38,8 +38,6 @@ def get_all_collections():
     
     '''
     results = requests.post(DIRECTORY_API_URL, json={'query':emx2_collections_query}).json()
-    import pprint
-    pprint.pprint(results['data']['Collections'])
     return ResourceDirectoryDTO.parse(results['data']['Collections'])
 
 
