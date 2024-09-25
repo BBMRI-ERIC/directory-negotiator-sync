@@ -29,3 +29,6 @@ def add_organizations (organizations: list[OrganizationDirectoryDTO]):
     organizations_data = dump(organizations)
     requests.post(f'{NEGOTIATOR_API_URL}/organizations', data=organizations_data, headers=get_auth_header())
 
+
+def update_organization_name(id, name, external_id):
+    requests.put(f'{NEGOTIATOR_API_URL}/organizations/{id}', data=json.dumps({'name': name, 'externalId': external_id}), headers=get_auth_header())
