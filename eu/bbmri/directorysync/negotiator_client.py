@@ -6,32 +6,90 @@ from pydantic import BaseModel
 from eu.bbmri.directorysync.models.dto.network import NegotiatorNetworkDTO, NetworkDirectoryDTO
 from eu.bbmri.directorysync.models.dto.organization import NegotiatorOrganizationDTO, OrganizationDirectoryDTO
 from eu.bbmri.directorysync.models.dto.resource import NegotiatorResourceDTO, ResourceDirectoryDTO
-from eu.config import NEGOTIATOR_TOKEN, NEGOTIATOR_API_URL, LOG
+from eu.bbmri.exception.TokenExpiredException import TokenExpiredException
+from eu.auth import renew_access_token
 from eu.utils import dump
 
+class NegotiatorAPIClient:
+    def __init__(self, base_url, token):
+        """
+        Initialize the API client.
 
-def get_auth_header():
-    return {'Authorization': f'Bearer {NEGOTIATOR_TOKEN}', 'Content-Type': 'application/json'}
+        :param base_url: Base URL for the API.
+        :param token: Bearer token for authentication.
+        """
+        self.base_url = base_url
+        self.headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json',
+        }
 
-def get_all_organizations():
-    return NegotiatorOrganizationDTO.parse(requests.get(f'{NEGOTIATOR_API_URL}/organizations?size=10000', headers=get_auth_header()).json()['_embedded']['organizations'])
+    def get(self, endpoint, params=None):
+        url = f"{self.base_url}/{endpoint}"
+        response = requests.get(url, headers=self.headers, params=params)
+        if response.status_code == 401:
+            raise TokenExpiredException()
+        return response
 
+    def post(self, endpoint, data=None):
+        url = f"{self.base_url}/{endpoint}"
+        response = requests.post(url, headers=self.headers, data=data)
+        if response.status_code == 401:
+            raise TokenExpiredException()
+        return response # Return the JSON response
 
-def get_all_resources():
-    return NegotiatorResourceDTO.parse(requests.get(f'{NEGOTIATOR_API_URL}/resources?size=10000', headers=get_auth_header()).json()['_embedded']['resources'])
+    def put(self, endpoint, data=None):
+        url = f"{self.base_url}/{endpoint}"
+        response = requests.put(url, headers=self.headers, data=data)
+        if response.status_code == 401:
+            raise TokenExpiredException()
+        return response # Return the JSON response
 
+    def patch(self, endpoint, data=None):
+        url = f"{self.base_url}/{endpoint}"
+        response = requests.patch(url, headers=self.headers, data=data)
+        if response.status_code == 401:
+            raise TokenExpiredException()
+        return response # Return the JSON response
 
-def get_all_negotiator_networks():
-    return NegotiatorNetworkDTO.parse(requests.get(f'{NEGOTIATOR_API_URL}/networks?size=10000', headers=get_auth_header()).json()['_embedded']['networks'])
+    @renew_access_token
+    def get_all_organizations(self):
+        return NegotiatorOrganizationDTO.parse(self.get('organizations?size=10000').json()['_embedded']['organizations'])
 
+    @renew_access_token
+    def get_all_resources(self):
+        return NegotiatorResourceDTO.parse(self.get('resources?size=10000').json()['_embedded']['resources'])
 
-def add_organizations (organizations: list[OrganizationDirectoryDTO]):
-    organizations_data = dump(organizations)
-    requests.post(f'{NEGOTIATOR_API_URL}/organizations', data=organizations_data, headers=get_auth_header())
+    @renew_access_token
+    def get_all_negotiator_networks(self):
+        return NegotiatorNetworkDTO.parse(self.get('networks?size=10000').json()['_embedded']['networks'])
 
+    @renew_access_token
+    def add_organizations (self, organizations: list[OrganizationDirectoryDTO]):
+        organizations_data = dump(organizations)
+        self.post('organizations', data=organizations_data)
 
-def update_organization_name(id, name, external_id):
-    requests.put(f'{NEGOTIATOR_API_URL}/organizations/{id}', data=json.dumps({'name': name, 'externalId': external_id}), headers=get_auth_header())
+    @renew_access_token
+    def update_organization_name(self, id, name, external_id):
+        self.put(f'organizations/{id}', data=json.dumps({'name': name, 'externalId': external_id}))
+
+    @renew_access_token
+    def add_resources(self, resources: list):
+        self.post('resources', data=json.dumps(resources))
+
+    @renew_access_token
+    def update_resource_name_or_description(self, id, name, description):
+        self.patch(f'resources/{id}',
+                     data=json.dumps({'name': name, 'description': description}))
+
+    @renew_access_token
+    def add_networks(self, networks: list):
+        self.post('networks', data=json.dumps(networks))
+
+    @renew_access_token
+    def update_network_info(self, id, name, url, email, external_id):
+        self.put(f'networks/{id}',
+                   data=json.dumps({'name': name, 'uri': url, 'contactEmail': email, 'externalId': external_id}))
 
 
 def create_resource_add_DTO(resource: ResourceDirectoryDTO, organization_id):
@@ -44,12 +102,6 @@ def create_resource_add_DTO(resource: ResourceDirectoryDTO, organization_id):
         'discoveryServiceId': 1
     }
 
-def add_resources (resources: list):
-    requests.post(f'{NEGOTIATOR_API_URL}/resources', data=json.dumps(resources), headers=get_auth_header())
-
-
-def update_resource_name_or_description(id, name, description):
-    requests.patch(f'{NEGOTIATOR_API_URL}/resources/{id}', data=json.dumps({'name': name, 'description': description }), headers=get_auth_header())
 
 
 def create_network_add_DTO(network: NetworkDirectoryDTO):
@@ -60,13 +112,6 @@ def create_network_add_DTO(network: NetworkDirectoryDTO):
         'uri': network.url
         }
 
-
-def add_networks(networks: list):
-    requests.post(f'{NEGOTIATOR_API_URL}/networks', data=json.dumps(networks), headers=get_auth_header())
-
-
-def update_network_info(id, name, url, email, external_id):
-    requests.put(f'{NEGOTIATOR_API_URL}/networks/{id}', data=json.dumps({'name': name, 'uri': url, 'contactEmail': email, 'externalId': external_id}), headers=get_auth_header())
 
 
 

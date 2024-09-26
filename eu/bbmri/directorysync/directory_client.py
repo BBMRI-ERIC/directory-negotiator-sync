@@ -3,7 +3,7 @@ import requests
 from eu.bbmri.directorysync.models.dto.organization import OrganizationDirectoryDTO
 from eu.bbmri.directorysync.models.dto.resource import ResourceDirectoryDTO
 from eu.bbmri.directorysync.models.dto.network import NetworkDirectoryDTO
-from eu.config import DIRECTORY_API_URL, NEGOTIATOR_API_URL
+from eu.config import DIRECTORY_API_URL
 
 
 def get_all_biobanks():
