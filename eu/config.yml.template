@@ -1,3 +1,7 @@
 directory_client:
   directory_emx2_endpoint: "https://directory.bbmri-eric.eu/ERIC/directory/graphql"
   negotiator_api_url: "http://localhost:8081/api/v3"
+    auth:
+      client_id : "123"
+      client_secret: "123"
+      oidc_token_uri: "http://localhost:4011/connect/token"

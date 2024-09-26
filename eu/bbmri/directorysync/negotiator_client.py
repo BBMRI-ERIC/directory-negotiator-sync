@@ -91,6 +91,14 @@ class NegotiatorAPIClient:
         self.put(f'networks/{id}',
                    data=json.dumps({'name': name, 'uri': url, 'contactEmail': email, 'externalId': external_id}))
 
+    @renew_access_token
+    def add_sync_job(self):
+        return (self.post('discovery-services/1/sync-jobs'))
+
+
+    @renew_access_token
+    def update_sync_job(self, job_id, job_status):
+        return (self.patch(f'discovery-services/1/sync-jobs/{job_id}', data=json.dumps({'jobStatus': job_status})))
 
 def create_resource_add_DTO(resource: ResourceDirectoryDTO, organization_id):
     return {

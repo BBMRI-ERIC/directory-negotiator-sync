@@ -40,11 +40,8 @@ def get_negotiator_network_by_external_id(negotiator_networks: list[NegotiatorNe
         raise Exception(f'More than one network with the externalId {external_id} found in the Negotiator')
 
 
-def create_sync_job():
-    pass
-
-
 def sync_all(negotiator_client: NegotiatorAPIClient):
+    job_id = (negotiator_client.add_sync_job()).json()['id']
     directory_organizations = get_all_biobanks()
     negotiator_organizations = negotiator_client.get_all_organizations()
     directory_resources = get_all_collections()
@@ -54,6 +51,8 @@ def sync_all(negotiator_client: NegotiatorAPIClient):
     directory_networks = get_all_directory_networks()
     negotiator_networks = negotiator_client.get_all_negotiator_networks()
     sync_all_networks(negotiator_client,directory_networks, negotiator_networks)
+    negotiator_client.update_sync_job(job_id, 'COMPLETED')
+
 
 
 def sync_all_organizations(negotiator_client: NegotiatorAPIClient, directory_organziations: list[OrganizationDirectoryDTO],
@@ -85,12 +84,12 @@ def sync_all_resources(negotiator_client: NegotiatorAPIClient, directory_resourc
         external_id = directory_resource.id
         negotiator_resource = get_negotiator_resource_by_external_id(negotiator_resources, external_id)
         if not negotiator_resource:
-            #LOG.info(f'Resource with external id {external_id} not found, including it to the list of resources to add')
+            #OG.info(f'Resource with external id {external_id} not found, including it to the list of resources to add')
             negotiator_organization = get_negotiator_organization_by_external_id(negotiator_organizations,
                                                                                  directory_resource.biobank.id)
             if not negotiator_organization:
-                #LOG.warning(
-                #   f'Impossible to add the resource with external id {directory_resource.id}: the related biobank with external id {directory_resource.biobank.id} is not present in the Negotiator. Possible withdrawn Biobank ?')
+                LOG.warning(
+                  f'Impossible to add the resource with external id {directory_resource.id}: the related biobank with external id {directory_resource.biobank.id} is not present in the Negotiator. Possible withdrawn Biobank ?')
                 continue
             resources_to_add.append(create_resource_add_DTO(directory_resource, negotiator_organization.id))
         else:
