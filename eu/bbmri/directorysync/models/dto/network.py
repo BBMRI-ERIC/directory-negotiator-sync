@@ -2,8 +2,10 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+
 class Contact(BaseModel):
-    email:str
+    email: str
+
 
 class NetworkDirectoryDTO(BaseModel):
     id: str
@@ -26,6 +28,3 @@ class NegotiatorNetworkDTO(BaseModel):
     @staticmethod
     def parse(negotiator_data):
         return [NegotiatorNetworkDTO(**network) for network in negotiator_data]
-
-
-

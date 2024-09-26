@@ -1,8 +1,8 @@
 import requests
 
+from eu.bbmri.directorysync.models.dto.network import NetworkDirectoryDTO
 from eu.bbmri.directorysync.models.dto.organization import OrganizationDirectoryDTO
 from eu.bbmri.directorysync.models.dto.resource import ResourceDirectoryDTO
-from eu.bbmri.directorysync.models.dto.network import NetworkDirectoryDTO
 from eu.config import DIRECTORY_API_URL
 
 
@@ -18,7 +18,7 @@ def get_all_biobanks():
   
             }
     '''
-    results = requests.post(DIRECTORY_API_URL, json={'query':emx2_biobanks_query}).json()
+    results = requests.post(DIRECTORY_API_URL, json={'query': emx2_biobanks_query}).json()
     return OrganizationDirectoryDTO.parse(results['data']['Biobanks'])
 
 
@@ -37,7 +37,7 @@ def get_all_collections():
     }
     
     '''
-    results = requests.post(DIRECTORY_API_URL, json={'query':emx2_collections_query}).json()
+    results = requests.post(DIRECTORY_API_URL, json={'query': emx2_collections_query}).json()
     return ResourceDirectoryDTO.parse(results['data']['Collections'])
 
 
@@ -57,5 +57,3 @@ def get_all_directory_networks():
     '''
     results = requests.post(DIRECTORY_API_URL, json={'query': emx2_networks_query}).json()
     return NetworkDirectoryDTO.parse(results['data']['Networks'])
-
-

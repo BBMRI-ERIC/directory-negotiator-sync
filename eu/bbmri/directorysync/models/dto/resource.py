@@ -2,14 +2,14 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from eu.bbmri.directorysync.models.dto.organization import OrganizationDirectoryDTO, NegotiatorOrganizationDTO
+from eu.bbmri.directorysync.models.dto.organization import OrganizationDirectoryDTO
 
 
 class ResourceDirectoryDTO(BaseModel):
     id: str
     name: str
     description: Optional[str]
-    biobank : OrganizationDirectoryDTO
+    biobank: OrganizationDirectoryDTO
 
     @staticmethod
     def parse(directory_data):
@@ -20,12 +20,8 @@ class NegotiatorResourceDTO(BaseModel):
     id: int
     sourceId: str
     name: str
-    description : Optional[str]
+    description: Optional[str]
 
     @staticmethod
     def parse(negotiator_data):
         return [NegotiatorResourceDTO(**resource) for resource in negotiator_data]
-
-
-
-

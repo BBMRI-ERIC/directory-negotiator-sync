@@ -1,7 +1,8 @@
-import yaml, logging, os, sys, json, requests
+import logging
+import os
+import yaml
 
 logging.getLogger(__name__).addHandler(logging.StreamHandler())
-
 
 with open(os.path.abspath('eu/config.yml'), 'r') as file:
     logging.debug("Loading configuration file")
@@ -12,6 +13,7 @@ NEGOTIATOR_API_URL = config['directory_client']['negotiator_api_url']
 AUTH_CLIENT_ID = config['directory_client']['auth']['client_id']
 AUTH_CLIENT_SECRET = config['directory_client']['auth']['client_secret']
 AUTH_OIDC_TOKEN_URI = config['directory_client']['auth']['oidc_token_uri']
+
 
 def setup_logger(log_level=logging.INFO):
     """
@@ -34,5 +36,6 @@ def setup_logger(log_level=logging.INFO):
         logger.addHandler(console_handler)
 
     return logger
+
 
 LOG = setup_logger(logging.DEBUG)

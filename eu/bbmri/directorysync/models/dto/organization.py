@@ -17,13 +17,9 @@ class OrganizationDirectoryDTO(BaseModel):
 
 class NegotiatorOrganizationDTO(BaseModel):
     id: int
-    externalId:str
-    name:str
+    externalId: str
+    name: str
 
     @staticmethod
     def parse(negotiator_data):
         return [NegotiatorOrganizationDTO(**organization) for organization in negotiator_data]
-
-
-
-

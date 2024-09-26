@@ -1,16 +1,18 @@
-import time
-import schedule
 from datetime import datetime
 
+import schedule
+
+from eu.auth import get_token
 from eu.bbmri.directorysync.negotiator_client import NegotiatorAPIClient
 from eu.bbmri.sync_service import sync_all
 from eu.config import LOG, NEGOTIATOR_API_URL
-from eu.auth import get_token
+
 
 # Define the task that you want to run every X days
 def cron_job(negotiator_client):
     LOG.info(f"Starting cron job at: {datetime.now()}")
     sync_all(negotiator_client)
+
 
 # Schedule the job to run every 2 days
 def sync_directory():
@@ -25,7 +27,7 @@ def run_microservice():
     while True:
         # Run all pending scheduled tasks
         schedule.run_pending()
-        #time.sleep(10)  # Check every minute for scheduled tasks
+        # time.sleep(10)  # Check every minute for scheduled tasks
 
 
 if __name__ == "__main__":

@@ -1,7 +1,10 @@
-import requests, json
+import json
+import requests
+
 from eu.bbmri.exception.TokenExpiredException import TokenExpiredException
-from eu.config import LOG
 from eu.config import AUTH_OIDC_TOKEN_URI, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET
+from eu.config import LOG
+
 
 def get_token():
     LOG.info('Getting ot refreshing a new token')
@@ -27,8 +30,7 @@ def renew_access_token(func):
         except TokenExpiredException:
             # Invoke the code responsible for get a new token
             get_token()
-# once the token is refreshed, we can retry the operation
+            # once the token is refreshed, we can retry the operation
             return func(*args, **kwargs)
+
     return wrapper
-
-
