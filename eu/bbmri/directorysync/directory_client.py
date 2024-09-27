@@ -9,11 +9,10 @@ from eu.config import DIRECTORY_API_URL
 def get_all_biobanks():
     emx2_biobanks_query = '''
     query {
-                Biobanks(
-                    filter: { withdrawn: { equals: false }}
-                )
+                Biobanks
                     {   id
                         name
+                        withdrawn
                     }
   
             }

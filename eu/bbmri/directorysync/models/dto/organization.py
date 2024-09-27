@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field, ConfigDict
 class OrganizationDirectoryDTO(BaseModel):
     id: str = Field(..., alias='externalId')
     name: str
+    withdrawn: bool = Field(default=False)
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -11,7 +12,8 @@ class OrganizationDirectoryDTO(BaseModel):
 
     @staticmethod
     def parse(directory_data):
-        return [OrganizationDirectoryDTO(id=organization.get('id'), name=organization.get('name')) for
+        return [OrganizationDirectoryDTO(id=organization.get('id'), name=organization.get('name'),
+                                         withdrawn=organization.get('withdrawn')) for
                 organization in directory_data]
 
 

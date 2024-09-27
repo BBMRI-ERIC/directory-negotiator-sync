@@ -82,12 +82,12 @@ def sync_resources(negotiator_client: NegotiatorAPIClient, directory_resources: 
         external_id = directory_resource.id
         negotiator_resource = get_negotiator_resource_by_external_id(negotiator_resources, external_id)
         if not negotiator_resource:
-            # OG.info(f'Resource with external id {external_id} not found, including it to the list of resources to add')
+            LOG.info(f'Resource with external id {external_id} not found, including it to the list of resources to add')
             negotiator_organization = get_negotiator_organization_by_external_id(negotiator_organizations,
                                                                                  directory_resource.biobank.id)
             if not negotiator_organization:
-                LOG.warning(
-                    f'Impossible to add the resource with external id {directory_resource.id}: the related biobank with external id {directory_resource.biobank.id} is not present in the Negotiator. Possible withdrawn Biobank ?')
+                LOG.error(
+                    f'Impossible to add the resource with external id {directory_resource.id}: the related biobank with external id {directory_resource.biobank.id} is not present in the Negotiator')
                 continue
             resources_to_add.append(resource_create_DTO(directory_resource, negotiator_organization.id))
         else:
