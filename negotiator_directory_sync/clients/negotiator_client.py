@@ -2,12 +2,13 @@ import json
 
 import requests
 
-from eu.auth import renew_access_token
-from eu.bbmri.directorysync.models.dto.network import NegotiatorNetworkDTO, NetworkDirectoryDTO
-from eu.bbmri.directorysync.models.dto.organization import NegotiatorOrganizationDTO, OrganizationDirectoryDTO
-from eu.bbmri.directorysync.models.dto.resource import NegotiatorResourceDTO, ResourceDirectoryDTO
-from eu.bbmri.exception.TokenExpiredException import TokenExpiredException
-from eu.utils import dump
+
+from ..auth.auth import renew_access_token
+from ..models.dto.network import NegotiatorNetworkDTO, NetworkDirectoryDTO
+from ..models.dto.organization import NegotiatorOrganizationDTO, OrganizationDirectoryDTO
+from ..models.dto.resource import NegotiatorResourceDTO, ResourceDirectoryDTO
+from ..exceptions.TokenExpiredException import TokenExpiredException
+from ..utils.utils import dump
 
 
 class NegotiatorAPIClient:

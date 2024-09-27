@@ -4,7 +4,7 @@ import yaml
 
 logging.getLogger(__name__).addHandler(logging.StreamHandler())
 
-with open(os.path.abspath('eu/config.yml'), 'r') as file:
+with open(os.path.abspath('negotiator_directory_sync/conf/config.yml'), 'r') as file:
     logging.debug("Loading configuration file")
     config = yaml.safe_load(file)
 

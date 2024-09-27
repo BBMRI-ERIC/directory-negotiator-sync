@@ -1,9 +1,9 @@
 import json
 import requests
 
-from eu.bbmri.exception.TokenExpiredException import TokenExpiredException
-from eu.config import AUTH_OIDC_TOKEN_URI, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET
-from eu.config import LOG
+from ..exceptions.TokenExpiredException import TokenExpiredException
+from ..conf.config import AUTH_OIDC_TOKEN_URI, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET
+from ..conf.config import LOG
 
 
 def get_token():

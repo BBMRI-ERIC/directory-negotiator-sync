@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from eu.bbmri.directorysync.models.dto.organization import OrganizationDirectoryDTO
+from ..dto.organization import OrganizationDirectoryDTO
 
 
 class ResourceDirectoryDTO(BaseModel):

@@ -1,9 +1,9 @@
-from eu.bbmri.directorysync.directory_client import get_all_biobanks, get_all_collections, get_all_directory_networks
-from eu.bbmri.directorysync.models.dto.network import NetworkDirectoryDTO, NegotiatorNetworkDTO
-from eu.bbmri.directorysync.models.dto.organization import OrganizationDirectoryDTO, NegotiatorOrganizationDTO
-from eu.bbmri.directorysync.models.dto.resource import ResourceDirectoryDTO, NegotiatorResourceDTO
-from eu.bbmri.directorysync.negotiator_client import resource_create_DTO, network_create_DTO, NegotiatorAPIClient
-from eu.config import LOG
+from ..clients.directory_client import (get_all_biobanks, get_all_collections, get_all_directory_networks)
+from ..models.dto.network import NetworkDirectoryDTO, NegotiatorNetworkDTO
+from ..models.dto.organization import OrganizationDirectoryDTO, NegotiatorOrganizationDTO
+from ..models.dto.resource import ResourceDirectoryDTO, NegotiatorResourceDTO
+from ..clients.negotiator_client import resource_create_DTO, network_create_DTO, NegotiatorAPIClient
+from ..conf.config import LOG
 
 
 def get_negotiator_organization_by_external_id(negotiator_organizations: list[NegotiatorOrganizationDTO],
