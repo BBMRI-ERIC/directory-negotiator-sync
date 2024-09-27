@@ -10,9 +10,10 @@ with open(os.path.abspath('eu/config.yml'), 'r') as file:
 
 DIRECTORY_API_URL = config['directory_client']['directory_emx2_endpoint']
 NEGOTIATOR_API_URL = config['directory_client']['negotiator_api_url']
-AUTH_CLIENT_ID = config['directory_client']['auth']['client_id']
-AUTH_CLIENT_SECRET = config['directory_client']['auth']['client_secret']
-AUTH_OIDC_TOKEN_URI = config['directory_client']['auth']['oidc_token_uri']
+AUTH_CLIENT_ID = config['negotiator_client']['auth']['client_id']
+AUTH_CLIENT_SECRET = config['negotiator_client']['auth']['client_secret']
+AUTH_OIDC_TOKEN_URI = config['negotiator_client']['auth']['oidc_token_uri']
+JOB_SCHEDULE_INTERVAL = config['sync']['job_schedule_interval']
 
 
 def setup_logger(log_level=logging.INFO):
