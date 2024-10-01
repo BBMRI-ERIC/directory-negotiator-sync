@@ -2,10 +2,10 @@ from datetime import datetime
 
 import schedule
 
-from negotiator_directory_sync.auth.auth import get_token
+from negotiator_directory_sync.auth import get_token
 from negotiator_directory_sync.clients.negotiator_client import NegotiatorAPIClient
+from negotiator_directory_sync.conf import LOG, NEGOTIATOR_API_URL, JOB_SCHEDULE_INTERVAL
 from negotiator_directory_sync.synchronization.sync_service import sync_all
-from negotiator_directory_sync.conf.config import LOG, NEGOTIATOR_API_URL, JOB_SCHEDULE_INTERVAL
 
 
 # Define the task that you want to run every X days

@@ -1,7 +1,7 @@
-from ..auth.auth import renew_access_token
+from ..auth import renew_access_token
 from ..clients.directory_client import (get_all_biobanks, get_all_collections, get_all_directory_networks)
 from ..clients.negotiator_client import resource_create_dto, network_create_dto, NegotiatorAPIClient
-from ..conf.config import LOG
+from ..conf import LOG
 from ..models.dto.network import NetworkDirectoryDTO, NegotiatorNetworkDTO
 from ..models.dto.organization import OrganizationDirectoryDTO, NegotiatorOrganizationDTO
 from ..models.dto.resource import ResourceDirectoryDTO, NegotiatorResourceDTO
@@ -54,6 +54,7 @@ def sync_all(negotiator_client: NegotiatorAPIClient):
     negotiator_client.update_sync_job(job_id, 'COMPLETED')
 
 
+@renew_access_token
 def sync_organizations(negotiator_client: NegotiatorAPIClient, directory_organziations: list[OrganizationDirectoryDTO],
                        negotiator_organizations: list[NegotiatorOrganizationDTO]):
     organizations_to_add = list()
@@ -75,6 +76,7 @@ def sync_organizations(negotiator_client: NegotiatorAPIClient, directory_organzi
         negotiator_client.add_organizations(organizations_to_add)
 
 
+@renew_access_token
 def sync_resources(negotiator_client: NegotiatorAPIClient, directory_resources: list[ResourceDirectoryDTO],
                    negotiator_resources: list[NegotiatorResourceDTO]):
     resources_to_add = list()
@@ -102,6 +104,7 @@ def sync_resources(negotiator_client: NegotiatorAPIClient, directory_resources: 
         negotiator_client.add_resources(resources_to_add)
 
 
+@renew_access_token
 def sync_networks(negotiator_client: NegotiatorAPIClient, directory_networks: list[NetworkDirectoryDTO],
                   negotiator_networks: list[NegotiatorNetworkDTO]):
     networks_to_add = list()
