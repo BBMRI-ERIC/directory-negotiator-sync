@@ -1,19 +1,21 @@
 import json
-import requests
+import requests, time
 
+from ..clients.negotiator_client import NegotiatorAPIClient
 from ..exceptions.TokenExpiredException import TokenExpiredException
 from ..conf.config import AUTH_OIDC_TOKEN_URI, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET
 from ..conf.config import LOG
 
 
 def get_token():
-    LOG.info('Getting ot refreshing a new token')
+    LOG.info('Getting or refreshing a new token')
     token_req_payload = {'grant_type': 'client_credentials'}
 
     token_response = requests.post(AUTH_OIDC_TOKEN_URI,
                                    data=token_req_payload, verify=False, allow_redirects=False,
                                    auth=(AUTH_CLIENT_ID, AUTH_CLIENT_SECRET))
 
+    time.sleep(10)
     if token_response.status_code != 200:
         LOG.error("Failed to obtain token from the OAuth 2.0 server")
         return
@@ -24,13 +26,17 @@ def get_token():
 
 
 def renew_access_token(func):
-    def wrapper(*args, **kwargs):
+    def wrapper(negotiator_client: NegotiatorAPIClient, *args, **kwargs):
         try:
-            return func(*args, **kwargs)
+            LOG.info("Calling token renewal function")
+            LOG.info("Attempting to call method")
+            return func(negotiator_client, *args, **kwargs)
         except TokenExpiredException:
+            LOG.info("Handling the exception and refreshing the token")
             # Invoke the code responsible for get a new token
-            get_token()
+            negotiator_client.renew_token(get_token())
+            LOG.info("Token Sucessfully refreshed")
             # once the token is refreshed, we can retry the operation
-            return func(*args, **kwargs)
+            return func(negotiator_client, *args, **kwargs)
 
     return wrapper

@@ -1,9 +1,10 @@
+from ..auth.auth import renew_access_token
 from ..clients.directory_client import (get_all_biobanks, get_all_collections, get_all_directory_networks)
+from ..clients.negotiator_client import resource_create_dto, network_create_dto, NegotiatorAPIClient
+from ..conf.config import LOG
 from ..models.dto.network import NetworkDirectoryDTO, NegotiatorNetworkDTO
 from ..models.dto.organization import OrganizationDirectoryDTO, NegotiatorOrganizationDTO
 from ..models.dto.resource import ResourceDirectoryDTO, NegotiatorResourceDTO
-from ..clients.negotiator_client import resource_create_DTO, network_create_DTO, NegotiatorAPIClient
-from ..conf.config import LOG
 
 
 def get_negotiator_organization_by_external_id(negotiator_organizations: list[NegotiatorOrganizationDTO],
@@ -38,6 +39,7 @@ def get_negotiator_network_by_external_id(negotiator_networks: list[NegotiatorNe
         raise Exception(f'More than one network with the externalId {external_id} found in the Negotiator')
 
 
+@renew_access_token
 def sync_all(negotiator_client: NegotiatorAPIClient):
     job_id = (negotiator_client.add_sync_job()).json()['id']
     directory_organizations = get_all_biobanks()
@@ -89,7 +91,7 @@ def sync_resources(negotiator_client: NegotiatorAPIClient, directory_resources: 
                 LOG.error(
                     f'Impossible to add the resource with external id {directory_resource.id}: the related biobank with external id {directory_resource.biobank.id} is not present in the Negotiator')
                 continue
-            resources_to_add.append(resource_create_DTO(directory_resource, negotiator_organization.id))
+            resources_to_add.append(resource_create_dto(directory_resource, negotiator_organization.id))
         else:
             if (
                     negotiator_resource.name != directory_resource.name or negotiator_resource.description != directory_resource.description):
@@ -110,11 +112,11 @@ def sync_networks(negotiator_client: NegotiatorAPIClient, directory_networks: li
         if network:
             if network.name != directory_network.name or network.uri != directory_network.url or network.contactEmail != directory_network.contact.email:
                 LOG.info(f'Updating mane and/or url and or contact email for network with external id: {external_id}')
-                negotiator_client: NegotiatorAPIClient.update_network_info(network.id, directory_network.name,
-                                                                           directory_network.url,
-                                                                           directory_network.contact.email, external_id)
+                negotiator_client.update_network_info(network.id, directory_network.name,
+                                                      directory_network.url,
+                                                      directory_network.contact.email, external_id)
         else:
             LOG.info(f'Network with id {external_id} not fount, adding it to the list of networks to add')
-            networks_to_add.append(network_create_DTO(directory_network))
+            networks_to_add.append(network_create_dto(directory_network))
     if len(networks_to_add) > 1:
         negotiator_client.add_networks(networks_to_add)
