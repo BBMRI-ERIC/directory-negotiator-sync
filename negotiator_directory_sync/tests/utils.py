@@ -1,3 +1,5 @@
+from typing import Literal
+
 import pytest
 from requests.auth import HTTPBasicAuth
 
@@ -36,11 +38,86 @@ def add_new_biobank_to_directory(biobank_id, biobank_pid, biobank_name, biobank_
             f'Impossible to complete the test, erroor when adding the new biobank. Status code: {response.status_code} . Error: {response.text}')
 
 
-def delete_biobank_from_directory(biobank_id):
+def add_new_collection_to_directory(collection_id, collection_name, collection_description):
     session = pytest.directory_session
-    query = 'mutation delete($pkey:[BiobanksInput]){delete(Biobanks:$pkey){message}}'
-    variables = {'pkey': [{'id': biobank_id}]}
+    query = "mutation insert($value:[CollectionsInput]){insert(Collections:$value){message}}"
+    variables = {
+        "value": [
+            {
+                "id": collection_id,
+                "name": collection_name,
+                "description": collection_description,
+                "country": {
+                    "name": "CY"
+                },
+                "contact": {
+                    "id": "bbmri-eric:contactID:AT_MUG_0001",
+                },
+                "national_node": {
+                    "id": "AT",
+                    "description": "Austria"
+                },
+                "biobank": {
+                    'id': "bbmri-eric:ID:CY_ALLBIO"
+                },
+                "biobank_label": "ALLBIO INTERNATIONAL",
+                "type": {
+                    "name": "OTHER"
+                },
+                "order_of_magnitude": {
+                    "name": 0
+                },
+                "order_of_magnitude_donors": {
+                    "label": "10 - 100"
+                },
+                "data_categories":
+                    {
+                        "name": "OTHER"
+                    },
+
+            }
+        ]
+    }
+
+    response = session.post(DIRECTORY_API_URL, json={'query': query, 'variables': variables},
+                            auth=HTTPBasicAuth('admin', 'admin'))
+    if response.status_code != 200:
+        raise Exception(
+            f'Impossible to complete the test, erroor when adding the new collection. Status code: {response.status_code} . Error: {response.text}')
+
+
+def add_new_network_to_directory(network_id, network_name, network_description):
+    session = pytest.directory_session
+    query = "mutation insert($value:[NetworksInput]){insert(Networks:$value){message}}"
+    variables = {
+        "value": [
+            {
+                "id": network_id,
+                "name": network_name,
+                "description": network_description,
+                "contact": {
+                    "id": "bbmri-eric:contactID:AT_MUG_0001",
+                },
+                "national_node": {
+                    "id": "AT",
+                    "description": "Austria"
+                }
+            }
+        ]
+    }
+
+    response = session.post(DIRECTORY_API_URL, json={'query': query, 'variables': variables},
+                            auth=HTTPBasicAuth('admin', 'admin'))
+    if response.status_code != 200:
+        raise Exception(
+            f'Impossible to complete the test, erroor when adding the new Network. Status code: {response.status_code} . Error: {response.text}')
+
+
+def delete_object_from_directory(object_id, objects_input_type=Literal['Biobanks', 'Collections', 'Networks']):
+    session = pytest.directory_session
+    query = f'mutation delete($pkey:[{objects_input_type}Input]){{delete({objects_input_type}:$pkey){{message}}}}'
+    variables = {'pkey': [{'id': object_id}]}
     response = session.post(DIRECTORY_API_URL, json={'query': query, 'variables': variables})
     if response.status_code != 200:
         raise Exception(
-            f'Impossible to complete the test, erroor when delting the new biobank. Status code: {response.status_code} . Error: {response.text}')
+            f'Impossible to complete the test, erroor when delting the new {objects_input_type[:-1]}. Status code: {response.status_code} . Error: {response.text}')

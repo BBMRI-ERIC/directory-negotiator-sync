@@ -121,5 +121,5 @@ def sync_networks(negotiator_client: NegotiatorAPIClient, directory_networks: li
         else:
             LOG.info(f'Network with id {external_id} not fount, adding it to the list of networks to add')
             networks_to_add.append(network_create_dto(directory_network))
-    if len(networks_to_add) > 1:
+    if len(networks_to_add) > 0:
         negotiator_client.add_networks(networks_to_add)
