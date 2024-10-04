@@ -6,14 +6,16 @@ from requests.auth import HTTPBasicAuth
 DIRECTORY_API_URL = "http://localhost:8080/Directory/directory/graphql"
 
 
-def add_new_biobank_to_directory(biobank_id, biobank_pid, biobank_name, biobank_description):
+def add_or_update_biobank(biobank_id, biobank_pid, biobank_name, biobank_description,
+                          operation=Literal['insert', 'update']):
     session = pytest.directory_session
-    query = "mutation insert($value:[BiobanksInput]){insert(Biobanks:$value){message}}"
+    query = f'mutation {operation}($value:[BiobanksInput]){{{operation}(Biobanks:$value){{message}}}}'
     variables = {
         "value": [
             {
                 "withdrawn": "false",
                 "id": biobank_id,
+
                 "pid": biobank_pid,
                 "name": biobank_name,
                 "description": biobank_description,
@@ -38,9 +40,10 @@ def add_new_biobank_to_directory(biobank_id, biobank_pid, biobank_name, biobank_
             f'Impossible to complete the test, erroor when adding the new biobank. Status code: {response.status_code} . Error: {response.text}')
 
 
-def add_new_collection_to_directory(collection_id, collection_name, collection_description):
+def add_or_update_collection(collection_id, collection_name, collection_description,
+                             operation=Literal['insert', 'update']):
     session = pytest.directory_session
-    query = "mutation insert($value:[CollectionsInput]){insert(Collections:$value){message}}"
+    query = f'mutation {operation}($value:[CollectionsInput]){{{operation}(Collections:$value){{message}}}}'
     variables = {
         "value": [
             {
@@ -86,9 +89,10 @@ def add_new_collection_to_directory(collection_id, collection_name, collection_d
             f'Impossible to complete the test, erroor when adding the new collection. Status code: {response.status_code} . Error: {response.text}')
 
 
-def add_new_network_to_directory(network_id, network_name, network_description):
+def add_or_update_network(network_id, network_name, network_description, network_url, contact_id,
+                          operation=Literal['insert', 'update']):
     session = pytest.directory_session
-    query = "mutation insert($value:[NetworksInput]){insert(Networks:$value){message}}"
+    query = f'mutation {operation}($value:[NetworksInput]){{{operation}(Networks:$value){{message}}}}'
     variables = {
         "value": [
             {
@@ -101,7 +105,11 @@ def add_new_network_to_directory(network_id, network_name, network_description):
                 "national_node": {
                     "id": "AT",
                     "description": "Austria"
-                }
+                },
+                "url": network_url,
+                "contact": {
+                    "id": contact_id
+                },
             }
         ]
     }
