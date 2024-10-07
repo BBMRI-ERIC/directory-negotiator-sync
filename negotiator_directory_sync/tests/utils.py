@@ -129,3 +129,28 @@ def delete_object_from_directory(object_id, objects_input_type=Literal['Biobanks
     if response.status_code != 200:
         raise Exception(
             f'Impossible to complete the test, erroor when delting the new {objects_input_type[:-1]}. Status code: {response.status_code} . Error: {response.text}')
+
+
+def update_person_email_contact(new_email_contact):
+    session = pytest.directory_session
+    query = 'mutation update($value:[PersonsInput]){update(Persons:$value){message}}'
+    variables = {"value": [
+        {"id": "bbmri-eric:contactID:AT_MUG_0001",
+         "first_name": "Sabrina",
+         "last_name": "Kral",
+         "title_after_name": "MSc",
+         "email": new_email_contact,
+         "phone": "+4331638572721",
+         "address": "ZWT Neue Stiftingtalstraße 2B",
+         "zip": "8010", "city": "Graz",
+         "country": {"name": "AT",
+                     "label": "Austria"},
+         "national_node": {"id": "AT",
+                           "description": "Austria"}
+         }
+    ]
+    }
+    response = session.post(DIRECTORY_API_URL, json={'query': query, 'variables': variables})
+    if response.status_code != 200:
+        raise Exception(
+            'Impossible to complete the test, error when updating email contact for person related to network')

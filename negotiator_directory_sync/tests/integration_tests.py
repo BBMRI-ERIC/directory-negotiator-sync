@@ -4,7 +4,7 @@ from negotiator_directory_sync.clients.directory_client import get_all_biobanks,
     get_all_directory_networks
 from negotiator_directory_sync.synchronization.sync_service import sync_organizations, sync_resources, sync_networks
 from utils import add_or_update_biobank, delete_object_from_directory, add_or_update_collection, \
-    add_or_update_network
+    add_or_update_network, update_person_email_contact
 
 
 def test_organizations_initial_sync_ok():
@@ -47,7 +47,7 @@ def test_organization_sync_when_new_added_and_then_updated():
     negotiator_organizations_after_update_name = pytest.negotiator_client.get_all_organizations()
     assert len(negotiator_organizations_after_update_name) == len(negotiator_organizations_after_bb_add_and_sync)
     organization_with_name_upd = \
-    [org for org in negotiator_organizations_after_update_name if org.externalId == "test_negotiator_sync"][0]
+        [org for org in negotiator_organizations_after_update_name if org.externalId == "test_negotiator_sync"][0]
     assert organization_with_name_upd.name == "test negotiator sync newname"
     delete_object_from_directory("test_negotiator_sync", "Biobanks")
 
@@ -70,7 +70,7 @@ def test_resources_sync_when_new_added_and_then_updated():
     negotiator_resources_after_update_name = pytest.negotiator_client.get_all_resources()
     assert len(negotiator_resources_after_update_name) == len(negotiator_resources_after_coll_add_and_sync)
     resource_with_name_upd = \
-    [res for res in negotiator_resources_after_update_name if res.sourceId == "test_negotiator_sync_coll"][0]
+        [res for res in negotiator_resources_after_update_name if res.sourceId == "test_negotiator_sync_coll"][0]
     assert resource_with_name_upd.name == "test negotiator sync collection newname"
     # now update the resource description and sync again
     add_or_update_collection("test_negotiator_sync_coll", "test negotiator sync collection newname",
@@ -81,12 +81,12 @@ def test_resources_sync_when_new_added_and_then_updated():
     negotiator_resources_after_update_desc = pytest.negotiator_client.get_all_resources()
     assert len(negotiator_resources_after_update_name) == len(negotiator_resources_after_update_desc)
     resource_with_desc_upd = \
-    [res for res in negotiator_resources_after_update_desc if res.sourceId == "test_negotiator_sync_coll"][0]
+        [res for res in negotiator_resources_after_update_desc if res.sourceId == "test_negotiator_sync_coll"][0]
     assert resource_with_desc_upd.description == "test negotiator sync collection newdesc"
     delete_object_from_directory("test_negotiator_sync_coll", 'Collections')
 
 
-def test_networks_sync_when_new_added():
+def test_networks_sync_when_new_added_and_then_updated():
     add_or_update_network("test_negotiator_sync_network", "test negotiator sync network",
                           "test negotiator sync network", 'http://test.eu', 'bbmri-eric:contactID:AT_MUG_0001',
                           'insert')
@@ -105,7 +105,7 @@ def test_networks_sync_when_new_added():
     networks_after_update_name = pytest.negotiator_client.get_all_negotiator_networks()
     assert len(networks_after_update_name) == len(negotiator_networks_after_ntw_add_and_sync)
     network_with_name_upd = \
-    [ntw for ntw in networks_after_update_name if ntw.externalId == "test_negotiator_sync_network"][0]
+        [ntw for ntw in networks_after_update_name if ntw.externalId == "test_negotiator_sync_network"][0]
     assert network_with_name_upd.name == "test negotiator sync network newname"
     # now update the network url
     add_or_update_network("test_negotiator_sync_network", "test negotiator sync network newname",
@@ -116,6 +116,16 @@ def test_networks_sync_when_new_added():
     negotiator_networks_after_update_url = pytest.negotiator_client.get_all_negotiator_networks()
     assert len(networks_after_update_name) == len(negotiator_networks_after_update_url)
     network_with_url_upd = \
-    [ntw for ntw in negotiator_networks_after_update_url if ntw.externalId == "test_negotiator_sync_network"][0]
+        [ntw for ntw in negotiator_networks_after_update_url if ntw.externalId == "test_negotiator_sync_network"][0]
     assert network_with_url_upd.uri == 'http://testnew.eu'
+    # now update the email contact of the person related to the network
+    update_person_email_contact('sabrina.kralnew@medunigraz.at')
+    networks_after_update_email = get_all_directory_networks()
+    sync_networks(pytest.negotiator_client, networks_after_update_email, negotiator_networks_after_update_url)
+    negotiator_networks_after_update_email = pytest.negotiator_client.get_all_negotiator_networks()
+    assert len(negotiator_networks_after_update_email) == len(negotiator_networks_after_update_url)
+    network_with_email_upd = \
+        [ntw for ntw in negotiator_networks_after_update_email if ntw.externalId == "test_negotiator_sync_network"][0]
+    assert network_with_email_upd.contactEmail == 'sabrina.kralnew@medunigraz.at'
     delete_object_from_directory("test_negotiator_sync_network", 'Networks')
+    update_person_email_contact('sabrina.kral@medunigraz.at')
