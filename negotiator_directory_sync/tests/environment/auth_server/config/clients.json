@@ -15,7 +15,7 @@
     ],
     "ClientClaimsPrefix": "",
     "Claims": [],
-    "IdentityTokenLifetime": 1,
-    "AccessTokenLifetime": 1
+    "IdentityTokenLifetime": 1000,
+    "AccessTokenLifetime": 1000
   }
 ]
