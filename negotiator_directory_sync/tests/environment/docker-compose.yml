@@ -6,6 +6,7 @@ services:
     ports:
       - '4011:80'
     environment:
+      TZ: Europe/Rome
       ASPNETCORE_ENVIRONMENT: Development
       SERVER_OPTIONS_INLINE: |
         {
@@ -50,6 +51,7 @@ services:
       postgres:
         condition: service_healthy
     environment:
+      - TZ=Europe/Rome
       - PROFILE=local
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/negotiator
       - SPRING_DATASOURCE_USERNAME=negotiator
@@ -78,6 +80,7 @@ services:
   emx2:
     image: molgenis/molgenis-emx2:latest
     environment:
+      - TZ=Europe/Rome
       - MOLGENIS_POSTGRES_URI=jdbc:postgresql://postgres:5432/molgenis
       - MOLGENIS_POSTGRES_USER=molgenis
       - MOLGENIS_POSTGRES_PASS=molgenis
@@ -97,6 +100,7 @@ services:
   postgres:
     image: postgres:15-alpine
     environment:
+      - TZ=Europe/Rome
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres

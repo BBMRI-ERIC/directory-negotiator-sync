@@ -125,7 +125,8 @@ services:
     networks:
       - directory-negotiator-sync-test
   directory-negotiator-sync:
-    image: directory-negotiator-sync
+    build:
+      context: ../../../
     depends_on:
       negotiator:
         condition: service_healthy
