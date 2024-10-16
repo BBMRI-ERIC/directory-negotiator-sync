@@ -1,10 +1,15 @@
 import json
+import os
 
 import requests
 
 from ..clients.negotiator_client import NegotiatorAPIClient
-from ..conf import AUTH_OIDC_TOKEN_URI, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET, LOG
 from ..exceptions.TokenExpiredException import TokenExpiredException
+from ..logger import LOG
+
+AUTH_OIDC_TOKEN_URI = os.getenv('AUTH_OIDC_TOKEN_URI')
+AUTH_CLIENT_ID = os.getenv('AUTH_CLIENT_ID')
+AUTH_CLIENT_SECRET = os.getenv('AUTH_CLIENT_SECRET')
 
 
 def get_token():
