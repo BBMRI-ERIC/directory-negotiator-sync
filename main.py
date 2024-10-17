@@ -38,7 +38,6 @@ def cron_job(negotiator_client):
 
 def sync_directory():
     negotiator_client = NegotiatorAPIClient(NEGOTIATOR_API_URL, get_token())
-    LOG.info("Scheduling the cron job...")
     schedule.every(int(JOB_SCHEDULE_INTERVAL)).seconds.do(cron_job, negotiator_client)
 
 
@@ -49,5 +48,5 @@ def run_microservice():
 
 
 if __name__ == "__main__":
-    LOG.info("Running microservice...")
+    LOG.info("Running microservice")
     run_microservice()

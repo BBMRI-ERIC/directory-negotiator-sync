@@ -4,12 +4,8 @@ logging.getLogger(__name__).addHandler(logging.StreamHandler())
 
 
 def setup_logger(log_level=logging.INFO):
-    """
-    Set up a logger with a console handler and the given log level.
-    """
     logger = logging.getLogger('directory-negotiator-sync')
 
-    # Avoid adding multiple handlers if the logger is already configured
     if len(logger.handlers) == 0:
         logger.setLevel(log_level)
 

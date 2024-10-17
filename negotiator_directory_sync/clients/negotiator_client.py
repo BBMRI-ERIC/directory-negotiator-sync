@@ -11,12 +11,6 @@ from ..utils.utils import dump
 
 class NegotiatorAPIClient:
     def __init__(self, base_url, token):
-        """
-        Initialize the API client.
-
-        :param base_url: Base URL for the API.
-        :param token: Bearer token for authentication.
-        """
         self._base_url = base_url
         self._token = token
 
@@ -89,10 +83,10 @@ class NegotiatorAPIClient:
                  data=json.dumps({'name': name, 'uri': url, 'contactEmail': email, 'externalId': external_id}))
 
     def add_sync_job(self):
-        return (self.post('discovery-services/1/sync-jobs'))
+        return self.post('discovery-services/1/sync-jobs')
 
     def update_sync_job(self, job_id, job_status):
-        return (self.patch(f'discovery-services/1/sync-jobs/{job_id}', data=json.dumps({'jobStatus': job_status})))
+        return self.patch(f'discovery-services/1/sync-jobs/{job_id}', data=json.dumps({'jobStatus': job_status}))
 
 
 def resource_create_dto(resource: ResourceDirectoryDTO, organization_id):

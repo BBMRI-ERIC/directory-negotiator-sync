@@ -21,10 +21,10 @@ def get_token():
                                    auth=(AUTH_CLIENT_ID, AUTH_CLIENT_SECRET))
 
     if token_response.status_code != 200:
-        LOG.error("Failed to obtain token from the OAuth 2.0 server")
+        LOG.error("Failed to obtain token from the server")
         return
 
-    LOG.info("Successfuly obtained a new token")
+    LOG.info("Successfully obtained a new token")
     tokens = json.loads(token_response.text)
     return tokens['access_token']
 
@@ -32,15 +32,12 @@ def get_token():
 def renew_access_token(func):
     def wrapper(negotiator_client: NegotiatorAPIClient, *args, **kwargs):
         try:
-            LOG.info("Calling token renewal function")
-            LOG.info("Attempting to call method")
+            LOG.info("Checking if the token needs to be renewed")
             return func(negotiator_client, *args, **kwargs)
         except TokenExpiredException:
-            LOG.info("Handling the exception and refreshing the token")
-            # Invoke the code responsible for get a new token
+            LOG.info("Attempting to request a new token (renewal)")
             negotiator_client.renew_token(get_token())
-            LOG.info("Token Sucessfully refreshed")
-            # once the token is refreshed, we can retry the operation
+            LOG.info("Renewal of token successful")
             return func(negotiator_client, *args, **kwargs)
 
     return wrapper
