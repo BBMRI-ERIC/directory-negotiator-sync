@@ -5,7 +5,6 @@ RUN mkdir -p /opt/directory-negotiator-sync
 COPY ./negotiator_directory_sync /opt/directory-negotiator-sync/negotiator_directory_sync
 COPY ./main.py /opt/directory-negotiator-sync/main.py
 COPY ./requirements.txt /opt/directory-negotiator-sync/requirements.txt
-COPY ./deploy/config.docker.yml /opt/directory-negotiator-sync/negotiator_directory_sync/conf/config.yml
 
 WORKDIR /opt/directory-negotiator-sync
 
