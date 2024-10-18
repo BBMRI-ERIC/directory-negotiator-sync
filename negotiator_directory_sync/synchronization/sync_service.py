@@ -66,6 +66,8 @@ def sync_organizations(negotiator_client: NegotiatorAPIClient, directory_organzi
         if negotiation_organization:
             if negotiation_organization.name != directory_organization.name:
                 LOG.info(f'Updating name for organization: {external_id}')
+                LOG.info(f'Current organization name is: {negotiation_organization.name}')
+                LOG.info(f'New organization name is: {directory_organization.name}')
                 negotiator_client.update_organization_name(negotiation_organization.id, directory_organization.name,
                                                            external_id)
         else:
