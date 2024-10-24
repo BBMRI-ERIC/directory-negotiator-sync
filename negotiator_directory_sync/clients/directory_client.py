@@ -1,12 +1,9 @@
-import os
-
 import requests
 
+from ..config import DIRECTORY_API_URL
 from ..models.dto.network import NetworkDirectoryDTO
 from ..models.dto.organization import OrganizationDirectoryDTO
 from ..models.dto.resource import ResourceDirectoryDTO
-
-DIRECTORY_API_URL = os.getenv('DIRECTORY_API_URL')
 
 
 def get_all_biobanks():

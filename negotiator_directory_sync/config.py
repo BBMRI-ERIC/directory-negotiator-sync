@@ -1,4 +1,12 @@
 import logging
+import os
+
+DIRECTORY_API_URL = os.getenv('DIRECTORY_API_URL', 'https://directory-emx2-acc.molgenis.net/ERIC/directory/graphql')
+NEGOTIATOR_API_URL = os.getenv('NEGOTIATOR_API_URL', 'http://localhost:8081/api/v3')
+AUTH_CLIENT_ID = os.getenv('AUTH_CLIENT_ID', '123')
+AUTH_CLIENT_SECRET = os.getenv('AUTH_CLIENT_SECRET', '123')
+AUTH_OIDC_TOKEN_URI = os.getenv('AUTH_OIDC_TOKEN_URI', 'http://localhost:4011/connect/token')
+JOB_SCHEDULE_INTERVAL = os.getenv('JOB_SCHEDULE_INTERVAL', '20')
 
 logging.getLogger(__name__).addHandler(logging.StreamHandler())
 
