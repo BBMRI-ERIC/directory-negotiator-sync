@@ -3,7 +3,7 @@ import json
 import requests
 
 from negotiator_directory_sync.utils import dump
-from ..exceptions.TokenExpiredException import TokenExpiredException
+from ..exceptions import TokenExpiredException
 from ..models.dto.network import NegotiatorNetworkDTO, NetworkDirectoryDTO
 from ..models.dto.organization import NegotiatorOrganizationDTO, OrganizationDirectoryDTO
 from ..models.dto.resource import NegotiatorResourceDTO, ResourceDirectoryDTO
