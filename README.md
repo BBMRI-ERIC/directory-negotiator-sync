@@ -13,7 +13,7 @@ This is a list of the attributes of Organization, Resource and Network that are 
 + For Resource: Name and Description attributes
 + For Network: Name, URL and Contact Email attributes
 
-##Configuration parameters
+## Configuration parameters
 This is a list of all the configuration parameters for the service: 
 
 
