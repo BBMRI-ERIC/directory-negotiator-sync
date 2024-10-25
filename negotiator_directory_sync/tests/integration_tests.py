@@ -3,7 +3,7 @@ import pytest
 from negotiator_directory_sync.clients.directory_client import get_all_biobanks, get_all_collections, \
     get_all_directory_networks
 from negotiator_directory_sync.synchronization.sync_service import sync_organizations, sync_resources, sync_networks
-from utils import add_or_update_biobank, delete_object_from_directory, add_or_update_collection, \
+from .utils import add_or_update_biobank, delete_object_from_directory, add_or_update_collection, \
     add_or_update_network, update_person_email_contact
 
 

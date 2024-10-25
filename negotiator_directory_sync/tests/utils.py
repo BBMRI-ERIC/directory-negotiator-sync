@@ -3,7 +3,7 @@ from typing import Literal
 import pytest
 from requests.auth import HTTPBasicAuth
 
-from conftest import DIRECTORY_API_URL, SESSION_URL
+from .conftest import DIRECTORY_API_URL, SESSION_URL
 
 
 def add_or_update_biobank(biobank_id, biobank_pid, biobank_name, biobank_description,

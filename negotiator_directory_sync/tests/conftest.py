@@ -24,7 +24,7 @@ from negotiator_directory_sync.clients.negotiator_client import NegotiatorAPICli
 from negotiator_directory_sync.auth import get_token
 from negotiator_directory_sync.clients.directory_client import get_all_biobanks, get_all_collections, \
     get_all_directory_networks
-from utils import load_all_directory_test_data, delete_all_directory_test_data
+from .utils import load_all_directory_test_data, delete_all_directory_test_data
 
 
 def get_session():
