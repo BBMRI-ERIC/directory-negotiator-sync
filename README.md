@@ -1,6 +1,4 @@
 # directory-negotiator-sync
-
-# directory-negotiator-sync
 Service to synchronize ressources from the BBMRI-ERIC Directory into the BBMRI-ERIC Negotiator.
 The service is composed of a main chron that periodically reads all the resource objects from the EMX-2 directory
 and then checks if there are some resources to add or update. 
