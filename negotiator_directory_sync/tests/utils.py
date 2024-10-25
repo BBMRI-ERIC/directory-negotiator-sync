@@ -170,3 +170,12 @@ def load_all_directory_test_data():
         raise Exception(
             'Impossible to load test Directory data')
 
+def delete_all_directory_test_data():
+    session = pytest.directory_session
+    query = "mutation deleteSchema($id:String){deleteSchema(id:$id){message}}"
+    variables = {"id": "ERIC"}
+    response = session.post(SESSION_URL, json={'query': query, 'variables': variables})
+    if response.status_code != 200:
+        raise Exception(
+            'Impossible to delete test Directory data')
+

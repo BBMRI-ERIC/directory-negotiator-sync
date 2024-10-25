@@ -24,7 +24,7 @@ from negotiator_directory_sync.clients.negotiator_client import NegotiatorAPICli
 from negotiator_directory_sync.auth import get_token
 from negotiator_directory_sync.clients.directory_client import get_all_biobanks, get_all_collections, \
     get_all_directory_networks
-from utils import load_all_directory_test_data
+from utils import load_all_directory_test_data, delete_all_directory_test_data
 
 
 def get_session():
@@ -48,6 +48,7 @@ def get_session():
 
 def pytest_configure(config):
     pytest.directory_session = get_session()
+    print('Loading Directory test data. This might take a while...')
     load_all_directory_test_data()
     pytest.negotiator_client = NegotiatorAPIClient(NEGOTIATOR_API_URL, get_token())
     pytest.initial_negotiator_organizations = pytest.negotiator_client.get_all_organizations()
@@ -56,3 +57,9 @@ def pytest_configure(config):
     pytest.directory_organizations = get_all_biobanks()
     pytest.directory_resources = get_all_collections()
     pytest.directory_networks = get_all_directory_networks()
+
+@pytest.hookimpl()
+def pytest_sessionfinish(session, exitstatus):
+    print('Deleting test data...')
+    delete_all_directory_test_data()
+
