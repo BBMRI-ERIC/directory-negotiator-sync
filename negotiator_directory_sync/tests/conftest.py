@@ -3,19 +3,20 @@ import os
 import pytest
 import requests
 
+# override ENV variables for tests
 NEGOTIATOR_API_URL = "http://localhost:8081/api/v3"
-DIRECTORY_API_URL = "http://localhost:8080/Directory/directory/graphql"
+DIRECTORY_API_URL = "http://localhost:8080/ERIC/directory/graphql"
 AUTH_CLIENT_ID = "123"
 AUTH_CLIENT_SECRET = "123"
 AUTH_OIDC_TOKEN_URI = "http://localhost:4011/connect/token"
 JOB_SCHEDULE_INTERVAL = 20
 
-os.environ['DIRECTORY_API_URL'] = DIRECTORY_API_URL
-os.environ['NEGOTIATOR_API_URL'] = NEGOTIATOR_API_URL
-os.environ['AUTH_CLIENT_ID'] = AUTH_CLIENT_ID
-os.environ['AUTH_CLIENT_SECRET'] = AUTH_CLIENT_SECRET
-os.environ['AUTH_OIDC_TOKEN_URI'] = AUTH_OIDC_TOKEN_URI
-os.environ['JOB_SCHEDULE_INTERVAL'] = str(JOB_SCHEDULE_INTERVAL)
+os.environ['DIRECTORY_EMX2_ENDPOINT'] = DIRECTORY_API_URL
+os.environ['NEGOTIATOR_ENDPOINT'] = NEGOTIATOR_API_URL
+os.environ['NEGOTIATOR_CLIENT_AUTH_CLIENT_ID'] = AUTH_CLIENT_ID
+os.environ['NEGOTIATOR_CLIENT_AUTH_CLIENT_SECRET'] = AUTH_CLIENT_SECRET
+os.environ['NEGOTIATOR_CLIENT_AUTH_OIDC_TOKEN_ENDPOINT'] = AUTH_OIDC_TOKEN_URI
+os.environ['SYNC_JOB_SCHEDULE_INTERVAL'] = str(JOB_SCHEDULE_INTERVAL)
 
 from negotiator_directory_sync.clients.negotiator_client import NegotiatorAPIClient
 from negotiator_directory_sync.auth import get_token

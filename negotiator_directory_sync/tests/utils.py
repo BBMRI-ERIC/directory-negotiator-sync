@@ -3,7 +3,7 @@ from typing import Literal
 import pytest
 from requests.auth import HTTPBasicAuth
 
-DIRECTORY_API_URL = "http://localhost:8080/Directory/directory/graphql"
+from conftest import DIRECTORY_API_URL
 
 
 def add_or_update_biobank(biobank_id, biobank_pid, biobank_name, biobank_description,
