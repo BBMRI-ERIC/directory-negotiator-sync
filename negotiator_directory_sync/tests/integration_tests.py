@@ -11,19 +11,19 @@ def test_organizations_initial_sync_ok():
     sync_organizations(pytest.negotiator_client, pytest.directory_organizations,
                        pytest.initial_negotiator_organizations)
     negotiator_organizations_after_sync = pytest.negotiator_client.get_all_organizations()
-    assert len(pytest.directory_organizations) == len(negotiator_organizations_after_sync) -2
+    assert len(pytest.directory_organizations) == len(negotiator_organizations_after_sync) - len(pytest.initial_negotiator_organizations)
 
 
 def test_resources_initial_sync_ok():
     sync_resources(pytest.negotiator_client, pytest.directory_resources, pytest.initial_negotiator_resources)
     negotiator_resources_after_sync = pytest.negotiator_client.get_all_resources()
-    assert len(pytest.directory_resources) == len(negotiator_resources_after_sync) - 2
+    assert len(pytest.directory_resources) == len(negotiator_resources_after_sync) - len(pytest.initial_negotiator_resources)
 
 
 def test_networks_initial_sync_ok():
     sync_networks(pytest.negotiator_client, pytest.directory_networks, pytest.initial_negotiator_networks)
     negotiator_networks_after_sync = pytest.negotiator_client.get_all_negotiator_networks()
-    assert len(pytest.directory_networks) == len(negotiator_networks_after_sync) - 1
+    assert len(pytest.directory_networks) == len(negotiator_networks_after_sync) - len(pytest.initial_negotiator_networks)
 
 
 def test_organization_sync_when_new_added_and_then_updated():
