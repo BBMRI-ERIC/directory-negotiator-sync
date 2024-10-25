@@ -20,14 +20,14 @@ def add_or_update_biobank(biobank_id, biobank_pid, biobank_name, biobank_descrip
                 "name": biobank_name,
                 "description": biobank_description,
                 "country": {
-                    "name": "CY"
+                    "name": "NL"
                 },
                 "contact": {
-                    "id": "bbmri-eric:contactID:AT_MUG_0001",
+                    "id": "bbmri-eric:contactID:NL_person1",
                 },
                 "national_node": {
-                    "id": "AT",
-                    "description": "Austria"
+                    "id": "NL",
+                    "description": "Netherlands"
                 }
             }
         ]
@@ -51,19 +51,19 @@ def add_or_update_collection(collection_id, collection_name, collection_descript
                 "name": collection_name,
                 "description": collection_description,
                 "country": {
-                    "name": "CY"
+                    "name": "NL"
                 },
                 "contact": {
-                    "id": "bbmri-eric:contactID:AT_MUG_0001",
+                    "id": "bbmri-eric:contactID:NL_person1",
                 },
                 "national_node": {
-                    "id": "AT",
-                    "description": "Austria"
+                    "id": "NL",
+                    "description": "Netherlands"
                 },
                 "biobank": {
-                    'id': "bbmri-eric:ID:CY_ALLBIO"
+                    'id': "bbmri-eric:ID:NL_biobank2"
                 },
-                "biobank_label": "ALLBIO INTERNATIONAL",
+                "biobank_label": "Biobank2",
                 "type": {
                     "name": "OTHER"
                 },
@@ -100,11 +100,11 @@ def add_or_update_network(network_id, network_name, network_description, network
                 "name": network_name,
                 "description": network_description,
                 "contact": {
-                    "id": "bbmri-eric:contactID:AT_MUG_0001",
+                    "id": "bbmri-eric:contactID:EU_network",
                 },
                 "national_node": {
-                    "id": "AT",
-                    "description": "Austria"
+                    "id": "NL",
+                    "description": "Netherlands"
                 },
                 "url": network_url,
                 "contact": {
@@ -135,18 +135,18 @@ def update_person_email_contact(new_email_contact):
     session = pytest.directory_session
     query = 'mutation update($value:[PersonsInput]){update(Persons:$value){message}}'
     variables = {"value": [
-        {"id": "bbmri-eric:contactID:AT_MUG_0001",
-         "first_name": "Sabrina",
-         "last_name": "Kral",
-         "title_after_name": "MSc",
+        {"id": "bbmri-eric:contactID:EU_network",
+         "first_name": "EU",
+         "last_name": "network Person",
+         "title_after_name": "",
          "email": new_email_contact,
-         "phone": "+4331638572721",
-         "address": "ZWT Neue Stiftingtalstraße 2B",
-         "zip": "8010", "city": "Graz",
-         "country": {"name": "AT",
-                     "label": "Austria"},
-         "national_node": {"id": "AT",
-                           "description": "Austria"}
+         "phone": "",
+         "address": "",
+         "zip": "",
+         "country": {"name": "EU",
+                     "label": "Europe"},
+         "national_node": {"id": "EU",
+                           "description": "European Union"}
          }
     ]
     }

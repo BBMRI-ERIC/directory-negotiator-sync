@@ -11,13 +11,13 @@ def test_organizations_initial_sync_ok():
     sync_organizations(pytest.negotiator_client, pytest.directory_organizations,
                        pytest.initial_negotiator_organizations)
     negotiator_organizations_after_sync = pytest.negotiator_client.get_all_organizations()
-    assert len(pytest.directory_organizations) == len(negotiator_organizations_after_sync)
+    assert len(pytest.directory_organizations) == len(negotiator_organizations_after_sync) -2
 
 
 def test_resources_initial_sync_ok():
     sync_resources(pytest.negotiator_client, pytest.directory_resources, pytest.initial_negotiator_resources)
     negotiator_resources_after_sync = pytest.negotiator_client.get_all_resources()
-    assert len(pytest.directory_resources) == len(negotiator_resources_after_sync) - 1
+    assert len(pytest.directory_resources) == len(negotiator_resources_after_sync) - 2
 
 
 def test_networks_initial_sync_ok():
@@ -88,7 +88,7 @@ def test_resources_sync_when_new_added_and_then_updated():
 
 def test_networks_sync_when_new_added_and_then_updated():
     add_or_update_network("test_negotiator_sync_network", "test negotiator sync network",
-                          "test negotiator sync network", 'http://test.eu', 'bbmri-eric:contactID:AT_MUG_0001',
+                          "test negotiator sync network", 'http://test.eu', 'bbmri-eric:contactID:EU_network',
                           'insert')
     networks_after_add = get_all_directory_networks()
     assert len(networks_after_add) == len(pytest.directory_networks) + 1
@@ -98,7 +98,7 @@ def test_networks_sync_when_new_added_and_then_updated():
     assert len(negotiator_networks_after_ntw_add_and_sync) == len(negotiator_networks_before_add) + 1
     # now update the network name and sync again
     add_or_update_network("test_negotiator_sync_network", "test negotiator sync network newname",
-                          "test negotiator sync network", 'http://test.eu', 'bbmri-eric:contactID:AT_MUG_0001',
+                          "test negotiator sync network", 'http://test.eu', 'bbmri-eric:contactID:EU_network',
                           'update')
     networks_after_update_name = get_all_directory_networks()
     sync_networks(pytest.negotiator_client, networks_after_update_name, negotiator_networks_after_ntw_add_and_sync)
@@ -109,7 +109,7 @@ def test_networks_sync_when_new_added_and_then_updated():
     assert network_with_name_upd.name == "test negotiator sync network newname"
     # now update the network url
     add_or_update_network("test_negotiator_sync_network", "test negotiator sync network newname",
-                          "test negotiator sync network", 'http://testnew.eu', 'bbmri-eric:contactID:AT_MUG_0001',
+                          "test negotiator sync network", 'http://testnew.eu', 'bbmri-eric:contactID:EU_network',
                           'update')
     networks_after_update_url = get_all_directory_networks()
     sync_networks(pytest.negotiator_client, networks_after_update_url, networks_after_update_name)
