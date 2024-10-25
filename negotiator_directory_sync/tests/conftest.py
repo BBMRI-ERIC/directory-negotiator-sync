@@ -18,10 +18,13 @@ os.environ['NEGOTIATOR_CLIENT_AUTH_CLIENT_SECRET'] = AUTH_CLIENT_SECRET
 os.environ['NEGOTIATOR_CLIENT_AUTH_OIDC_TOKEN_ENDPOINT'] = AUTH_OIDC_TOKEN_URI
 os.environ['SYNC_JOB_SCHEDULE_INTERVAL'] = str(JOB_SCHEDULE_INTERVAL)
 
+SESSION_URL = 'http://localhost:8080/api/graphql'
+
 from negotiator_directory_sync.clients.negotiator_client import NegotiatorAPIClient
 from negotiator_directory_sync.auth import get_token
 from negotiator_directory_sync.clients.directory_client import get_all_biobanks, get_all_collections, \
     get_all_directory_networks
+from utils import load_all_directory_test_data
 
 
 def get_session():
@@ -35,7 +38,7 @@ def get_session():
       }
     }
     '''
-    response = session.post(DIRECTORY_API_URL, json={'query': signin_mutation},
+    response = session.post(SESSION_URL, json={'query': signin_mutation},
                             headers={'Content-Type': 'application/json'})
     if response.status_code != 200:
         raise Exception('Impossible to complete the test, authentication failed for EMX2 ')
@@ -45,6 +48,7 @@ def get_session():
 
 def pytest_configure(config):
     pytest.directory_session = get_session()
+    load_all_directory_test_data()
     pytest.negotiator_client = NegotiatorAPIClient(NEGOTIATOR_API_URL, get_token())
     pytest.initial_negotiator_organizations = pytest.negotiator_client.get_all_organizations()
     pytest.initial_negotiator_resources = pytest.negotiator_client.get_all_resources()

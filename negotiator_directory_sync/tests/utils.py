@@ -3,7 +3,7 @@ from typing import Literal
 import pytest
 from requests.auth import HTTPBasicAuth
 
-from conftest import DIRECTORY_API_URL
+from conftest import DIRECTORY_API_URL, SESSION_URL
 
 
 def add_or_update_biobank(biobank_id, biobank_pid, biobank_name, biobank_description,
@@ -154,3 +154,19 @@ def update_person_email_contact(new_email_contact):
     if response.status_code != 200:
         raise Exception(
             'Impossible to complete the test, error when updating email contact for person related to network')
+
+
+def load_all_directory_test_data():
+    session = pytest.directory_session
+    query = 'mutation createSchema($name:String, $description:String, $template: String, $includeDemoData: Boolean){createSchema(name:$name, description:$description, template: $template, includeDemoData: $includeDemoData){message}}'
+    variables = {
+        "name": "ERIC",
+        "description": None,
+        "template": "BIOBANK_DIRECTORY",
+        "includeDemoData": True
+    }
+    response = session.post(SESSION_URL, json={'query': query, 'variables': variables})
+    if response.status_code != 200:
+        raise Exception(
+            'Impossible to load test Directory data')
+
