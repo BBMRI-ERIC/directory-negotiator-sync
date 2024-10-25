@@ -28,3 +28,23 @@ This is a list of all the configuration parameters for the service:
 | SYNC_JOB_SCHEDULE_INTERVAL | The interval (in seconds) of the Chron main service. The synchronization will be performed every [X] seconds according to this value |
 
 
+## Integration tests
+
+Prerequisite: a compose file to run negotiator, oidc test service and emx2 testing directory is available under
+ ` negotiator_directory_sync/tests/compose `  .
+
+First, from this directory run the compose: 
+
+`docker-compose -f docker-compose-integation-tests.yml  up -d`
+
+Note: Adjiust the build reference to the Negotiator accordingly before run 
+
+Once that all the services are up and running, run the integration tests. 
+From ` negotiator_directory_sync/tests/compose ` run:
+
+` pytest integration_tests.py `
+
+
+
+
+
