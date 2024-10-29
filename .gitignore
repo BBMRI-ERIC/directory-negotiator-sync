@@ -1,0 +1,120 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environment
+venv/
+ENV/
+env/
+.venv/
+env.bak/
+*.env
+
+# PyCharm project-specific files
+.idea/
+.idea/*
+*.iml
+
+# PyCharm Python-specific files
+# .idea/ contains project-specific settings
+# .idea/workspace.xml stores your project workspace (window sizes, opened files, etc.)
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/dictionaries
+.idea/shelf/
+.idea/vcs.xml
+
+# Comment out if you have Python helper scripts in the project's root directory
+# *.pyc
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+*.pid
+*.csv
+*.dat
+*.db
+*.tmp
+
+# Jupyter Notebook files
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow
+__pypackages__/
+
+# pytest
+.cache/
+.pytest_cache/
+
+# MyPy
+.mypy_cache/
+
+# PyInstaller
+# Usually these files are written to `.gitignore`, but be aware that
+# PyInstaller config files also can generate `.spec` files.
+*.spec
+
+# Coverage tool output
+htmlcov/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+
+# pyright
+pyrightconfig.json
+
+# Local environment variables
+.env
+.env.*
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Cython debug symbols
+cython_debug/
+
+# VSCode settings (if you use VSCode with PyCharm)
+.vscode/
+
