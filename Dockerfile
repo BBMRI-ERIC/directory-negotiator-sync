@@ -10,7 +10,6 @@ WORKDIR /opt/directory-negotiator-sync
 
 RUN pip install -r requirements.txt
 
-#RUN export PYTHONPATH=$PYTHONPATH:/opt/directory-negotiator-sync/negotiator_directory_sync
 ENV PYTHONPATH=/opt/directory-negotiator-sync
 
 CMD ["python",  "main.py"]
