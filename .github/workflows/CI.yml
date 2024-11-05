@@ -26,8 +26,9 @@ jobs:
         run: |
           echo $GITHUB_WORKSPACE
       - name: debug working dir
-        working-directory: $GITHUB_WORKSPACE
-        run: ls 
+        run: | 
+          cd $GITHUB_WORKSPACE
+          ls
       - name: Run compose
         run: |  
          cd $GITHUB_WORKSPACE/negotiator_directory_sync/tests/compose
