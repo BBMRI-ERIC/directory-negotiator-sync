@@ -27,6 +27,9 @@ jobs:
           cd ..
           ls
           pwd
+          cd $GITHUB_WORKSPACE/negotiator_directory_sync/tests/compose
+          cd ../../../negotiator
+          ls
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Set up Docker Buildx
