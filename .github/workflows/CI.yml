@@ -16,6 +16,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Checkout Negotiator
+        uses: actions/checkout@v2
+        with:
+          repository: BBMRI-ERIC/negotiator
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Debug workspace
