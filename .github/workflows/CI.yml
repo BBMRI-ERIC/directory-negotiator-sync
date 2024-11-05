@@ -42,4 +42,10 @@ jobs:
         run: |  
          cd $GITHUB_WORKSPACE/negotiator_directory_sync/tests/compose
          docker compose -f docker-compose-integration-tests.yml  up -d
+      - name: Run Integration Tests
+        run: |
+         cd $GITHUB_WORKSPACE
+         pip install -r requirements.txt
+         cd $GITHUB_WORKSPACE/negotiator_directory_sync/tests
+         pytest integration_tests.py
     
