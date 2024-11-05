@@ -14,6 +14,9 @@ jobs:
   run-docker-compose-for-tests:
     runs-on: ubuntu-latest
     steps:
+     - name: Debug workspace
+       run:
+        echo "Workspace: $GITHUB_WORKSPACE"
      - name: Run compose
        run: |  
          cd $GITHUB_WORKSPACE/negotiator_directory_sync/tests/compose
