@@ -22,6 +22,7 @@ jobs:
       - name: Show negotiator path
         run:  | 
           ls
+          cd negotiator
           pwd
           cd ..
           ls
