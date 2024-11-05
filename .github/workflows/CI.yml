@@ -17,9 +17,9 @@ jobs:
      - name: Debug workspace
        run: |
         echo $GITHUB_WORKSPACE
-         ls  $GITHUB_WORKSPACE
      - name: Run compose
        run: |  
-         cd $GITHUB_WORKSPACE/negotiator_directory_sync/tests/compose
+         cd $GITHUB_WORKSPACE
+         ls
          docker-compose -f docker-compose-integration-tests.yml  up -d
     
