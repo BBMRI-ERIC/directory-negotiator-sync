@@ -16,5 +16,5 @@ jobs:
     steps:
      - name: Run compose
        working-directory: negotiator_directory_sync/tests/compose
-       run: docker-compose -f docker-compose-integation-tests.yml  up -d
+       run: docker-compose -f docker-compose-integration-tests.yml  up -d
     
