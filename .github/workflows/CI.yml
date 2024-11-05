@@ -15,10 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Negotiator
-        uses: actions/checkout@v2
-        with:
-          repository: BBMRI-ERIC/negotiator
-          path: /home/runner/work/negotiator
+        run: | 
+         cd /opt
+         git checkout https://github.com/BBMRI-ERIC/negotiator.git
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Set up Docker Buildx
