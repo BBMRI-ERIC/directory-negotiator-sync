@@ -22,31 +22,21 @@ jobs:
         uses: actions/checkout@v2
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-      - name: Debug workspace
-        run: |
-          cd $GITHUB_WORKSPACE/negotiator_directory_sync/tests/compose
-          cd ../
-          pwd
-          ls
-          cd ../../
-          pwd
-          ls
-          cd ../../../
-          pwd 
-          ls
-      - name: debug working dir
-        run: | 
-          cd $GITHUB_WORKSPACE
-          ls
       - name: Run compose
         run: |  
          cd $GITHUB_WORKSPACE/negotiator_directory_sync/tests/compose
          docker compose -f docker-compose-integration-tests.yml  up -d
-      - name: Run Integration Tests
+      - name: Prepare python environment
         run: |
          cd $GITHUB_WORKSPACE
          pip install -r requirements.txt
-         cd $GITHUB_WORKSPACE/negotiator_directory_sync/tests
+      - name: Load test data for Directory
+        run: |
+         cd $GITHUB_WORKSPACE/negotiator_directory_sync/tests/scripts
          sleep 30
-         pytest -n 0 integration_tests.py
+         python load_directory_data.py
+      - name: Run Integration tests
+        run: | 
+         cd $GITHUB_WORKSPACE/negotiator_directory_sync/tests/scripts
+         pytest integration_tests.py
     

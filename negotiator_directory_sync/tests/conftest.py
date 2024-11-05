@@ -48,8 +48,8 @@ def get_session():
 
 def pytest_configure(config):
     pytest.directory_session = get_session()
-    print('Loading Directory test data. This might take a while...')
-    load_all_directory_test_data()
+    #print('Loading Directory test data. This might take a while...')
+    #load_all_directory_test_data()
     pytest.negotiator_client = NegotiatorAPIClient(NEGOTIATOR_API_URL, get_token())
     pytest.initial_negotiator_organizations = pytest.negotiator_client.get_all_organizations()
     pytest.initial_negotiator_resources = pytest.negotiator_client.get_all_resources()
