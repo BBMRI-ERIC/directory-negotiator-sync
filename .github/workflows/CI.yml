@@ -27,16 +27,15 @@ jobs:
           cd ..
           ls
           pwd
-          cd $GITHUB_WORKSPACE/negotiator_directory_sync/tests/compose
-          cd ../../../negotiator
-          ls
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Debug workspace
         run: |
-          echo $GITHUB_WORKSPACE
+          cd $GITHUB_WORKSPACE/negotiator_directory_sync/tests/compose
+          cd ../../../negotiator
+          ls
       - name: debug working dir
         run: | 
           cd $GITHUB_WORKSPACE
