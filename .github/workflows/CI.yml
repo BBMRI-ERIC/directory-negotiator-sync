@@ -47,6 +47,5 @@ jobs:
          cd $GITHUB_WORKSPACE
          pip install -r requirements.txt
          cd $GITHUB_WORKSPACE/negotiator_directory_sync/tests
-         sleep 30
-         pytest integration_tests.py
+         pytest -n 1 integration_tests.py
     
