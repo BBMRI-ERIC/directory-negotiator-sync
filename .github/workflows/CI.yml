@@ -34,11 +34,14 @@ jobs:
       - name: Debug workspace
         run: |
           cd $GITHUB_WORKSPACE/negotiator_directory_sync/tests/compose
-          cd ../../../../
+          cd ../
+          pwd
           ls
-          cd ../../../../../
+          cd ../../
+          pwd
           ls
-          cd ../../../../../../
+          cd ../../../
+          pwd 
           ls
       - name: debug working dir
         run: | 
