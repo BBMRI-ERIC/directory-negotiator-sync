@@ -15,8 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
      - name: Debug workspace
-       run:
+       run: |
         echo $GITHUB_WORKSPACE
+         ls  $GITHUB_WORKSPACE
      - name: Run compose
        run: |  
          cd $GITHUB_WORKSPACE/negotiator_directory_sync/tests/compose
