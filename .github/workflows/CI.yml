@@ -19,7 +19,12 @@ jobs:
         with:
           repository: BBMRI-ERIC/negotiator
       - name: Show negotiator path
-        run: pwd
+        run:  | 
+          ls
+          pwd
+          cd ..
+          ls
+          pwd
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Set up Docker Buildx
