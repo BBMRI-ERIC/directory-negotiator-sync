@@ -17,7 +17,7 @@ jobs:
       - name: Checkout Negotiator
         run: | 
          cd /opt
-         git checkout https://github.com/BBMRI-ERIC/negotiator.git
+         git clone https://github.com/BBMRI-ERIC/negotiator.git
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Set up Docker Buildx
