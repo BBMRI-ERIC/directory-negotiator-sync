@@ -26,6 +26,7 @@ jobs:
         run: |
           echo $GITHUB_WORKSPACE
       - name: debug working dir
+        working-directory: $GITHUB_WORKSPACE
         run: ls 
       - name: Run compose
         run: |  
