@@ -47,7 +47,7 @@ services:
   negotiator:
     container_name: negotiator
     build:
-      context: ../../../negotiator
+      context: ../../negotiator
     depends_on:
       postgres:
         condition: service_healthy
