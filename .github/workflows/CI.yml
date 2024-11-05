@@ -15,17 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Negotiator
-        run: |
-          cd $GITHUB_WORKSPACE
-          git clone https://github.com/BBMRI-ERIC/negotiator.git
-      - name: Show negotiator path
-        run:  | 
-          ls
-          cd negotiator
-          pwd
-          cd ..
-          ls
-          pwd
+        uses: actions/checkout@v2
+        with:
+          repository: BBMRI-ERIC/negotiator
+          path: /opt/negotiator
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Set up Docker Buildx
