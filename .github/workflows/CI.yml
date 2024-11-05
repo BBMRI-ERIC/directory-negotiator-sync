@@ -14,12 +14,15 @@ jobs:
   run-docker-compose-for-tests:
     runs-on: ubuntu-latest
     steps:
-     - name: Debug workspace
-       run: |
-        echo $GITHUB_WORKSPACE
-     - name: Run compose
-       run: |  
-         cd $GITHUB_WORKSPACE
-         ls
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Set up Docker Compose
+        uses: docker/compose-action@v2
+      - name: Debug workspace
+        run: |
+          echo $GITHUB_WORKSPACE
+      - name: Run compose
+        run: |  
+         cd $GITHUB_WORKSPACE/negotiator_directory_sync/tests/compose
          docker-compose -f docker-compose-integration-tests.yml  up -d
     
