@@ -36,6 +36,10 @@ jobs:
           cd $GITHUB_WORKSPACE/negotiator_directory_sync/tests/compose
           cd ../../../../
           ls
+          cd ../../../../../
+          ls
+          cd ../../../../../../
+          ls
       - name: debug working dir
         run: | 
           cd $GITHUB_WORKSPACE
