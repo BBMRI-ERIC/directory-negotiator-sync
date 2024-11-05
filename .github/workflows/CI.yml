@@ -15,6 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
      - name: Run compose
-       working-directory: ./negotiator_directory_sync/tests/compose
+       working-directory: negotiator_directory_sync/tests/compose
        run: docker-compose -f docker-compose-integation-tests.yml  up -d
     
