@@ -15,10 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Negotiator
-        uses: actions/checkout@v2
-        with:
-          repository: BBMRI-ERIC/negotiator
-          path: $GITHUB_WORKSPACE/negotiator
+        run: |
+          cd $GITHUB_WORKSPACE
+          git clone https://github.com/BBMRI-ERIC/negotiator.git
       - name: Show negotiator path
         run:  | 
           ls
