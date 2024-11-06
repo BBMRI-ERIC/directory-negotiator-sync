@@ -35,7 +35,7 @@ jobs:
          cd $GITHUB_WORKSPACE/negotiator_directory_sync/tests/scripts
          sleep 30
          python load_directory_data.py
-         sleep 180
+         sleep 120
       - name: Run Integration tests
         run: | 
          cd $GITHUB_WORKSPACE/negotiator_directory_sync/tests
