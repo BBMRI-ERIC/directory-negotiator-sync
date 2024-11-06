@@ -3,7 +3,6 @@ import os
 import pytest
 import requests
 
-# override ENV variables for tests
 NEGOTIATOR_API_URL = "http://localhost:8081/api/v3"
 DIRECTORY_API_URL = "http://localhost:8080/ERIC/directory/graphql"
 AUTH_CLIENT_ID = "123"
@@ -48,8 +47,6 @@ def get_session():
 
 def pytest_configure(config):
     pytest.directory_session = get_session()
-    #print('Loading Directory test data. This might take a while...')
-    #load_all_directory_test_data()
     pytest.negotiator_client = NegotiatorAPIClient(NEGOTIATOR_API_URL, get_token())
     pytest.initial_negotiator_organizations = pytest.negotiator_client.get_all_organizations()
     pytest.initial_negotiator_resources = pytest.negotiator_client.get_all_resources()
