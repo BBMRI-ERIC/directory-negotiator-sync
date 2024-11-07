@@ -46,8 +46,7 @@ services:
       - directory-negotiator-sync-test
   negotiator:
     container_name: negotiator
-    build:
-      context: /opt/negotiator
+    image: bbmrieric/negotiator:latest
     depends_on:
       postgres:
         condition: service_healthy

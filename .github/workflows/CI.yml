@@ -14,10 +14,6 @@ jobs:
   integration-tests:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Negotiator
-        run: | 
-         cd /opt
-         git clone https://github.com/BBMRI-ERIC/negotiator.git
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Set up Docker Buildx
