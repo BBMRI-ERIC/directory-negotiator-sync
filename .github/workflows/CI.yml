@@ -20,7 +20,7 @@ jobs:
         uses: docker/setup-buildx-action@v3.7.1
       - name: Run compose
         run: |  
-         cd $GITHUB_WORKSPACE/negotiator_directory_sync/tests/compose
+         cd $GITHUB_WORKSPACE/compose
          docker compose -f docker-compose-integration-tests.yml  up -d
       - name: Prepare python environment
         run: |
@@ -28,13 +28,13 @@ jobs:
          pip install -r requirements.txt
       - name: Load test data for Directory
         run: |
-         cd $GITHUB_WORKSPACE/negotiator_directory_sync/tests/scripts
+         cd $GITHUB_WORKSPACE/tests/scripts
          sleep 30
          python load_directory_data.py
          sleep 120
       - name: Run Integration tests
         run: | 
-         cd $GITHUB_WORKSPACE/negotiator_directory_sync/tests
+         cd $GITHUB_WORKSPACE/tests
          pytest integration_tests.py
   build-docker-image:
     runs-on: ubuntu-latest
