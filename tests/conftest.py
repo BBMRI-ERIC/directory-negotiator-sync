@@ -21,7 +21,7 @@ SESSION_URL = 'http://localhost:8080/api/graphql'
 
 from clients.negotiator_client import NegotiatorAPIClient
 from auth import get_token
-from negotiator_directory_sync.clients.directory_client import get_all_biobanks, get_all_collections, \
+from clients.directory_client import get_all_biobanks, get_all_collections, \
     get_all_directory_networks
 from .utils import delete_all_directory_test_data
 
