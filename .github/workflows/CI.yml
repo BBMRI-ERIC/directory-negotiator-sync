@@ -1,4 +1,4 @@
-name: CI for integration tests execution and image build
+name: CI build
 on:
   workflow_dispatch:
   schedule:
@@ -54,5 +54,12 @@ jobs:
           context: .
           file: ./Dockerfile
           tags: directory-negotiation-sync:latest
-          push: false
+          outputs: type=docker,dest=/tmp/directory-negotiator-sync.tar
+
+      - name: Upload docker image
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
+        with:
+          name: directory-negotiator-sync
+          path: /tmp/directory-negotiator-sync.tar
+
     
