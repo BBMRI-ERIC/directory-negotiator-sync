@@ -26,10 +26,13 @@ jobs:
         run: |
          cd $GITHUB_WORKSPACE
          pip install -r requirements.txt
+      - name: Wait for Directory service
+        run: |
+          cd $GITHUB_WORKSPACE/tests/scripts
+          python wait_for_service.py
       - name: Load test data for Directory
         run: |
          cd $GITHUB_WORKSPACE/tests/scripts
-         sleep 30
          python load_directory_data.py
          sleep 120
       - name: Run Integration tests
