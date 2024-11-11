@@ -47,6 +47,7 @@ services:
   negotiator:
     container_name: negotiator
     image: bbmrieric/negotiator:latest
+    platform: linux/x86_64
     depends_on:
       postgres:
         condition: service_healthy

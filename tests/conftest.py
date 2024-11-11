@@ -19,11 +19,11 @@ os.environ['SYNC_JOB_SCHEDULE_INTERVAL'] = str(JOB_SCHEDULE_INTERVAL)
 
 SESSION_URL = 'http://localhost:8080/api/graphql'
 
-from negotiator_directory_sync.clients.negotiator_client import NegotiatorAPIClient
-from negotiator_directory_sync.auth import get_token
+from clients.negotiator_client import NegotiatorAPIClient
+from auth import get_token
 from negotiator_directory_sync.clients.directory_client import get_all_biobanks, get_all_collections, \
     get_all_directory_networks
-from .utils import load_all_directory_test_data, delete_all_directory_test_data
+from .utils import delete_all_directory_test_data
 
 
 def get_session():

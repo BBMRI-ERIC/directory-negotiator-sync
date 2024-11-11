@@ -2,9 +2,9 @@ import json
 
 import requests
 
-from negotiator_directory_sync.clients.negotiator_client import NegotiatorAPIClient
-from negotiator_directory_sync.config import LOG, AUTH_OIDC_TOKEN_URI, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET
-from negotiator_directory_sync.exceptions import TokenExpiredException
+from clients.negotiator_client import NegotiatorAPIClient
+from config import LOG, AUTH_OIDC_TOKEN_URI, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET
+from exceptions import TokenExpiredException
 
 
 def get_token():
