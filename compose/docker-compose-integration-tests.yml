@@ -43,7 +43,7 @@ services:
     volumes:
       - ./auth_server/config:/config:ro
     networks:
-      - host
+      - directory-negotiator-sync-test
   negotiator:
     container_name: negotiator
     image: bbmrieric/negotiator:latest
@@ -77,7 +77,7 @@ services:
     ports:
       - '8081:8081'
     networks:
-      - host
+      - directory-negotiator-sync-test
   emx2:
     image: molgenis/molgenis-emx2:latest
     environment:
@@ -92,7 +92,7 @@ services:
         condition: service_healthy
     restart: on-failure
     networks:
-      - host
+      - directory-negotiator-sync-test
   postgres:
     image: postgres:15-alpine
     environment:
@@ -111,15 +111,16 @@ services:
       timeout: 60s
       retries: 5
     networks:
-      - host
+      - directory-negotiator-sync-test
   ssr-catalogue:
     image: molgenis/ssr-catalogue
     ports:
       - "3000:3000"
     networks:
-      - host
+      - directory-negotiator-sync-test
 networks:
-  host:
+  directory-negotiator-sync-test:
+    name: directory-negotiator-sync-test
     driver: bridge
 volumes:
   negotiator-db-data:
