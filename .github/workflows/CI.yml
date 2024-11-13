@@ -39,6 +39,10 @@ jobs:
         run: | 
          cd $GITHUB_WORKSPACE/tests/integration
          pytest integration_tests.py
+      - name: Down compose
+        run: |
+          cd $GITHUB_WORKSPACE/compose
+          docker compose -f docker-compose-integration-tests.yml  down
       - name: Run service deploy tests
         run: |
           cd $GITHUB_WORKSPACE/tests/deployment
