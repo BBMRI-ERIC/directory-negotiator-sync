@@ -1,6 +1,7 @@
 version: '3.9'
 services:
   directory-negotiator-sync:
+    container_name: directory-negotiator-sync
     build:
       context: ..
     environment:
@@ -10,7 +11,7 @@ services:
       - NEGOTIATOR_CLIENT_AUTH_CLIENT_ID=123
       - NEGOTIATOR_CLIENT_AUTH_CLIENT_SECRET=123
       - NEGOTIATOR_CLIENT_AUTH_OIDC_TOKEN_ENDPOINT=http://oidc-cc-server-mock:80/connect/token
-      - SYNC_JOB_SCHEDULE_INTERVAL=20
+      - SYNC_JOB_SCHEDULE_INTERVAL=1
     networks:
       - directory-negotiator-sync-network
 networks:

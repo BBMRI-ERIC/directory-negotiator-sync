@@ -37,8 +37,12 @@ jobs:
          sleep 120
       - name: Run Integration tests
         run: | 
-         cd $GITHUB_WORKSPACE/tests
+         cd $GITHUB_WORKSPACE/tests/integration
          pytest integration_tests.py
+      - name: Run service deploy tests
+        run: |
+          cd $GITHUB_WORKSPACE/tests/deployment
+          pytest standalone_service_test.py
   build-docker-image:
     runs-on: ubuntu-latest
     steps:
