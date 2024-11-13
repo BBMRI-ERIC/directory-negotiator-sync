@@ -67,6 +67,7 @@ def test_service_logs(setup_docker_compose):
     # Get the container for service A
     service_container = client.containers.get("directory-negotiator-sync")
     logs = service_container.logs().decode("utf-8")
+    print(logs)
     assert 'Organization with external id bbmri-eric:ID:DE_biobank1 not found, including it to the list of organizations to add' in logs
     assert 'Organization with external id bbmri-eric:ID:NL_biobank2 not found, including it to the list of organizations to add' in logs
     assert 'Resource with external id bbmri-eric:ID:DE_biobank1:collection:coll1 not found, including it to the list of resources' in logs
