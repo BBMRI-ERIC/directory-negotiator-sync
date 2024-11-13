@@ -18,9 +18,10 @@ jobs:
         uses: actions/checkout@v4.2.2
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3.7.1
-      - name: Install Docker Compose
+      - name: Set alias for docker-compose
         run: |
-          pip install docker-compose
+           echo "alias docker-compose='docker compose'" >> ~/.bashrc
+           source ~/.bashrc
       - name: Run compose
         run: |  
          cd $GITHUB_WORKSPACE/compose
