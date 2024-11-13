@@ -22,12 +22,12 @@ WAIT_FOR_SERVICE_TIMEOUT = 300
 
 def run_compose(compose_file):
     """Starts a Docker Compose file."""
-    subprocess.run(["docker-compose", "-f", compose_file, "up", "-d"], check=True)
+    subprocess.run(["docker", "compose", "-f", compose_file, "up", "-d"], check=True)
 
 
 def stop_compose(compose_file):
     """Stops a Docker Compose file."""
-    subprocess.run(["docker-compose", "-f", compose_file, "down"], check=True)
+    subprocess.run(["docker", "compose", "-f", compose_file, "down"], check=True)
 
 
 def wait_for_service(url):
