@@ -55,7 +55,7 @@ def setup_docker_compose():
     print('wait for data to be loaded...')
     time.sleep(60)
     run_compose(COMPOSE_FILE_APP)
-    time.sleep(30)  # wait that at least a synchronization cycle has been completed
+    time.sleep(90)  # wait that at least a synchronization cycle has been completed
 
     yield
 
