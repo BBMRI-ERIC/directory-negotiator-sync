@@ -20,13 +20,11 @@ jobs:
         uses: docker/setup-buildx-action@v3.7.1
       - name: Install Docker Compose
         run: |
-          mkdir -p ~/.docker/cli-plugins/
-          curl -SL https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-linux-x86_64 -o ~/.docker/cli-plugins/docker-compose
-          chmod +x ~/.docker/cli-plugins/docker-compose
+          pip install docker-compose
       - name: Run compose
         run: |  
          cd $GITHUB_WORKSPACE/compose
-         docker compose -f docker-compose-integration-tests.yml  up -d
+         docker-compose -f docker-compose-integration-tests.yml  up -d
       - name: Prepare python environment
         run: |
          cd $GITHUB_WORKSPACE
