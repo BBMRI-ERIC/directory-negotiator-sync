@@ -25,6 +25,9 @@ def add_or_update_biobank(biobank_id, biobank_pid, biobank_name, biobank_descrip
                 "contact": {
                     "id": "bbmri-eric:contactID:NL_person1",
                 },
+                "juridical_person": {
+                    "id": "bbmri-eric:contactID:NL_person1",
+                },
                 "national_node": {
                     "id": "NL",
                     "description": "Netherlands"
@@ -158,7 +161,7 @@ def update_person_email_contact(new_email_contact):
 
 def load_all_directory_test_data():
     session = pytest.directory_session
-    query = 'mutation createSchema($name:String, $description:String, $template: String, $includeDemoData: Boolean){createSchema(name:$name, description:$description, template: $template, includeDemoData: $includeDemoData){message}}'
+    query = 'mutation createSchema($name:String, $description:String, $template: String, $includeDemoData: Boolean){createSchema(name:$name, description:$description, template: $template, includeDemoData: $includeDemoData){message, taskId}}'
     variables = {
         "name": "ERIC",
         "description": None,

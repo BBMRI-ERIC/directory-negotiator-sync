@@ -2,10 +2,10 @@ from datetime import datetime
 
 import schedule
 
-from negotiator_directory_sync.auth import get_token
-from negotiator_directory_sync.clients.negotiator_client import NegotiatorAPIClient
-from negotiator_directory_sync.config import LOG, NEGOTIATOR_API_URL, JOB_SCHEDULE_INTERVAL
-from negotiator_directory_sync.synchronization.sync_service import sync_all
+from auth import get_token
+from clients.negotiator_client import NegotiatorAPIClient
+from config import LOG, NEGOTIATOR_API_URL, JOB_SCHEDULE_INTERVAL
+from synchronization.sync_service import sync_all
 
 
 def cron_job(negotiator_client):

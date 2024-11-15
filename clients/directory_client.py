@@ -1,9 +1,9 @@
 import requests
 
-from ..config import DIRECTORY_API_URL
-from ..models.dto.network import NetworkDirectoryDTO
-from ..models.dto.organization import OrganizationDirectoryDTO
-from ..models.dto.resource import ResourceDirectoryDTO
+from config import DIRECTORY_API_URL
+from models.dto.network import NetworkDirectoryDTO
+from models.dto.organization import OrganizationDirectoryDTO
+from models.dto.resource import ResourceDirectoryDTO
 
 
 def get_all_biobanks():

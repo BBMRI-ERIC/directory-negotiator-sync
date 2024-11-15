@@ -46,8 +46,8 @@ services:
       - directory-negotiator-sync-test
   negotiator:
     container_name: negotiator
-    build:
-      context: ../../../../negotiator
+    image: bbmrieric/negotiator:latest
+    platform: linux/x86_64
     depends_on:
       postgres:
         condition: service_healthy
@@ -120,6 +120,7 @@ services:
       - directory-negotiator-sync-test
 networks:
   directory-negotiator-sync-test:
+    name: directory-negotiator-sync-test
     driver: bridge
 volumes:
   negotiator-db-data:

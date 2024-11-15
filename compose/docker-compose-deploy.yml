@@ -1,0 +1,23 @@
+version: '3.9'
+services:
+  directory-negotiator-sync:
+    container_name: directory-negotiator-sync
+    build:
+      context: ..
+    environment:
+      - TZ=Europe/Rome
+      - DIRECTORY_EMX2_ENDPOINT=http://emx2:8080/ERIC/directory/graphql
+      - NEGOTIATOR_ENDPOINT=http://negotiator:8081/api/v3
+      - NEGOTIATOR_CLIENT_AUTH_CLIENT_ID=123
+      - NEGOTIATOR_CLIENT_AUTH_CLIENT_SECRET=123
+      - NEGOTIATOR_CLIENT_AUTH_OIDC_TOKEN_ENDPOINT=http://oidc-cc-server-mock:80/connect/token
+      - SYNC_JOB_SCHEDULE_INTERVAL=1
+    networks:
+      - directory-negotiator-sync-network
+networks:
+  directory-negotiator-sync-network:
+    external: true
+    name: directory-negotiator-sync-test
+volumes:
+  negotiator-db-data:
+
