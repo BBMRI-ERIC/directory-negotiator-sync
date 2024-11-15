@@ -51,6 +51,13 @@ class NegotiatorAPIClient:
             raise TokenExpiredException()
         return response  # Return the JSON response
 
+    def delete(self, endpoint, data=None):
+        url = f"{self._base_url}/{endpoint}"
+        response = requests.delete(url, headers=self.get_headers(), data=data)
+        if response.status_code == 401:
+            raise TokenExpiredException()
+        return response  # Return the JSON response
+
     def get_all_organizations(self):
         return NegotiatorOrganizationDTO.parse(
             self.get('organizations?size=10000').json()['_embedded']['organizations'])
@@ -78,13 +85,22 @@ class NegotiatorAPIClient:
 
     def add_networks(self, networks: list):
         added_networks = self.post('networks', data=json.dumps(networks))
-        print(added_networks.json())
         return added_networks.json()
 
     def add_resources_to_network(self, network_id, resources: list):
         response = self.post(f'networks/{network_id}/resources', data=json.dumps(resources))
         if response.status_code != 204:
             raise Exception(f'Error occurred while trying to link network {network_id} with resources {resources}')
+
+    def delete_resource_from_network(self, network_id, resource_id):
+        self.delete(f'networks/{network_id}/resources/{resource_id}')
+
+    def get_network_resources(self, network_id):
+        response = self.get(f'networks/{network_id}/resources')
+        try:
+            return [{'id': resource['id'], 'sourceId': resource['sourceId']} for resource in response.json()['_embedded']['resources']]
+        except KeyError:
+            return []
 
     def update_network_info(self, id, name, url, email, external_id):
         self.put(f'networks/{id}',
@@ -125,8 +141,16 @@ def get_network_id_by_external_id(external_id, added_networks_json):
     return None
 
 
-def get_resource_id_by_source_id(source_id, added_resources_json):
+def lookup_resource_id(source_id, added_resources_json):
     for resource in added_resources_json['_embedded']['resources']:
         if resource['sourceId'] == source_id:
             return resource['id']
     return None
+
+
+def get_resource_id_by_source_id(source_id, negotiator_resources: [NegotiatorResourceDTO]):
+    for r in negotiator_resources:
+        if r.sourceId == source_id:
+            return r.id
+
+
