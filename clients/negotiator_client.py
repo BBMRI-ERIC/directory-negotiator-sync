@@ -2,11 +2,11 @@ import json
 
 import requests
 
-from utils import dump
 from exceptions import TokenExpiredException
 from models.dto.network import NegotiatorNetworkDTO, NetworkDirectoryDTO
 from models.dto.organization import NegotiatorOrganizationDTO, OrganizationDirectoryDTO
 from models.dto.resource import NegotiatorResourceDTO, ResourceDirectoryDTO
+from utils import dump
 
 
 class NegotiatorAPIClient:
@@ -69,14 +69,22 @@ class NegotiatorAPIClient:
         self.put(f'organizations/{id}', data=json.dumps({'name': name, 'externalId': external_id}))
 
     def add_resources(self, resources: list):
-        self.post('resources', data=json.dumps(resources))
+        added_resources = self.post('resources', data=json.dumps(resources))
+        return added_resources.json()
 
     def update_resource_name_or_description(self, id, name, description):
         self.patch(f'resources/{id}',
                    data=json.dumps({'name': name, 'description': description}))
 
     def add_networks(self, networks: list):
-        self.post('networks', data=json.dumps(networks))
+        added_networks = self.post('networks', data=json.dumps(networks))
+        print(added_networks.json())
+        return added_networks.json()
+
+    def add_resources_to_network(self, network_id, resources: list):
+        response = self.post(f'networks/{network_id}/resources', data=json.dumps(resources))
+        if response.status_code != 204:
+            raise Exception(f'Error occurred while trying to link network {network_id} with resources {resources}')
 
     def update_network_info(self, id, name, url, email, external_id):
         self.put(f'networks/{id}',
@@ -108,3 +116,17 @@ def network_create_dto(network: NetworkDirectoryDTO):
         'contactEmail': network.contact.email,
         'uri': network.url
     }
+
+
+def get_network_id_by_external_id(external_id, added_networks_json):
+    for network in added_networks_json['_embedded']['networks']:
+        if network['externalId'] == external_id:
+            return network['id']
+    return None
+
+
+def get_resource_id_by_source_id(source_id, added_resources_json):
+    for resource in added_resources_json['_embedded']['resources']:
+        if resource['sourceId'] == source_id:
+            return resource['id']
+    return None
