@@ -9,7 +9,9 @@ on:
     tags:
       - 'v*.*.*'
   pull_request:
-permissions: read-all
+permissions:
+  contents: read
+  packages: write  
 jobs:
   integration-tests:
     runs-on: ubuntu-latest
