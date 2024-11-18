@@ -96,7 +96,7 @@ class NegotiatorAPIClient:
         self.delete(f'networks/{network_id}/resources/{resource_id}')
 
     def get_network_resources(self, network_id):
-        response = self.get(f'networks/{network_id}/resources')
+        response = self.get(f'networks/{network_id}/resources?size=10000')
         try:
             return [{'id': resource['id'], 'sourceId': resource['sourceId']} for resource in response.json()['_embedded']['resources']]
         except KeyError:

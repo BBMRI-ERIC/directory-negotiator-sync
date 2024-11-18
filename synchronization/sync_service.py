@@ -50,14 +50,11 @@ def sync_all(negotiator_client: NegotiatorAPIClient):
     sync_organizations(negotiator_client, directory_organizations, negotiator_organizations)
     directory_network_resources_links = get_all_directory_resources_networks_links(directory_resources)
     negotiator_resources = negotiator_client.get_all_resources()
-    new_resources = sync_resources(negotiator_client, directory_resources, negotiator_resources)
+    sync_resources(negotiator_client, directory_resources, negotiator_resources)
     directory_networks = get_all_directory_networks()
     negotiator_networks = negotiator_client.get_all_negotiator_networks()
-    new_networks = sync_networks(negotiator_client, directory_networks, negotiator_networks,
-                                 directory_network_resources_links)
-    # if new_networks is not None and new_resources is not None:
-    #    link_resources_to_networks(negotiator_client, directory_resources, new_networks, new_resources)
-    # negotiator_client.update_sync_job(job_id, 'COMPLETED')
+    sync_networks(negotiator_client, directory_networks, negotiator_networks,
+                  directory_network_resources_links)
 
 
 @renew_access_token
@@ -88,7 +85,6 @@ def sync_organizations(negotiator_client: NegotiatorAPIClient, directory_organzi
 def sync_resources(negotiator_client: NegotiatorAPIClient, directory_resources: list[ResourceDirectoryDTO],
                    negotiator_resources: list[NegotiatorResourceDTO]):
     resources_to_add = list()
-    added_resources = None
     negotiator_organizations = negotiator_client.get_all_organizations()  # redone after organization sync
     LOG.info("Starting sync for resources")
     for directory_resource in directory_resources:
@@ -110,8 +106,8 @@ def sync_resources(negotiator_client: NegotiatorAPIClient, directory_resources: 
                 negotiator_client.update_resource_name_or_description(negotiator_resource.id, directory_resource.name,
                                                                       directory_resource.description)
     if len(resources_to_add) > 0:
-        added_resources = negotiator_client.add_resources(resources_to_add)
-    return added_resources
+        negotiator_client.add_resources(resources_to_add)
+
 
 
 @renew_access_token
@@ -138,6 +134,7 @@ def sync_networks(negotiator_client: NegotiatorAPIClient, directory_networks: li
 
     if len(networks_to_add) > 0:
         added_networks = negotiator_client.add_networks(networks_to_add)
+        LOG.info("Adding resource links for the new networks")
         for network in added_networks['_embedded']['networks']:
             update_network_resources(negotiator_client, network['id'], network['externalId'],
                                      directory_network_resources_links)
