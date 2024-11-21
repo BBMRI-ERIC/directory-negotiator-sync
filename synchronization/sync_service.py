@@ -1,10 +1,12 @@
 from auth import renew_access_token
 from clients.directory_client import (get_all_biobanks, get_all_collections, get_all_directory_networks)
-from clients.negotiator_client import resource_create_dto, network_create_dto, NegotiatorAPIClient
+from clients.negotiator_client import resource_create_dto, network_create_dto, NegotiatorAPIClient, \
+    get_resource_id_by_source_id
 from config import LOG
 from models.dto.network import NetworkDirectoryDTO, NegotiatorNetworkDTO
 from models.dto.organization import OrganizationDirectoryDTO, NegotiatorOrganizationDTO
 from models.dto.resource import ResourceDirectoryDTO, NegotiatorResourceDTO
+from utils import get_all_directory_resources_networks_links
 
 
 def get_negotiator_organization_by_external_id(negotiator_organizations: list[NegotiatorOrganizationDTO],
@@ -45,13 +47,14 @@ def sync_all(negotiator_client: NegotiatorAPIClient):
     directory_organizations = get_all_biobanks()
     negotiator_organizations = negotiator_client.get_all_organizations()
     directory_resources = get_all_collections()
-    negotiator_resources = negotiator_client.get_all_resources()
     sync_organizations(negotiator_client, directory_organizations, negotiator_organizations)
+    directory_network_resources_links = get_all_directory_resources_networks_links(directory_resources)
+    negotiator_resources = negotiator_client.get_all_resources()
     sync_resources(negotiator_client, directory_resources, negotiator_resources)
     directory_networks = get_all_directory_networks()
     negotiator_networks = negotiator_client.get_all_negotiator_networks()
-    sync_networks(negotiator_client, directory_networks, negotiator_networks)
-    negotiator_client.update_sync_job(job_id, 'COMPLETED')
+    sync_networks(negotiator_client, directory_networks, negotiator_networks,
+                  directory_network_resources_links)
 
 
 @renew_access_token
@@ -106,10 +109,12 @@ def sync_resources(negotiator_client: NegotiatorAPIClient, directory_resources: 
         negotiator_client.add_resources(resources_to_add)
 
 
+
 @renew_access_token
 def sync_networks(negotiator_client: NegotiatorAPIClient, directory_networks: list[NetworkDirectoryDTO],
-                  negotiator_networks: list[NegotiatorNetworkDTO]):
+                  negotiator_networks: list[NegotiatorNetworkDTO], directory_network_resources_links: dict):
     networks_to_add = list()
+    added_networks = None
     LOG.info("Starting sync for networks")
     for directory_network in directory_networks:
         external_id = directory_network.id
@@ -120,8 +125,44 @@ def sync_networks(negotiator_client: NegotiatorAPIClient, directory_networks: li
                 negotiator_client.update_network_info(network.id, directory_network.name,
                                                       directory_network.url,
                                                       directory_network.contact.email, external_id)
+            LOG.info(f'Updating linked resources for network: {network.id}')
+            update_network_resources(negotiator_client, network.id, network.externalId,
+                                     directory_network_resources_links)
         else:
             LOG.info(f'Network with id {external_id} not found, adding it to the list of networks to add')
             networks_to_add.append(network_create_dto(directory_network))
+
     if len(networks_to_add) > 0:
-        negotiator_client.add_networks(networks_to_add)
+        added_networks = negotiator_client.add_networks(networks_to_add)
+        LOG.info("Adding resource links for the new networks")
+        for network in added_networks['_embedded']['networks']:
+            update_network_resources(negotiator_client, network['id'], network['externalId'],
+                                     directory_network_resources_links)
+
+    return added_networks
+
+
+@renew_access_token
+def update_network_resources(negotiator_client: NegotiatorAPIClient, network_id, network_external_id,
+                             directory_network_resources_links):
+    negotiator_network_resources = negotiator_client.get_network_resources(network_id)
+    negotiator_network_resources_external_ids = [r['sourceId'] for r in negotiator_network_resources]
+    try:
+        directory_network_resources = directory_network_resources_links[network_external_id]
+    except KeyError:
+        directory_network_resources = []
+    if set(directory_network_resources) == set(negotiator_network_resources_external_ids):
+        LOG.info(f'No resources to update for network: {network_id}')
+    else:
+        resources_to_unlink = set(negotiator_network_resources_external_ids) - set(directory_network_resources)
+        resources_to_add = set(directory_network_resources) - set(negotiator_network_resources_external_ids)
+        negotiator_resources = negotiator_client.get_all_resources()
+        for r in resources_to_unlink:
+            LOG.info(f'Removing resource {r} from network: {network_external_id}')
+            negotiator_resource_id = get_resource_id_by_source_id(r, negotiator_resources)
+            negotiator_client.delete_resource_from_network(network_id, negotiator_resource_id)
+        if len(resources_to_add) > 0:
+            negotiator_resources_to_add = [get_resource_id_by_source_id(res, negotiator_resources) for res in
+                                           resources_to_add]
+            LOG.info(f'Adding resources {resources_to_add} to network {network_external_id}')
+            negotiator_client.add_resources_to_network(network_id, negotiator_resources_to_add)

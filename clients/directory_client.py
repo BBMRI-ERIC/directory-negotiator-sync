@@ -32,7 +32,16 @@ def get_all_collections():
                     id
                     name
                 }
-            }  
+                network {   
+                    id
+                    name
+                    url
+                    contact
+                        {
+                        email
+                        }
+                    }
+                }  
     }
     
     '''

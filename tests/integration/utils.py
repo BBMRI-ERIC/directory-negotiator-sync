@@ -3,6 +3,7 @@ from typing import Literal
 import pytest
 from requests.auth import HTTPBasicAuth
 
+from models.dto.network import NegotiatorNetworkDTO
 from .conftest import DIRECTORY_API_URL, SESSION_URL
 
 
@@ -43,7 +44,7 @@ def add_or_update_biobank(biobank_id, biobank_pid, biobank_name, biobank_descrip
             f'Impossible to complete the test, erroor when adding the new biobank. Status code: {response.status_code} . Error: {response.text}')
 
 
-def add_or_update_collection(collection_id, collection_name, collection_description,
+def add_or_update_collection(collection_id, collection_name, collection_description, network,
                              operation=Literal['insert', 'update']):
     session = pytest.directory_session
     query = f'mutation {operation}($value:[CollectionsInput]){{{operation}(Collections:$value){{message}}}}'
@@ -63,6 +64,7 @@ def add_or_update_collection(collection_id, collection_name, collection_descript
                     "id": "NL",
                     "description": "Netherlands"
                 },
+                "network": network,
                 "biobank": {
                     'id': "bbmri-eric:ID:NL_biobank2"
                 },
@@ -173,6 +175,7 @@ def load_all_directory_test_data():
         raise Exception(
             'Impossible to load test Directory data')
 
+
 def delete_all_directory_test_data():
     session = pytest.directory_session
     query = "mutation deleteSchema($id:String){deleteSchema(id:$id){message}}"
@@ -182,3 +185,8 @@ def delete_all_directory_test_data():
         raise Exception(
             'Impossible to delete test Directory data')
 
+
+def get_negotiator_network_id_by_external_id(external_id, negotiator_networks: [NegotiatorNetworkDTO]):
+    for n in negotiator_networks:
+        if n.externalId == external_id:
+            return n.id

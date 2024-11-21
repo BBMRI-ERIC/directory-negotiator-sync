@@ -2,6 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from .network import NetworkDirectoryDTO
 from ..dto.organization import OrganizationDirectoryDTO
 
 
@@ -10,6 +11,7 @@ class ResourceDirectoryDTO(BaseModel):
     name: str
     description: Optional[str]
     biobank: OrganizationDirectoryDTO
+    network: Optional[list[NetworkDirectoryDTO]] = None
 
     @staticmethod
     def parse(directory_data):
