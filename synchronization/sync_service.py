@@ -1,5 +1,6 @@
 from auth import renew_access_token
-from clients.directory_client import (get_all_biobanks, get_all_collections, get_all_directory_networks)
+from clients.directory_client import (get_all_biobanks, get_all_collections, get_all_directory_networks,
+                                      get_all_directory_services)
 from clients.negotiator_client import resource_create_dto, network_create_dto, NegotiatorAPIClient, \
     get_resource_id_by_source_id
 from config import LOG
@@ -46,7 +47,7 @@ def sync_all(negotiator_client: NegotiatorAPIClient):
     job_id = (negotiator_client.add_sync_job()).json()['id']
     directory_organizations = get_all_biobanks()
     negotiator_organizations = negotiator_client.get_all_organizations()
-    directory_resources = get_all_collections()
+    directory_resources = get_all_collections() + get_all_directory_services(directory_organizations)
     sync_organizations(negotiator_client, directory_organizations, negotiator_organizations)
     directory_network_resources_links = get_all_directory_resources_networks_links(directory_resources)
     negotiator_resources = negotiator_client.get_all_resources()
@@ -107,7 +108,6 @@ def sync_resources(negotiator_client: NegotiatorAPIClient, directory_resources: 
                                                                       directory_resource.description)
     if len(resources_to_add) > 0:
         negotiator_client.add_resources(resources_to_add)
-
 
 
 @renew_access_token
