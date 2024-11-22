@@ -1,13 +1,14 @@
 import requests
 
-from config import DIRECTORY_API_URL
+from config import DIRECTORY_API_URL, CHECK_SERVICES_SUPPORT
 from models.dto.network import NetworkDirectoryDTO
 from models.dto.organization import OrganizationDirectoryDTO
 from models.dto.resource import ResourceDirectoryDTO
 
 
-def get_all_biobanks():
-    emx2_biobanks_query = '''
+def get_emx2_biobank_query():
+    if CHECK_SERVICES_SUPPORT:
+        return '''
     query {
                 Biobanks
                     {   id
@@ -22,6 +23,19 @@ def get_all_biobanks():
   
             }
     '''
+    return '''
+    query {
+                Biobanks
+                    {   id
+                        name
+                        withdrawn
+                    }
+            }
+    '''
+
+
+def get_all_biobanks():
+    emx2_biobanks_query = get_emx2_biobank_query()
     results = requests.post(DIRECTORY_API_URL, json={'query': emx2_biobanks_query}).json()
     return OrganizationDirectoryDTO.parse(results['data']['Biobanks'])
 
@@ -74,6 +88,8 @@ def get_all_directory_networks():
 
 def get_all_directory_services(biobanks: list[OrganizationDirectoryDTO]):
     parsed_services = list()
+    if not CHECK_SERVICES_SUPPORT:
+        return []
     emx2_services_query = '''
     query {
         Services

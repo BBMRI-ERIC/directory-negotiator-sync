@@ -79,7 +79,7 @@ services:
     networks:
       - directory-negotiator-sync-test
   emx2:
-    image: molgenis/molgenis-emx2-snapshot
+    image: molgenis/molgenis-emx2:v11.34.0
     environment:
       - TZ=Europe/Rome
       - MOLGENIS_POSTGRES_URI=jdbc:postgresql://postgres:5432/molgenis
