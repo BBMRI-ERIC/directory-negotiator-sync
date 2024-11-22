@@ -32,7 +32,10 @@ def add_or_update_biobank(biobank_id, biobank_pid, biobank_name, biobank_descrip
                 "national_node": {
                     "id": "NL",
                     "description": "Netherlands"
-                }
+                },
+                'services': [
+                    {'id': 'bbmri-eric:serviceID:DE_1234'}
+                ]
             }
         ]
     }
@@ -190,3 +193,31 @@ def get_negotiator_network_id_by_external_id(external_id, negotiator_networks: [
     for n in negotiator_networks:
         if n.externalId == external_id:
             return n.id
+
+
+def add_or_update_service(service_id, service_name, service_description, operation=Literal['insert', 'update']):
+    session = pytest.directory_session
+    query = f'mutation {operation}($value:[ServicesInput]){{{operation}(Services:$value){{message}}}}'
+    service = {
+        'id': service_id,
+        'name': service_name,
+        'description': service_description,
+        "serviceTypes": [
+            {"name": "PET-Scans",
+             "label": "PET Scans",
+             "serviceCategory": {
+                 "name": "imagingServices", "label": "Imaging Services"
+             }
+             }
+        ],
+        "accessDescription": "https://biobank2-service-access.nl",
+        "national_node": {"id": "NL", "description": "Netherlands", "dns": "https://external_server.nl"},
+    }
+    variables = {
+        "value": [service]
+    }
+    response = session.post(DIRECTORY_API_URL, json={'query': query, 'variables': variables},
+                            auth=HTTPBasicAuth('admin', 'admin'))
+    if response.status_code != 200:
+        raise Exception(
+            f'Impossible to complete the test, erroor when adding the new Service. Status code: {response.status_code} . Error: {response.text}')
