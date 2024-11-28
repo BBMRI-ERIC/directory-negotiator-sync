@@ -2,11 +2,12 @@ import pytest
 
 from clients.directory_client import get_all_biobanks, get_all_collections, \
     get_all_directory_networks
+from models.dto.resource import NegotiatorResourceDTO
 from synchronization.sync_service import sync_organizations, sync_resources, sync_networks, \
     sync_all
 from utils import get_all_directory_resources_networks_links
 from .utils import add_or_update_biobank, delete_object_from_directory, add_or_update_collection, \
-    add_or_update_network, update_person_email_contact, get_negotiator_network_id_by_external_id
+    add_or_update_network, update_person_email_contact, get_negotiator_network_id_by_external_id, add_or_update_service
 
 
 def test_organizations_initial_sync_ok():
@@ -213,3 +214,20 @@ def test_network_resource_links():
     network_deleted_new_resources = pytest.negotiator_client.get_network_resources(
         test_negotiator_sync_network_resource_links_id)
     assert len(network_deleted_new_resources) == len(test_negotiator_sync_network_resource_links_resources) - 1
+
+
+def test_service_sync():
+    def get_resource_by_source_id(source_id, negotiator_resources: [NegotiatorResourceDTO]):
+        for r in negotiator_resources:
+            if r.sourceId == source_id:
+                return r
+
+    resources_before_sync = pytest.negotiator_client.get_all_resources()
+    service_before_sync = get_resource_by_source_id('bbmri-eric:serviceID:DE_1234', resources_before_sync)
+    assert service_before_sync.name == 'Biobank Service'
+    add_or_update_service('bbmri-eric:serviceID:DE_1234', 'Biobank service_newname', 'Service provided by this biobank',
+                          'update')
+    sync_all(pytest.negotiator_client)
+    resources_after_sync = pytest.negotiator_client.get_all_resources()
+    service_after_sync = get_resource_by_source_id('bbmri-eric:serviceID:DE_1234', resources_after_sync)
+    assert service_after_sync.name == 'Biobank service_newname'

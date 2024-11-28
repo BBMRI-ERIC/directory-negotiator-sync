@@ -1,7 +1,10 @@
 import logging
 import os
 
-DIRECTORY_API_URL = os.getenv('DIRECTORY_EMX2_ENDPOINT', 'https://directory-emx2-acc.molgenis.net/ERIC/directory/graphql')
+import requests
+
+DIRECTORY_API_URL = os.getenv('DIRECTORY_EMX2_ENDPOINT',
+                              'https://directory-emx2-acc.molgenis.net/ERIC/directory/graphql')
 NEGOTIATOR_API_URL = os.getenv('NEGOTIATOR_ENDPOINT', 'http://localhost:8081/api/v3')
 AUTH_CLIENT_ID = os.getenv('NEGOTIATOR_CLIENT_AUTH_CLIENT_ID', '123')
 AUTH_CLIENT_SECRET = os.getenv('NEGOTIATOR_CLIENT_AUTH_CLIENT_SECRET', '123')
@@ -30,4 +33,24 @@ def setup_logger(log_level=logging.INFO):
     return logger
 
 
+def check_services_support():
+    query = '''
+    query {
+            Biobanks
+            {   services {
+                          id 
+                          name 
+                          description
+                        }
+                }
+
+            }
+    '''
+    results = requests.post(DIRECTORY_API_URL, json={'query': query})
+    if results.status_code == 200:
+        return True
+    return False
+
+
 LOG = setup_logger(logging.DEBUG)
+CHECK_SERVICES_SUPPORT = check_services_support()
