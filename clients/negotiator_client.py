@@ -6,7 +6,6 @@ from exceptions import TokenExpiredException
 from models.dto.network import NegotiatorNetworkDTO, NetworkDirectoryDTO
 from models.dto.organization import NegotiatorOrganizationDTO, OrganizationDirectoryDTO
 from models.dto.resource import NegotiatorResourceDTO, ResourceDirectoryDTO
-from utils import dump
 
 
 class NegotiatorAPIClient:
@@ -69,8 +68,7 @@ class NegotiatorAPIClient:
         return NegotiatorNetworkDTO.parse(self.get('networks?size=10000').json()['_embedded']['networks'])
 
     def add_organizations(self, organizations: list[OrganizationDirectoryDTO]):
-        organizations_data = dump(organizations)
-        self.post('organizations', data=organizations_data)
+        self.post('organizations', data=json.dumps(organizations))
 
     def update_organization_name(self, id, name, external_id):
         self.put(f'organizations/{id}', data=json.dumps({'name': name, 'externalId': external_id}))
@@ -98,7 +96,8 @@ class NegotiatorAPIClient:
     def get_network_resources(self, network_id):
         response = self.get(f'networks/{network_id}/resources?size=10000')
         try:
-            return [{'id': resource['id'], 'sourceId': resource['sourceId']} for resource in response.json()['_embedded']['resources']]
+            return [{'id': resource['id'], 'sourceId': resource['sourceId']} for resource in
+                    response.json()['_embedded']['resources']]
         except KeyError:
             return []
 
@@ -113,11 +112,24 @@ class NegotiatorAPIClient:
         return self.patch(f'discovery-services/1/sync-jobs/{job_id}', data=json.dumps({'jobStatus': job_status}))
 
 
+def organization_create_dto(organization: OrganizationDirectoryDTO):
+    return {
+        'externalId': organization.id,
+        'name': organization.name,
+        'description': organization.description,
+        'contactEmail': organization.contact.email,
+        'uri': organization.url,
+        'withdrawn': organization.withdrawn
+    }
+
+
 def resource_create_dto(resource: ResourceDirectoryDTO, organization_id):
     return {
         'name': resource.name,
         'sourceId': resource.id,
         'description': resource.description,
+        'contactEmail': resource.contact.email if resource.contact else '',
+        'uri': resource.url,
         'organizationId': organization_id,
         'accessFormId': 1,
         'discoveryServiceId': 1
@@ -129,6 +141,7 @@ def network_create_dto(network: NetworkDirectoryDTO):
     return {
         'externalId': network.id,
         'name': network.name,
+        'description': network.description,
         'contactEmail': network.contact.email,
         'uri': network.url
     }
@@ -152,5 +165,3 @@ def get_resource_id_by_source_id(source_id, negotiator_resources: [NegotiatorRes
     for r in negotiator_resources:
         if r.sourceId == source_id:
             return r.id
-
-

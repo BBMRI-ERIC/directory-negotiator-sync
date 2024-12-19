@@ -13,7 +13,13 @@ def get_emx2_biobank_query():
                 Biobanks
                     {   id
                         name
+                        description
+                        url
                         withdrawn
+                        contact
+                        {
+                        email
+                        }    
                         services {
                           id 
                           name 
@@ -28,6 +34,12 @@ def get_emx2_biobank_query():
                 Biobanks
                     {   id
                         name
+                        description
+                        contact
+                        {
+                        email
+                        }
+                        url
                         withdrawn
                     }
             }
@@ -47,19 +59,31 @@ def get_all_collections():
             {   id
                 name
                 description
+                contact
+                        {
+                        email
+                        }
+                url
                 biobank {
                     id
                     name
+                    description
+                    contact
+                        {
+                        email
+                        }
+                        url                   
                 }
                 network {   
                     id
                     name
+                    description
                     url
                     contact
                         {
                         email
                         }
-                    }
+                }
                 }  
     }
     
@@ -74,6 +98,7 @@ def get_all_directory_networks():
         Networks
             {   id
                 name
+                description
                 url
                 contact
                     {
@@ -96,7 +121,9 @@ def get_all_directory_services(biobanks: list[OrganizationDirectoryDTO]):
             {   id
                 name
                 description
-                    
+                contactInformation {
+                    email
+                }             
             }  
     }       
     '''
@@ -104,7 +131,9 @@ def get_all_directory_services(biobanks: list[OrganizationDirectoryDTO]):
     for service in results['data']['Services']:
         service_biobank = get_biobank_by_service(biobanks, service['id'])
         service_resource_directory = ResourceDirectoryDTO(id=service['id'], name=service['name'],
-                                                          description=service['description'], biobank=service_biobank)
+                                                          description=service['description'], biobank=service_biobank,
+                                                          contactEmail=service['contactInformation'][
+                                                              'email'] if 'contactInformation' in service else '')
         parsed_services.append(service_resource_directory)
     return parsed_services
 
