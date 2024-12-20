@@ -24,8 +24,8 @@ class NegotiatorNetworkDTO(BaseModel):
     externalId: str
     name: str
     description: Optional[str] = Field(default='')
-    contactEmail: str
-    uri: str
+    contactEmail: Optional[str] = Field(default='')
+    uri: Optional[str] = Field(default='')
 
     @staticmethod
     def parse(negotiator_data):

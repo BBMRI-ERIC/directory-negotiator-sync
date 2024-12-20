@@ -70,16 +70,19 @@ class NegotiatorAPIClient:
     def add_organizations(self, organizations: list[OrganizationDirectoryDTO]):
         self.post('organizations', data=json.dumps(organizations))
 
-    def update_organization_name(self, id, name, external_id):
-        self.put(f'organizations/{id}', data=json.dumps({'name': name, 'externalId': external_id}))
+    def update_organization_info(self, id, name, external_id, description, contact_email, uri):
+        self.put(f'organizations/{id}', data=json.dumps({'name': name, 'externalId': external_id,
+                                                         'description': description, 'contactEmail': contact_email,
+                                                         'uri': uri}))
 
     def add_resources(self, resources: list):
         added_resources = self.post('resources', data=json.dumps(resources))
         return added_resources.json()
 
-    def update_resource_name_or_description(self, id, name, description):
+    def update_resource_data(self, id, name, description, contact_email, uri):
         self.patch(f'resources/{id}',
-                   data=json.dumps({'name': name, 'description': description}))
+                   data=json.dumps(
+                       {'name': name, 'description': description, 'contactEmail': contact_email, 'uri': uri}))
 
     def add_networks(self, networks: list):
         added_networks = self.post('networks', data=json.dumps(networks))
@@ -101,9 +104,10 @@ class NegotiatorAPIClient:
         except KeyError:
             return []
 
-    def update_network_info(self, id, name, url, email, external_id):
+    def update_network_info(self, id, name, description, url, email, external_id):
         self.put(f'networks/{id}',
-                 data=json.dumps({'name': name, 'uri': url, 'contactEmail': email, 'externalId': external_id}))
+                 data=json.dumps({'name': name, 'description': description, 'uri': url, 'contactEmail': email,
+                                  'externalId': external_id}))
 
     def add_sync_job(self):
         return self.post('discovery-services/1/sync-jobs')
