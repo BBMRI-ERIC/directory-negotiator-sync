@@ -7,7 +7,7 @@ from models.dto.network import NegotiatorNetworkDTO
 from .conftest import DIRECTORY_API_URL, SESSION_URL
 
 
-def add_or_update_biobank(biobank_id, biobank_pid, biobank_name, biobank_description,
+def add_or_update_biobank(biobank_id, biobank_pid, biobank_name, biobank_description, biobank_contact, biobank_url,
                           operation=Literal['insert', 'update']):
     session = pytest.directory_session
     query = f'mutation {operation}($value:[BiobanksInput]){{{operation}(Biobanks:$value){{message}}}}'
@@ -24,11 +24,12 @@ def add_or_update_biobank(biobank_id, biobank_pid, biobank_name, biobank_descrip
                     "name": "NL"
                 },
                 "contact": {
-                    "id": "bbmri-eric:contactID:NL_person1",
+                    "id": biobank_contact,
                 },
                 "juridical_person": {
                     "id": "bbmri-eric:contactID:NL_person1",
                 },
+                "url": biobank_url,
                 "national_node": {
                     "id": "NL",
                     "description": "Netherlands"
@@ -47,7 +48,8 @@ def add_or_update_biobank(biobank_id, biobank_pid, biobank_name, biobank_descrip
             f'Impossible to complete the test, erroor when adding the new biobank. Status code: {response.status_code} . Error: {response.text}')
 
 
-def add_or_update_collection(collection_id, collection_name, collection_description, network,
+def add_or_update_collection(collection_id, collection_name, collection_description, network, collection_contact,
+                             collection_url,
                              operation=Literal['insert', 'update']):
     session = pytest.directory_session
     query = f'mutation {operation}($value:[CollectionsInput]){{{operation}(Collections:$value){{message}}}}'
@@ -61,8 +63,9 @@ def add_or_update_collection(collection_id, collection_name, collection_descript
                     "name": "NL"
                 },
                 "contact": {
-                    "id": "bbmri-eric:contactID:NL_person1",
+                    "id": collection_contact
                 },
+                'url': collection_url,
                 "national_node": {
                     "id": "NL",
                     "description": "Netherlands"
