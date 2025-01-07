@@ -7,7 +7,7 @@ from config import LOG
 from models.dto.network import NetworkDirectoryDTO, NegotiatorNetworkDTO
 from models.dto.organization import OrganizationDirectoryDTO, NegotiatorOrganizationDTO
 from models.dto.resource import ResourceDirectoryDTO, NegotiatorResourceDTO
-from utils import get_all_directory_resources_networks_links
+from utils import get_all_directory_resources_networks_links, check_fields
 
 
 def get_negotiator_organization_by_external_id(negotiator_organizations: list[NegotiatorOrganizationDTO],
@@ -68,10 +68,11 @@ def sync_organizations(negotiator_client: NegotiatorAPIClient, directory_organzi
         external_id = directory_organization.id
         negotiation_organization = get_negotiator_organization_by_external_id(negotiator_organizations, external_id)
         if negotiation_organization:
-            if (negotiation_organization.name.strip() != directory_organization.name.strip() or
-                    negotiation_organization.description.strip() != directory_organization.description.strip() or
-                    negotiation_organization.contactEmail.strip() != directory_organization.contact.email.strip() or
-                    negotiation_organization.uri.strip() != directory_organization.url.strip()):
+            if (check_fields(negotiation_organization.name, directory_organization.name) or
+                    check_fields(negotiation_organization.description, directory_organization.description) or
+                    (directory_organization.contact is not None and check_fields(negotiation_organization.contactEmail,
+                                                                                 directory_organization.contact.email)) or
+                    check_fields(negotiation_organization.uri, directory_organization.url)):
                 LOG.info(
                     f'Updating name and/or description and/or contact email and/or uri for organization: {external_id}')
                 LOG.info(f'Current organization name is: {negotiation_organization.name}')
@@ -108,10 +109,11 @@ def sync_resources(negotiator_client: NegotiatorAPIClient, directory_resources: 
             resources_to_add.append(resource_create_dto(directory_resource, negotiator_organization.id))
         else:
             if (
-                    negotiator_resource.name.strip() != directory_resource.name.strip() or
-                    negotiator_resource.description.strip() != directory_resource.description.strip() or
-                    directory_resource.contact is not None and negotiator_resource.contactEmail.strip() != directory_resource.contact.email.strip() or
-                    directory_resource.url is not None and negotiator_resource.uri.strip() != directory_resource.url.strip()
+                    check_fields(negotiator_resource.name, directory_resource.name) or
+                    check_fields(negotiator_resource.description, directory_resource.description) or
+                    (directory_resource.contact is not None and check_fields(negotiator_resource.contactEmail,
+                                                                             directory_resource.contact.email)) or
+                    check_fields(negotiator_resource.uri, directory_resource.url)
             ):
                 LOG.info(f'Updating name and/or description for resource {directory_resource.id}')
                 directory_resource_contact_email = directory_resource.contact.email if directory_resource.contact is not None else ''
@@ -132,10 +134,10 @@ def sync_networks(negotiator_client: NegotiatorAPIClient, directory_networks: li
         external_id = directory_network.id
         network = get_negotiator_network_by_external_id(negotiator_networks, external_id)
         if network:
-            if (network.name.strip() != directory_network.name.strip() or
-                    network.description.strip() != directory_network.description.strip() or
-                    (directory_network.url is not None and network.uri.strip() != directory_network.url.strip())
-                    or network.contactEmail.strip() != directory_network.contact.email.strip()):
+            if (check_fields(network.name, directory_network.name) or
+                    check_fields(network.description, directory_network.description) or
+                    check_fields(network.uri, directory_network.url)
+                    or check_fields(network.contactEmail, directory_network.contact.email)):
                 LOG.info(f'Updating name and/or url and/or contact email for network with external id: {external_id}')
                 negotiator_client.update_network_info(network.id, directory_network.name,
                                                       directory_network.description,
