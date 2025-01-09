@@ -19,3 +19,12 @@ def get_all_directory_resources_networks_links(directory_resources: list[Resourc
                 else:
                     directory_network_resources[network.id].append(resource.id)
     return directory_network_resources
+
+
+def check_fields(negotiator_field, directory_field):
+    if directory_field is None:
+        return False
+    else:
+        if negotiator_field is None:
+            return True
+    return negotiator_field.strip() != directory_field.strip()

@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class Contact(BaseModel):
@@ -10,6 +10,7 @@ class Contact(BaseModel):
 class NetworkDirectoryDTO(BaseModel):
     id: str
     name: str
+    description: str
     url: Optional[str] = ''
     contact: Contact
 
@@ -22,8 +23,9 @@ class NegotiatorNetworkDTO(BaseModel):
     id: int
     externalId: str
     name: str
-    contactEmail: str
-    uri: str
+    description: Optional[str] = Field(default='')
+    contactEmail: Optional[str] = Field(default='')
+    uri: Optional[str] = Field(default='')
 
     @staticmethod
     def parse(negotiator_data):
