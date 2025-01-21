@@ -44,6 +44,7 @@ class NegotiatorOrganizationDTO(BaseModel):
     description: Optional[str] = Field(default='')
     contactEmail: Optional[str] = Field(default='')
     uri: Optional[str] = Field(default='')
+    withdrawn: Optional[bool] = Field(default=False)
 
     @staticmethod
     def parse(negotiator_data):
