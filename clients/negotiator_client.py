@@ -70,10 +70,10 @@ class NegotiatorAPIClient:
     def add_organizations(self, organizations: list[OrganizationDirectoryDTO]):
         self.post('organizations', data=json.dumps(organizations))
 
-    def update_organization_info(self, id, name, external_id, description, contact_email, uri):
+    def update_organization_info(self, id, name, external_id, description, contact_email, uri, withdrawn):
         self.put(f'organizations/{id}', data=json.dumps({'name': name, 'externalId': external_id,
                                                          'description': description, 'contactEmail': contact_email,
-                                                         'uri': uri}))
+                                                         'uri': uri, 'withdrawn': withdrawn}))
 
     def add_resources(self, resources: list):
         added_resources = self.post('resources', data=json.dumps(resources))
