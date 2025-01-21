@@ -37,7 +37,7 @@ def test_networks_initial_sync_ok():
 def test_organization_sync_when_new_added_and_then_updated():
     add_or_update_biobank("test_negotiator_sync", "test_negotiator_sync", "test negotiator sync",
                           "test negotiator sync", 'bbmri-eric:contactID:EU_network',
-                          "http://test_negotiator_sync.org", 'insert')
+                          "http://test_negotiator_sync.org", 'false', 'insert')
 
     biobanks_after_add = get_all_biobanks()
     assert len(biobanks_after_add) == len(pytest.directory_organizations) + 1
@@ -50,7 +50,7 @@ def test_organization_sync_when_new_added_and_then_updated():
 
     add_or_update_biobank("test_negotiator_sync", "test_negotiator_sync", "test negotiator sync newname",
                           "test negotiator sync", 'bbmri-eric:contactID:EU_network',
-                          "http://test_negotiator_sync.org", 'update')
+                          "http://test_negotiator_sync.org", 'false', 'update')
     biobanks_after_update_name = get_all_biobanks()
     sync_organizations(pytest.negotiator_client, biobanks_after_update_name,
                        negotiator_organizations_after_bb_add_and_sync)
@@ -61,7 +61,7 @@ def test_organization_sync_when_new_added_and_then_updated():
     assert organization_with_name_upd.name == "test negotiator sync newname"
     add_or_update_biobank("test_negotiator_sync", "test_negotiator_sync", "test negotiator sync newname",
                           "test negotiator sync newdesc", 'bbmri-eric:contactID:EU_network',
-                          "http://test_negotiator_sync.org", 'update')
+                          "http://test_negotiator_sync.org", 'false', 'update')
     biobanks_after_update_desc = get_all_biobanks()
     sync_organizations(pytest.negotiator_client, biobanks_after_update_desc,
                        negotiator_organizations_after_update_name)
@@ -73,7 +73,7 @@ def test_organization_sync_when_new_added_and_then_updated():
     assert organization_with_desc_upd.description == "test negotiator sync newdesc"
     add_or_update_biobank("test_negotiator_sync", "test_negotiator_sync", "test negotiator sync newname",
                           "test negotiator sync newdesc", 'bbmri-eric:contactID:EU_network',
-                          "http://test_negotiator_sync.org", 'update')
+                          "http://test_negotiator_sync.org", 'false', 'update')
     update_person_email_contact('sabrina.kralnew@medunigraz.at')
     biobanks_after_update_email = get_all_biobanks()
 
@@ -87,7 +87,7 @@ def test_organization_sync_when_new_added_and_then_updated():
     assert organization_with_email_upd.contactEmail == 'sabrina.kralnew@medunigraz.at'
     add_or_update_biobank("test_negotiator_sync", "test_negotiator_sync", "test negotiator sync newname",
                           "test negotiator sync newdesc", 'bbmri-eric:contactID:EU_network',
-                          "http://test_negotiator_sync_newurl.org", 'update')
+                          "http://test_negotiator_sync_newurl.org", 'false', 'update')
     biobanks_after_update_url = get_all_biobanks()
     sync_organizations(pytest.negotiator_client, biobanks_after_update_url,
                        negotiator_organizations_after_update_email)
@@ -96,6 +96,17 @@ def test_organization_sync_when_new_added_and_then_updated():
     organization_with_url_upd = \
         [org for org in negotiator_organizations_after_update_url if org.externalId == "test_negotiator_sync"][0]
     assert organization_with_url_upd.uri == "http://test_negotiator_sync_newurl.org"
+    add_or_update_biobank("test_negotiator_sync", "test_negotiator_sync", "test negotiator sync newname",
+                          "test negotiator sync newdesc", 'bbmri-eric:contactID:EU_network',
+                          "http://test_negotiator_sync_newurl.org", 'true', 'update')
+    biobanks_after_update_withdrawn = get_all_biobanks()
+    sync_organizations(pytest.negotiator_client, biobanks_after_update_withdrawn,
+                       negotiator_organizations_after_update_url)
+    negotiator_organizations_after_update_withdrawn = pytest.negotiator_client.get_all_organizations()
+    assert len(negotiator_organizations_after_update_withdrawn) == len(negotiator_organizations_after_update_withdrawn)
+    organization_with_withdrawn_upd = \
+        [org for org in negotiator_organizations_after_update_withdrawn if org.externalId == "test_negotiator_sync"][0]
+    assert organization_with_withdrawn_upd.withdrawn == True
     delete_object_from_directory("test_negotiator_sync", "Biobanks")
 
 

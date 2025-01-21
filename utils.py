@@ -27,4 +27,7 @@ def check_fields(negotiator_field, directory_field):
     else:
         if negotiator_field is None:
             return True
-    return negotiator_field.strip() != directory_field.strip()
+    if isinstance(negotiator_field, str) and isinstance(directory_field, str):
+        return negotiator_field.strip() != directory_field.strip()
+    else:
+        return negotiator_field != directory_field

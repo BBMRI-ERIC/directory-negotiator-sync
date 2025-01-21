@@ -72,15 +72,17 @@ def sync_organizations(negotiator_client: NegotiatorAPIClient, directory_organzi
                     check_fields(negotiation_organization.description, directory_organization.description) or
                     (directory_organization.contact is not None and check_fields(negotiation_organization.contactEmail,
                                                                                  directory_organization.contact.email)) or
-                    check_fields(negotiation_organization.uri, directory_organization.url)):
+                    check_fields(negotiation_organization.uri, directory_organization.url) or
+                    check_fields(negotiation_organization.withdrawn, directory_organization.withdrawn)):
                 LOG.info(
-                    f'Updating name and/or description and/or contact email and/or uri for organization: {external_id}')
+                    f'Updating name and/or description and/or contact email and/or uri and/or withdrawn for organization: {external_id}')
                 LOG.info(f'Current organization name is: {negotiation_organization.name}')
                 LOG.info(f'New organization name is: {directory_organization.name}')
                 negotiator_client.update_organization_info(negotiation_organization.id, directory_organization.name,
                                                            external_id, directory_organization.description,
                                                            directory_organization.contact.email,
-                                                           directory_organization.url)
+                                                           directory_organization.url,
+                                                           directory_organization.withdrawn)
         else:
             LOG.info(
                 f'Organization with external id {external_id} not found, including it to the list of organizations to add')

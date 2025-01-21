@@ -8,13 +8,13 @@ from .conftest import DIRECTORY_API_URL, SESSION_URL
 
 
 def add_or_update_biobank(biobank_id, biobank_pid, biobank_name, biobank_description, biobank_contact, biobank_url,
-                          operation=Literal['insert', 'update']):
+                          biobank_withdrawn, operation=Literal['insert', 'update']):
     session = pytest.directory_session
     query = f'mutation {operation}($value:[BiobanksInput]){{{operation}(Biobanks:$value){{message}}}}'
     variables = {
         "value": [
             {
-                "withdrawn": "false",
+                "withdrawn": biobank_withdrawn,
                 "id": biobank_id,
 
                 "pid": biobank_pid,
