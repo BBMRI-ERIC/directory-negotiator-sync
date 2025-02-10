@@ -128,14 +128,17 @@ def get_all_directory_services(biobanks: list[OrganizationDirectoryDTO]):
     }       
     '''
     results = requests.post(DIRECTORY_API_URL, json={'query': emx2_services_query}).json()
-    for service in results['data']['Services']:
-        service_biobank = get_biobank_by_service(biobanks, service['id'])
-        service_resource_directory = ResourceDirectoryDTO(id=service['id'], name=service['name'],
-                                                          description=service['description'], biobank=service_biobank,
-                                                          contactEmail=service['contactInformation'][
-                                                              'email'] if 'contactInformation' in service else '')
-        parsed_services.append(service_resource_directory)
-    return parsed_services
+    if ('Services' in results['data'].keys()):
+        for service in results['data']['Services']:
+            service_biobank = get_biobank_by_service(biobanks, service['id'])
+            service_resource_directory = ResourceDirectoryDTO(id=service['id'], name=service['name'],
+                                                              description=service['description'],
+                                                              biobank=service_biobank,
+                                                              contactEmail=service['contactInformation'][
+                                                                  'email'] if 'contactInformation' in service else '')
+            parsed_services.append(service_resource_directory)
+        return parsed_services
+    return []
 
 
 def get_biobank_by_service(biobanks: list[OrganizationDirectoryDTO], service_id):
