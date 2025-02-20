@@ -6,6 +6,7 @@ from exceptions import TokenExpiredException
 from models.dto.network import NegotiatorNetworkDTO, NetworkDirectoryDTO
 from models.dto.organization import NegotiatorOrganizationDTO, OrganizationDirectoryDTO
 from models.dto.resource import NegotiatorResourceDTO, ResourceDirectoryDTO
+from utils import create_biobank_production_uri, create_collection_production_uri, create_network_production_uri
 
 
 class NegotiatorAPIClient:
@@ -70,19 +71,19 @@ class NegotiatorAPIClient:
     def add_organizations(self, organizations: list[OrganizationDirectoryDTO]):
         self.post('organizations', data=json.dumps(organizations))
 
-    def update_organization_info(self, id, name, external_id, description, contact_email, uri, withdrawn):
+    def update_organization_info(self, id, name, external_id, description, contact_email, withdrawn):
         self.put(f'organizations/{id}', data=json.dumps({'name': name, 'externalId': external_id,
                                                          'description': description, 'contactEmail': contact_email,
-                                                         'uri': uri, 'withdrawn': withdrawn}))
+                                                          'withdrawn': withdrawn, 'uri': create_biobank_production_uri(id)}))
 
     def add_resources(self, resources: list):
         added_resources = self.post('resources', data=json.dumps(resources))
         return added_resources.json()
 
-    def update_resource_data(self, id, name, description, contact_email, uri, withdrawn):
+    def update_resource_data(self, id, name, description, contact_email, withdrawn):
         self.patch(f'resources/{id}',
                    data=json.dumps(
-                       {'name': name, 'description': description, 'contactEmail': contact_email, 'uri': uri, 'withdrawn': withdrawn}))
+                       {'name': name, 'description': description, 'contactEmail': contact_email, 'withdrawn': withdrawn, 'uri': create_collection_production_uri(id)}))
 
     def add_networks(self, networks: list):
         added_networks = self.post('networks', data=json.dumps(networks))
@@ -104,9 +105,9 @@ class NegotiatorAPIClient:
         except KeyError:
             return []
 
-    def update_network_info(self, id, name, description, url, email, external_id):
+    def update_network_info(self, id, name, description, email, external_id):
         self.put(f'networks/{id}',
-                 data=json.dumps({'name': name, 'description': description, 'uri': url, 'contactEmail': email,
+                 data=json.dumps({'name': name, 'description': description, 'uri': create_network_production_uri(id), 'contactEmail': email,
                                   'externalId': external_id}))
 
     def add_sync_job(self):
@@ -122,7 +123,7 @@ def organization_create_dto(organization: OrganizationDirectoryDTO):
         'name': organization.name,
         'description': organization.description,
         'contactEmail': organization.contact.email,
-        'uri': organization.url,
+        'uri': create_biobank_production_uri(organization.id),
         'withdrawn': organization.withdrawn
     }
 
@@ -133,7 +134,7 @@ def resource_create_dto(resource: ResourceDirectoryDTO, organization_id):
         'sourceId': resource.id,
         'description': resource.description,
         'contactEmail': resource.contact.email if resource.contact else '',
-        'uri': resource.url,
+        'uri': create_collection_production_uri(resource.id),
         'withdrawn': resource.withdrawn,
         'organizationId': organization_id,
         'accessFormId': 1,
@@ -148,7 +149,7 @@ def network_create_dto(network: NetworkDirectoryDTO):
         'name': network.name,
         'description': network.description,
         'contactEmail': network.contact.email,
-        'uri': network.url
+        'uri': create_network_production_uri(network.id)
     }
 
 

@@ -31,3 +31,13 @@ def check_fields(negotiator_field, directory_field):
         return negotiator_field.strip() != directory_field.strip()
     else:
         return negotiator_field != directory_field
+
+
+def create_biobank_production_uri(biobank_id):
+    return f'https://directory.bbmri-eric.eu/ERIC/directory/#/biobank/{biobank_id}'
+
+def create_collection_production_uri(collection_id):
+    return f'https://directory.bbmri-eric.eu/ERIC/directory/#/collection/{collection_id}'
+
+def create_network_production_uri(network_id):
+    return f'https://directory.bbmri-eric.eu/ERIC/directory/#/network/{network_id}'

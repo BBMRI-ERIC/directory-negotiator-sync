@@ -14,7 +14,6 @@ def get_emx2_biobank_query():
                     {   id
                         name
                         description
-                        url
                         withdrawn
                         contact
                         {
@@ -39,7 +38,6 @@ def get_emx2_biobank_query():
                         {
                         email
                         }
-                        url
                         withdrawn
                     }
             }
@@ -63,7 +61,6 @@ def get_all_collections():
                         {
                         email
                         }
-                url
                 withdrawn
                 biobank {
                     id
@@ -100,7 +97,6 @@ def get_all_directory_networks():
             {   id
                 name
                 description
-                url
                 contact
                     {
                         email

@@ -72,7 +72,6 @@ def sync_organizations(negotiator_client: NegotiatorAPIClient, directory_organzi
                     check_fields(negotiation_organization.description, directory_organization.description) or
                     (directory_organization.contact is not None and check_fields(negotiation_organization.contactEmail,
                                                                                  directory_organization.contact.email)) or
-                    check_fields(negotiation_organization.uri, directory_organization.url) or
                     check_fields(negotiation_organization.withdrawn, directory_organization.withdrawn)):
                 LOG.info(
                     f'Updating name and/or description and/or contact email and/or uri and/or withdrawn for organization: {external_id}')
@@ -81,7 +80,6 @@ def sync_organizations(negotiator_client: NegotiatorAPIClient, directory_organzi
                 negotiator_client.update_organization_info(negotiation_organization.id, directory_organization.name,
                                                            external_id, directory_organization.description,
                                                            directory_organization.contact.email,
-                                                           directory_organization.url,
                                                            directory_organization.withdrawn)
         else:
             LOG.info(
@@ -115,14 +113,13 @@ def sync_resources(negotiator_client: NegotiatorAPIClient, directory_resources: 
                     check_fields(negotiator_resource.description, directory_resource.description) or
                     (directory_resource.contact is not None and check_fields(negotiator_resource.contactEmail,
                                                                              directory_resource.contact.email)) or
-                    check_fields(negotiator_resource.uri, directory_resource.url) or
                     check_fields(negotiator_resource.withdrawn, directory_resource.withdrawn)
             ):
                 LOG.info(f'Updating name and/or description for resource {directory_resource.id}')
                 directory_resource_contact_email = directory_resource.contact.email if directory_resource.contact is not None else ''
                 negotiator_client.update_resource_data(negotiator_resource.id, directory_resource.name,
                                                        directory_resource.description, directory_resource_contact_email,
-                                                       directory_resource.url, directory_resource.withdrawn)
+                                                       directory_resource.withdrawn)
     if len(resources_to_add) > 0:
         negotiator_client.add_resources(resources_to_add)
 
@@ -138,13 +135,11 @@ def sync_networks(negotiator_client: NegotiatorAPIClient, directory_networks: li
         network = get_negotiator_network_by_external_id(negotiator_networks, external_id)
         if network:
             if (check_fields(network.name, directory_network.name) or
-                    check_fields(network.description, directory_network.description) or
-                    check_fields(network.uri, directory_network.url)
+                    check_fields(network.description, directory_network.description)
                     or check_fields(network.contactEmail, directory_network.contact.email)):
                 LOG.info(f'Updating name and/or url and/or contact email for network with external id: {external_id}')
                 negotiator_client.update_network_info(network.id, directory_network.name,
                                                       directory_network.description,
-                                                      directory_network.url,
                                                       directory_network.contact.email, external_id)
             LOG.info(f'Updating linked resources for network: {network.id}')
             update_network_resources(negotiator_client, network.id, network.externalId,
