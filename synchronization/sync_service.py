@@ -115,13 +115,14 @@ def sync_resources(negotiator_client: NegotiatorAPIClient, directory_resources: 
                     check_fields(negotiator_resource.description, directory_resource.description) or
                     (directory_resource.contact is not None and check_fields(negotiator_resource.contactEmail,
                                                                              directory_resource.contact.email)) or
-                    check_fields(negotiator_resource.uri, directory_resource.url)
+                    check_fields(negotiator_resource.uri, directory_resource.url) or
+                    check_fields(negotiator_resource.withdrawn, directory_resource.withdrawn)
             ):
                 LOG.info(f'Updating name and/or description for resource {directory_resource.id}')
                 directory_resource_contact_email = directory_resource.contact.email if directory_resource.contact is not None else ''
                 negotiator_client.update_resource_data(negotiator_resource.id, directory_resource.name,
                                                        directory_resource.description, directory_resource_contact_email,
-                                                       directory_resource.url)
+                                                       directory_resource.url, directory_resource.withdrawn)
     if len(resources_to_add) > 0:
         negotiator_client.add_resources(resources_to_add)
 

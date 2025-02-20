@@ -64,6 +64,7 @@ def get_all_collections():
                         email
                         }
                 url
+                withdrawn
                 biobank {
                     id
                     name

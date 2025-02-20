@@ -125,7 +125,7 @@ def test_resources_sync_when_new_added_and_then_updated():
     add_or_update_collection("test_negotiator_sync_coll", "test negotiator sync collection",
                              "test negotiator sync collection", network,
                              'bbmri-eric:contactID:EU_network',
-                             'http://test_negotiator_sync_coll.org', 'insert')
+                             'http://test_negotiator_sync_coll.org', False, 'insert')
     collections_after_add = get_all_collections()
     assert len(collections_after_add) == len(pytest.directory_resources) + 1
     negotiator_resources_before_add = pytest.negotiator_client.get_all_resources()
@@ -135,7 +135,7 @@ def test_resources_sync_when_new_added_and_then_updated():
     # now update the resource name and sync again
     add_or_update_collection("test_negotiator_sync_coll", "test negotiator sync collection newname",
                              "test negotiator sync collection", network, 'bbmri-eric:contactID:EU_network',
-                             'http://test_negotiator_sync_coll.org', 'update')
+                             'http://test_negotiator_sync_coll.org', False,  'update')
     collections_after_update_name = get_all_collections()
     sync_resources(pytest.negotiator_client, collections_after_update_name,
                    negotiator_resources_after_coll_add_and_sync)
@@ -147,7 +147,7 @@ def test_resources_sync_when_new_added_and_then_updated():
     # now update the resource description and sync again
     add_or_update_collection("test_negotiator_sync_coll", "test negotiator sync collection newname",
                              "test negotiator sync collection newdesc", network, 'bbmri-eric:contactID:EU_network',
-                             'http://test_negotiator_sync_coll.org', 'update')
+                             'http://test_negotiator_sync_coll.org', False, 'update')
     collections_after_update_desc = get_all_collections()
     sync_resources(pytest.negotiator_client, collections_after_update_desc,
                    negotiator_resources_after_update_name)
@@ -167,7 +167,7 @@ def test_resources_sync_when_new_added_and_then_updated():
     assert resource_with_email_upd.contactEmail == 'sabrina.kralnew@medunigraz.at'
     add_or_update_collection("test_negotiator_sync_coll", "test negotiator sync collection newname",
                              "test negotiator sync collection newdesc", network, 'bbmri-eric:contactID:EU_network',
-                             'http://test_negotiator_sync_coll_newuri.org', 'update')
+                             'http://test_negotiator_sync_coll_newuri.org', False, 'update')
     collections_after_update_uri = get_all_collections()
     sync_resources(pytest.negotiator_client, collections_after_update_uri,
                    negotiator_resources_after_update_email)
@@ -176,6 +176,17 @@ def test_resources_sync_when_new_added_and_then_updated():
     resource_with_uri_upd = \
         [res for res in negotiator_resources_after_update_uri if res.sourceId == "test_negotiator_sync_coll"][0]
     assert resource_with_uri_upd.uri == 'http://test_negotiator_sync_coll_newuri.org'
+    add_or_update_collection("test_negotiator_sync_coll", "test negotiator sync collection newname",
+                             "test negotiator sync collection newdesc", network, 'bbmri-eric:contactID:EU_network',
+                             'http://test_negotiator_sync_coll_newuri.org', True, 'update')
+    collections_after_update_withdrawn = get_all_collections()
+    sync_resources(pytest.negotiator_client, collections_after_update_withdrawn,
+                   negotiator_resources_after_update_uri)
+    negotiator_resources_after_update_withdrawn = pytest.negotiator_client.get_all_resources()
+    assert len(negotiator_resources_after_update_withdrawn) == len(negotiator_resources_after_update_uri)
+    resource_with_withdrawn_upd = \
+        [res for res in negotiator_resources_after_update_withdrawn if res.sourceId == "test_negotiator_sync_coll"][0]
+    assert resource_with_withdrawn_upd.withdrawn == True
     delete_object_from_directory("test_negotiator_sync_coll", 'Collections')
 
 
@@ -267,7 +278,7 @@ def test_network_resource_links():
     add_or_update_collection("test_negotiator_sync_coll_network_resource_links",
                              "test negotiator sync collection network resource links",
                              "test negotiator sync collection network resource links", network,
-                             'bbmri-eric:contactID:EU_network', 'http://testreslinks.com', 'insert')
+                             'bbmri-eric:contactID:EU_network', 'http://testreslinks.com', False, 'insert')
 
     sync_all(pytest.negotiator_client)
     negotiator_networks = pytest.negotiator_client.get_all_negotiator_networks()
@@ -292,7 +303,7 @@ def test_network_resource_links():
     add_or_update_collection("test_negotiator_sync_coll_network_resource_links",
                              "test negotiator sync collection network resource links",
                              "test negotiator sync collection network resource links", new_networks_with_added,
-                             'bbmri-eric:contactID:EU_network', 'http://testreslinks.com', 'update')
+                             'bbmri-eric:contactID:EU_network', 'http://testreslinks.com', False,  'update')
     sync_all(pytest.negotiator_client)
     network_to_add_new_resources = pytest.negotiator_client.get_network_resources(network_to_add_id)
     assert len(network_to_add_new_resources) == len(network_to_add_resources) + 1
@@ -305,7 +316,7 @@ def test_network_resource_links():
     add_or_update_collection("test_negotiator_sync_coll_network_resource_links",
                              "test negotiator sync collection network resource links",
                              "test negotiator sync collection network resource links", new_networks_with_deleted,
-                             'bbmri-eric:contactID:EU_network', 'http://testreslinks.com', 'update')
+                             'bbmri-eric:contactID:EU_network', 'http://testreslinks.com', False,  'update')
 
     sync_all(pytest.negotiator_client)
     network_deleted_new_resources = pytest.negotiator_client.get_network_resources(

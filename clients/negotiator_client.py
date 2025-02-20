@@ -79,10 +79,10 @@ class NegotiatorAPIClient:
         added_resources = self.post('resources', data=json.dumps(resources))
         return added_resources.json()
 
-    def update_resource_data(self, id, name, description, contact_email, uri):
+    def update_resource_data(self, id, name, description, contact_email, uri, withdrawn):
         self.patch(f'resources/{id}',
                    data=json.dumps(
-                       {'name': name, 'description': description, 'contactEmail': contact_email, 'uri': uri}))
+                       {'name': name, 'description': description, 'contactEmail': contact_email, 'uri': uri, 'withdrawn': withdrawn}))
 
     def add_networks(self, networks: list):
         added_networks = self.post('networks', data=json.dumps(networks))
@@ -134,6 +134,7 @@ def resource_create_dto(resource: ResourceDirectoryDTO, organization_id):
         'description': resource.description,
         'contactEmail': resource.contact.email if resource.contact else '',
         'uri': resource.url,
+        'withdrawn': resource.withdrawn,
         'organizationId': organization_id,
         'accessFormId': 1,
         'discoveryServiceId': 1

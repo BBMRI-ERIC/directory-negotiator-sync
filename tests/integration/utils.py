@@ -49,7 +49,7 @@ def add_or_update_biobank(biobank_id, biobank_pid, biobank_name, biobank_descrip
 
 
 def add_or_update_collection(collection_id, collection_name, collection_description, network, collection_contact,
-                             collection_url,
+                             collection_url, collection_withdrawn,
                              operation=Literal['insert', 'update']):
     session = pytest.directory_session
     query = f'mutation {operation}($value:[CollectionsInput]){{{operation}(Collections:$value){{message}}}}'
@@ -66,6 +66,7 @@ def add_or_update_collection(collection_id, collection_name, collection_descript
                     "id": collection_contact
                 },
                 'url': collection_url,
+                'withdrawn': collection_withdrawn,
                 "national_node": {
                     "id": "NL",
                     "description": "Netherlands"
