@@ -1,9 +1,12 @@
 import requests
 
 from config import DIRECTORY_API_URL, CHECK_SERVICES_SUPPORT
+from exceptions import DirectoryAPIException
 from models.dto.network import NetworkDirectoryDTO
 from models.dto.organization import OrganizationDirectoryDTO
 from models.dto.resource import ResourceDirectoryDTO
+
+SUCCESS_CODES = [200, 201, 204]
 
 
 def get_emx2_biobank_query():
@@ -46,7 +49,11 @@ def get_emx2_biobank_query():
 
 def get_all_biobanks():
     emx2_biobanks_query = get_emx2_biobank_query()
-    results = requests.post(DIRECTORY_API_URL, json={'query': emx2_biobanks_query}).json()
+    response = requests.post(DIRECTORY_API_URL, json={'query': emx2_biobanks_query})
+    if response.status_code not in SUCCESS_CODES:
+        raise DirectoryAPIException(
+            f'Error occurred while trying to get Biobanks from the Directory API: {response.text}')
+    results = response.json()
     return OrganizationDirectoryDTO.parse(results['data']['Biobanks'])
 
 
@@ -86,7 +93,11 @@ def get_all_collections():
     }
     
     '''
-    results = requests.post(DIRECTORY_API_URL, json={'query': emx2_collections_query}).json()
+    response = requests.post(DIRECTORY_API_URL, json={'query': emx2_collections_query})
+    if response.status_code not in SUCCESS_CODES:
+        raise DirectoryAPIException(
+            f'Error occurred while trying to get Collections from the Directory API: {response.text}')
+    results = response.json()
     return ResourceDirectoryDTO.parse(results['data']['Collections'])
 
 
@@ -104,7 +115,11 @@ def get_all_directory_networks():
             }
     }   
     '''
-    results = requests.post(DIRECTORY_API_URL, json={'query': emx2_networks_query}).json()
+    response = requests.post(DIRECTORY_API_URL, json={'query': emx2_networks_query})
+    if response.status_code not in SUCCESS_CODES:
+        raise DirectoryAPIException(
+            f'Error occurred while trying to get Networks from the Directory API: {response.text}')
+    results = response.json()
     return NetworkDirectoryDTO.parse(results['data']['Networks'])
 
 
@@ -124,7 +139,11 @@ def get_all_directory_services(biobanks: list[OrganizationDirectoryDTO]):
             }  
     }       
     '''
-    results = requests.post(DIRECTORY_API_URL, json={'query': emx2_services_query}).json()
+    response = requests.post(DIRECTORY_API_URL, json={'query': emx2_services_query})
+    if response.status_code not in SUCCESS_CODES:
+        raise DirectoryAPIException(
+            f'Error occurred while trying to get Services from the Directory API: {response.text}')
+    results = response.json()
     if ('Services' in results['data'].keys()):
         for service in results['data']['Services']:
             service_biobank = get_biobank_by_service(biobanks, service['id'])

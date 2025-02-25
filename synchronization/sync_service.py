@@ -1,9 +1,12 @@
+import requests
+
 from auth import renew_access_token
 from clients.directory_client import (get_all_biobanks, get_all_collections, get_all_directory_networks,
                                       get_all_directory_services)
 from clients.negotiator_client import resource_create_dto, network_create_dto, NegotiatorAPIClient, \
     get_resource_id_by_source_id, organization_create_dto
 from config import LOG
+from exceptions import NegotiatorAPIException, DirectoryAPIException
 from models.dto.network import NetworkDirectoryDTO, NegotiatorNetworkDTO
 from models.dto.organization import OrganizationDirectoryDTO, NegotiatorOrganizationDTO
 from models.dto.resource import ResourceDirectoryDTO, NegotiatorResourceDTO
@@ -44,18 +47,41 @@ def get_negotiator_network_by_external_id(negotiator_networks: list[NegotiatorNe
 
 @renew_access_token
 def sync_all(negotiator_client: NegotiatorAPIClient):
-    job_id = (negotiator_client.add_sync_job()).json()['id']
-    directory_organizations = get_all_biobanks()
-    negotiator_organizations = negotiator_client.get_all_organizations()
-    directory_resources = get_all_collections() + get_all_directory_services(directory_organizations)
-    sync_organizations(negotiator_client, directory_organizations, negotiator_organizations)
-    directory_network_resources_links = get_all_directory_resources_networks_links(directory_resources)
-    negotiator_resources = negotiator_client.get_all_resources()
-    sync_resources(negotiator_client, directory_resources, negotiator_resources)
-    directory_networks = get_all_directory_networks()
-    negotiator_networks = negotiator_client.get_all_negotiator_networks()
-    sync_networks(negotiator_client, directory_networks, negotiator_networks,
-                  directory_network_resources_links)
+    job_id = None
+    try:
+        job_id = (negotiator_client.add_sync_job()).json()['id']
+        directory_organizations = get_all_biobanks()
+        negotiator_organizations = negotiator_client.get_all_organizations()
+        directory_resources = get_all_collections() + get_all_directory_services(directory_organizations)
+        sync_organizations(negotiator_client, directory_organizations, negotiator_organizations)
+        directory_network_resources_links = get_all_directory_resources_networks_links(directory_resources)
+        negotiator_resources = negotiator_client.get_all_resources()
+        sync_resources(negotiator_client, directory_resources, negotiator_resources)
+        directory_networks = get_all_directory_networks()
+        negotiator_networks = negotiator_client.get_all_negotiator_networks()
+        sync_networks(negotiator_client, directory_networks, negotiator_networks,
+                      directory_network_resources_links)
+
+    except requests.exceptions.ConnectionError as e:
+        LOG.error(
+            f'Error occurred while trying to connect to one f the dependent services required for sync (Negotiator, Lifescience AAI, Directory): {e}')
+        if job_id:
+            negotiator_client.update_sync_job(job_id, 'FAILED')
+
+    except DirectoryAPIException as e:
+        LOG.error(f'Error occurred while calling Directory API for resources sync: {e}')
+        if job_id:
+            negotiator_client.update_sync_job(job_id, 'FAILED')
+
+    except NegotiatorAPIException as e:
+        LOG.error(f'Error occurred while calling Negotiator API for resources sync: {e}')
+        if job_id:
+            negotiator_client.update_sync_job(job_id, 'FAILED')
+
+    except Exception as e:
+        LOG.error(f'Error occurred while trying to sync all resources: {e}')
+        if job_id:
+            negotiator_client.update_sync_job(job_id, 'FAILED')
 
 
 @renew_access_token
@@ -170,6 +196,7 @@ def update_network_resources(negotiator_client: NegotiatorAPIClient, network_id,
     if set(directory_network_resources) == set(negotiator_network_resources_external_ids):
         LOG.info(f'No resources to update for network: {network_id}')
     else:
+        LOG.info(f'Updating resources for network: {network_id}')
         resources_to_unlink = set(negotiator_network_resources_external_ids) - set(directory_network_resources)
         resources_to_add = set(directory_network_resources) - set(negotiator_network_resources_external_ids)
         negotiator_resources = negotiator_client.get_all_resources()

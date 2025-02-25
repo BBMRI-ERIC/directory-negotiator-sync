@@ -1,4 +1,5 @@
 import pytest
+from markdown_it.parser_block import LOGGER
 
 from clients.directory_client import get_all_biobanks, get_all_collections, \
     get_all_directory_networks
@@ -45,9 +46,10 @@ def test_organization_sync_when_new_added_and_then_updated():
     sync_organizations(pytest.negotiator_client, biobanks_after_add,
                        negotiator_organizations_before_add)
     negotiator_organizations_after_bb_add_and_sync = pytest.negotiator_client.get_all_organizations()
-    #check that for one of the biobanks coming from the directory the url has been successfylly transformed
+    # check that for one of the biobanks coming from the directory the url has been successfylly transformed
     organization_added = \
-        [org for org in negotiator_organizations_after_bb_add_and_sync if org.externalId == "bbmri-eric:ID:DE_biobank1"][0]
+        [org for org in negotiator_organizations_after_bb_add_and_sync if
+         org.externalId == "bbmri-eric:ID:DE_biobank1"][0]
     assert organization_added.uri == 'https://directory.bbmri-eric.eu/ERIC/directory/#/biobank/bbmri-eric:ID:DE_biobank1'
     assert len(negotiator_organizations_after_bb_add_and_sync) == len(negotiator_organizations_before_add) + 1
     # now update the Biobank name and sync again
@@ -77,7 +79,7 @@ def test_organization_sync_when_new_added_and_then_updated():
     assert organization_with_desc_upd.description == "test negotiator sync newdesc"
     add_or_update_biobank("test_negotiator_sync", "test_negotiator_sync", "test negotiator sync newname",
                           "test negotiator sync newdesc", 'bbmri-eric:contactID:EU_network',
-                           'false', 'update')
+                          'false', 'update')
     update_person_email_contact('sabrina.kralnew@medunigraz.at')
     biobanks_after_update_email = get_all_biobanks()
 
@@ -119,21 +121,22 @@ def test_resources_sync_when_new_added_and_then_updated():
     add_or_update_collection("test_negotiator_sync_coll", "test negotiator sync collection",
                              "test negotiator sync collection", network,
                              'bbmri-eric:contactID:EU_network',
-                              False, 'insert')
+                             False, 'insert')
     collections_after_add = get_all_collections()
     assert len(collections_after_add) == len(pytest.directory_resources) + 1
     negotiator_resources_before_add = pytest.negotiator_client.get_all_resources()
     sync_resources(pytest.negotiator_client, collections_after_add, negotiator_resources_before_add)
     negotiator_resources_after_coll_add_and_sync = pytest.negotiator_client.get_all_resources()
     resource_added = \
-        [res for res in negotiator_resources_after_coll_add_and_sync if res.sourceId == "bbmri-eric:ID:DE_biobank1:collection:coll1"][0]
-    #check that for one of the collections coming from the directory the url has been successfully transformed
+        [res for res in negotiator_resources_after_coll_add_and_sync if
+         res.sourceId == "bbmri-eric:ID:DE_biobank1:collection:coll1"][0]
+    # check that for one of the collections coming from the directory the url has been successfully transformed
     assert resource_added.uri == 'https://directory.bbmri-eric.eu/ERIC/directory/#/collection/bbmri-eric:ID:DE_biobank1:collection:coll1'
     assert len(negotiator_resources_after_coll_add_and_sync) == len(negotiator_resources_before_add) + 1
     # now update the resource name and sync again
     add_or_update_collection("test_negotiator_sync_coll", "test negotiator sync collection newname",
                              "test negotiator sync collection", network, 'bbmri-eric:contactID:EU_network',
-                             False,  'update')
+                             False, 'update')
     collections_after_update_name = get_all_collections()
     sync_resources(pytest.negotiator_client, collections_after_update_name,
                    negotiator_resources_after_coll_add_and_sync)
@@ -188,9 +191,10 @@ def test_networks_sync_when_new_added_and_then_updated():
     sync_networks(pytest.negotiator_client, networks_after_add, negotiator_networks_before_add,
                   directory_network_resources_links)
     negotiator_networks_after_ntw_add_and_sync = pytest.negotiator_client.get_all_negotiator_networks()
-    added_network =  \
-        [ntw for ntw in  negotiator_networks_after_ntw_add_and_sync if ntw.externalId == "bbmri-eric:networkID:DE_network1"][0]
-    #check that for one of the networks coming from the directory the url has been successfylly transformed
+    added_network = \
+        [ntw for ntw in negotiator_networks_after_ntw_add_and_sync if
+         ntw.externalId == "bbmri-eric:networkID:DE_network1"][0]
+    # check that for one of the networks coming from the directory the url has been successfylly transformed
     assert added_network.uri == 'https://directory.bbmri-eric.eu/ERIC/directory/#/network/bbmri-eric:networkID:DE_network1'
     assert len(negotiator_networks_after_ntw_add_and_sync) == len(negotiator_networks_before_add) + 1
     # now update the network name and sync again
@@ -258,7 +262,9 @@ def test_network_resource_links():
                              "test negotiator sync collection network resource links", network,
                              'bbmri-eric:contactID:EU_network', False, 'insert')
 
+    LOGGER.info("Syncing all for limnks...")
     sync_all(pytest.negotiator_client)
+    LOGGER.info("END Syncing all for limnks...")
     negotiator_networks = pytest.negotiator_client.get_all_negotiator_networks()
     test_negotiator_sync_network_resource_links_id = get_negotiator_network_id_by_external_id(
         "test_negotiator_sync_network_resource_links", negotiator_networks)
@@ -281,7 +287,7 @@ def test_network_resource_links():
     add_or_update_collection("test_negotiator_sync_coll_network_resource_links",
                              "test negotiator sync collection network resource links",
                              "test negotiator sync collection network resource links", new_networks_with_added,
-                             'bbmri-eric:contactID:EU_network',  False,  'update')
+                             'bbmri-eric:contactID:EU_network', False, 'update')
     sync_all(pytest.negotiator_client)
     network_to_add_new_resources = pytest.negotiator_client.get_network_resources(network_to_add_id)
     assert len(network_to_add_new_resources) == len(network_to_add_resources) + 1
@@ -294,7 +300,7 @@ def test_network_resource_links():
     add_or_update_collection("test_negotiator_sync_coll_network_resource_links",
                              "test negotiator sync collection network resource links",
                              "test negotiator sync collection network resource links", new_networks_with_deleted,
-                             'bbmri-eric:contactID:EU_network',  False,  'update')
+                             'bbmri-eric:contactID:EU_network', False, 'update')
 
     sync_all(pytest.negotiator_client)
     network_deleted_new_resources = pytest.negotiator_client.get_network_resources(
