@@ -90,7 +90,7 @@ class NegotiatorAPIClient:
                                                                     'description': description,
                                                                     'contactEmail': contact_email,
                                                                     'withdrawn': withdrawn,
-                                                                    'uri': create_biobank_production_uri(id)}))
+                                                                    'uri': create_biobank_production_uri(external_id)}))
         if response.status_code not in self.success_codes:
             raise NegotiatorAPIException(f'Error occurred while trying to update organization: {response.text}')
 
@@ -100,11 +100,11 @@ class NegotiatorAPIClient:
             raise NegotiatorAPIException(f'Error occurred while trying to add resources: {response.text}')
         return response.json()
 
-    def update_resource_data(self, id, name, description, contact_email, withdrawn):
+    def update_resource_data(self, id, source_id, name, description, contact_email, withdrawn):
         response = self.patch(f'resources/{id}',
                               data=json.dumps(
                                   {'name': name, 'description': description, 'contactEmail': contact_email,
-                                   'withdrawn': withdrawn, 'uri': create_collection_production_uri(id)}))
+                                   'withdrawn': withdrawn, 'uri': create_collection_production_uri(source_id)}))
         if response.status_code not in self.success_codes:
             raise NegotiatorAPIException(f'Error occurred while trying to update resource: {response.text}')
 
@@ -134,7 +134,8 @@ class NegotiatorAPIClient:
     def update_network_info(self, id, name, description, email, external_id):
         response = self.put(f'networks/{id}',
                             data=json.dumps(
-                                {'name': name, 'description': description, 'uri': create_network_production_uri(id),
+                                {'name': name, 'description': description,
+                                 'uri': create_network_production_uri(external_id),
                                  'contactEmail': email,
                                  'externalId': external_id}))
         if response.status_code not in self.success_codes:

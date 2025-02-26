@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from markdown_it.parser_block import LOGGER
 
@@ -103,6 +105,62 @@ def test_organization_sync_when_new_added_and_then_updated():
     organization_with_withdrawn_upd = \
         [org for org in negotiator_organizations_after_update_withdrawn if org.externalId == "test_negotiator_sync"][0]
     assert organization_with_withdrawn_upd.withdrawn == True
+    # Change URI in the negotiator organization  and check that it has been re-set to the directory value
+    # case 1: URI Null
+
+    pytest.negotiator_client.put(f'organizations/{organization_with_withdrawn_upd.id}',
+                                 data=json.dumps(
+                                     {'name': organization_with_withdrawn_upd.name,
+                                      'externalId': organization_with_withdrawn_upd.externalId,
+                                      'description': organization_with_withdrawn_upd.description,
+                                      'contactEmail': organization_with_withdrawn_upd.contactEmail,
+                                      'withdrawn': False, 'uri': None}))
+    negotiator_organizations_after_uri_null = pytest.negotiator_client.get_all_organizations()
+    organization_with_uri_null = \
+        [org for org in negotiator_organizations_after_uri_null if org.externalId == "test_negotiator_sync"][0]
+    assert organization_with_uri_null.uri == ''  # parsed as '' in the DTO
+    sync_organizations(pytest.negotiator_client, biobanks_after_update_withdrawn,
+                       negotiator_organizations_after_uri_null)
+    negotiator_organizations_after_uri_sync = pytest.negotiator_client.get_all_organizations()
+    organization_with_uri_sync = \
+        [org for org in negotiator_organizations_after_uri_sync if org.externalId == "test_negotiator_sync"][0]
+    assert organization_with_uri_sync.uri == 'https://directory.bbmri-eric.eu/ERIC/directory/#/biobank/test_negotiator_sync'
+    # case 2: URI empty
+    pytest.negotiator_client.put(f'organizations/{organization_with_withdrawn_upd.id}',
+                                 data=json.dumps(
+                                     {'name': organization_with_withdrawn_upd.name,
+                                      'externalId': organization_with_withdrawn_upd.externalId,
+                                      'description': organization_with_withdrawn_upd.description,
+                                      'contactEmail': organization_with_withdrawn_upd.contactEmail,
+                                      'withdrawn': False, 'uri': ''}))
+    negotiator_organizations_after_uri_empty = pytest.negotiator_client.get_all_organizations()
+    organization_with_uri_empty = \
+        [org for org in negotiator_organizations_after_uri_empty if org.externalId == "test_negotiator_sync"][0]
+    assert organization_with_uri_empty.uri == ''
+    sync_organizations(pytest.negotiator_client, biobanks_after_update_withdrawn,
+                       negotiator_organizations_after_uri_empty)
+    negotiator_organizations_after_uri_sync = pytest.negotiator_client.get_all_organizations()
+    organization_with_uri_sync = \
+        [org for org in negotiator_organizations_after_uri_sync if org.externalId == "test_negotiator_sync"][0]
+    assert organization_with_uri_sync.uri == 'https://directory.bbmri-eric.eu/ERIC/directory/#/biobank/test_negotiator_sync'
+    # case 3: URI not starting with the directory URI
+    pytest.negotiator_client.put(f'organizations/{organization_with_withdrawn_upd.id}',
+                                 data=json.dumps(
+                                     {'name': organization_with_withdrawn_upd.name,
+                                      'externalId': organization_with_withdrawn_upd.externalId,
+                                      'description': organization_with_withdrawn_upd.description,
+                                      'contactEmail': organization_with_withdrawn_upd.contactEmail,
+                                      'withdrawn': False, 'uri': 'https://www.test.com'}))
+    negotiator_organizations_after_uri_not_directory = pytest.negotiator_client.get_all_organizations()
+    organization_with_uri_not_directory = \
+        [org for org in negotiator_organizations_after_uri_not_directory if org.externalId == "test_negotiator_sync"][0]
+    assert organization_with_uri_not_directory.uri == 'https://www.test.com'
+    sync_organizations(pytest.negotiator_client, biobanks_after_update_withdrawn,
+                       negotiator_organizations_after_uri_not_directory)
+    negotiator_organizations_after_uri_sync = pytest.negotiator_client.get_all_organizations()
+    organization_with_uri_sync = \
+        [org for org in negotiator_organizations_after_uri_sync if org.externalId == "test_negotiator_sync"][0]
+    assert organization_with_uri_sync.uri == 'https://directory.bbmri-eric.eu/ERIC/directory/#/biobank/test_negotiator_sync'
     delete_object_from_directory("test_negotiator_sync", "Biobanks")
 
 
@@ -177,6 +235,61 @@ def test_resources_sync_when_new_added_and_then_updated():
     resource_with_withdrawn_upd = \
         [res for res in negotiator_resources_after_update_withdrawn if res.sourceId == "test_negotiator_sync_coll"][0]
     assert resource_with_withdrawn_upd.withdrawn == True
+
+    # Change URI in the negotiator resource  and check that it has been re-set to the directory value
+    # case 1: URI Null
+    pytest.negotiator_client.patch(f'resources/{resource_with_withdrawn_upd.id}',
+                                   data=json.dumps(
+                                       {'name': resource_with_withdrawn_upd.name,
+                                        'description': resource_with_withdrawn_upd.description,
+                                        'contactEmail': resource_with_withdrawn_upd.contactEmail,
+                                        'withdrawn': False, 'uri': None}))
+    negotiator_resources_after_uri_null = pytest.negotiator_client.get_all_resources()
+    resource_with_uri_null = \
+        [res for res in negotiator_resources_after_uri_null if res.sourceId == "test_negotiator_sync_coll"][0]
+    assert resource_with_uri_null.uri is None
+    sync_resources(pytest.negotiator_client, collections_after_update_withdrawn,
+                   negotiator_resources_after_uri_null)
+    negotiator_resources_after_uri_sync = pytest.negotiator_client.get_all_resources()
+    resource_with_uri_sync = \
+        [res for res in negotiator_resources_after_uri_sync if res.sourceId == "test_negotiator_sync_coll"][0]
+    assert resource_with_uri_sync.uri == 'https://directory.bbmri-eric.eu/ERIC/directory/#/collection/test_negotiator_sync_coll'
+    # case 2: URI empty
+    pytest.negotiator_client.patch(f'resources/{resource_with_withdrawn_upd.id}',
+                                   data=json.dumps(
+                                       {'name': resource_with_withdrawn_upd.name,
+                                        'description': resource_with_withdrawn_upd.description,
+                                        'contactEmail': resource_with_withdrawn_upd.contactEmail,
+                                        'withdrawn': False, 'uri': ''}))
+    negotiator_resources_after_uri_empty = pytest.negotiator_client.get_all_resources()
+
+    resource_with_uri_empty = \
+        [res for res in negotiator_resources_after_uri_empty if res.sourceId == "test_negotiator_sync_coll"][0]
+    assert resource_with_uri_empty.uri == ''
+    sync_resources(pytest.negotiator_client, collections_after_update_withdrawn,
+                   negotiator_resources_after_uri_empty)
+    negotiator_resources_after_uri_sync = pytest.negotiator_client.get_all_resources()
+    resource_with_uri_sync = \
+        [res for res in negotiator_resources_after_uri_sync if res.sourceId == "test_negotiator_sync_coll"][0]
+    assert resource_with_uri_sync.uri == 'https://directory.bbmri-eric.eu/ERIC/directory/#/collection/test_negotiator_sync_coll'
+
+    # case3: URI not starting with the directory URI
+    pytest.negotiator_client.patch(f'resources/{resource_with_withdrawn_upd.id}',
+                                   data=json.dumps(
+                                       {'name': resource_with_withdrawn_upd.name,
+                                        'description': resource_with_withdrawn_upd.description,
+                                        'contactEmail': resource_with_withdrawn_upd.contactEmail,
+                                        'withdrawn': False, 'uri': 'https://www.test.com'}))
+    negotiator_resources_after_uri_not_directory = pytest.negotiator_client.get_all_resources()
+    resource_with_uri_not_directory = \
+        [res for res in negotiator_resources_after_uri_not_directory if res.sourceId == "test_negotiator_sync_coll"][0]
+    assert resource_with_uri_not_directory.uri == 'https://www.test.com'
+    sync_resources(pytest.negotiator_client, collections_after_update_withdrawn,
+                   negotiator_resources_after_uri_not_directory)
+    negotiator_resources_after_uri_sync = pytest.negotiator_client.get_all_resources()
+    resource_with_uri_sync = \
+        [res for res in negotiator_resources_after_uri_sync if res.sourceId == "test_negotiator_sync_coll"][0]
+    assert resource_with_uri_sync.uri == 'https://directory.bbmri-eric.eu/ERIC/directory/#/collection/test_negotiator_sync_coll'
     delete_object_from_directory("test_negotiator_sync_coll", 'Collections')
 
 
@@ -241,6 +354,26 @@ def test_networks_sync_when_new_added_and_then_updated():
     negotiator_networks_after_update_uri = pytest.negotiator_client.get_all_negotiator_networks()
     network_with_uri_upd = \
         [ntw for ntw in negotiator_networks_after_update_uri if ntw.externalId == "test_negotiator_sync_network"][0]
+    # # Change URI in the negotiator network  and check that it has been re-set to the directory value
+    # case 3: URI not starting with the directory URI (in the negotiator, networks.uri is not nullable)
+    pytest.negotiator_client.put(f'networks/{network_with_uri_upd.id}',
+                                 data=json.dumps(
+                                     {'name': 'test_name', 'description': 'test_desc',
+                                      'contactEmail': 'test@test.it',
+                                      'externalId': network_with_uri_upd.externalId,
+                                      'uri': 'https://www.test.com'}))
+    negotiator_networks_after_uri_not_directory = pytest.negotiator_client.get_all_negotiator_networks()
+    network_with_uri_not_directory = \
+        [ntw for ntw in negotiator_networks_after_uri_not_directory if
+         ntw.externalId == "test_negotiator_sync_network"][0]
+    assert network_with_uri_not_directory.uri == 'https://www.test.com'
+    sync_networks(pytest.negotiator_client, networks_after_update_uri, negotiator_networks_after_uri_not_directory,
+                  directory_network_resources_links)
+    negotiator_networks_after_uri_sync = pytest.negotiator_client.get_all_negotiator_networks()
+    network_with_uri_sync = \
+        [ntw for ntw in negotiator_networks_after_uri_sync if ntw.externalId == "test_negotiator_sync_network"][0]
+    assert network_with_uri_sync.uri == 'https://directory.bbmri-eric.eu/ERIC/directory/#/network/test_negotiator_sync_network'
+
     delete_object_from_directory("test_negotiator_sync_network", 'Networks')
 
 

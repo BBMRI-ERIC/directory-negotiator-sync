@@ -10,7 +10,7 @@ from exceptions import NegotiatorAPIException, DirectoryAPIException
 from models.dto.network import NetworkDirectoryDTO, NegotiatorNetworkDTO
 from models.dto.organization import OrganizationDirectoryDTO, NegotiatorOrganizationDTO
 from models.dto.resource import ResourceDirectoryDTO, NegotiatorResourceDTO
-from utils import get_all_directory_resources_networks_links, check_fields
+from utils import get_all_directory_resources_networks_links, check_fields, check_uri
 
 
 def get_negotiator_organization_by_external_id(negotiator_organizations: list[NegotiatorOrganizationDTO],
@@ -98,7 +98,8 @@ def sync_organizations(negotiator_client: NegotiatorAPIClient, directory_organzi
                     check_fields(negotiation_organization.description, directory_organization.description) or
                     (directory_organization.contact is not None and check_fields(negotiation_organization.contactEmail,
                                                                                  directory_organization.contact.email)) or
-                    check_fields(negotiation_organization.withdrawn, directory_organization.withdrawn)):
+                    check_fields(negotiation_organization.withdrawn, directory_organization.withdrawn) or
+                    check_uri(negotiation_organization.uri)):
                 LOG.info(
                     f'Updating name and/or description and/or contact email and/or uri and/or withdrawn for organization: {external_id}')
                 LOG.info(f'Current organization name is: {negotiation_organization.name}')
@@ -139,11 +140,13 @@ def sync_resources(negotiator_client: NegotiatorAPIClient, directory_resources: 
                     check_fields(negotiator_resource.description, directory_resource.description) or
                     (directory_resource.contact is not None and check_fields(negotiator_resource.contactEmail,
                                                                              directory_resource.contact.email)) or
-                    check_fields(negotiator_resource.withdrawn, directory_resource.withdrawn)
+                    check_fields(negotiator_resource.withdrawn, directory_resource.withdrawn) or
+                    check_uri(negotiator_resource.uri)
             ):
-                LOG.info(f'Updating name and/or description for resource {directory_resource.id}')
+                LOG.info(f'Updating name and/or description and/or url for resource {directory_resource.id}')
                 directory_resource_contact_email = directory_resource.contact.email if directory_resource.contact is not None else ''
-                negotiator_client.update_resource_data(negotiator_resource.id, directory_resource.name,
+                negotiator_client.update_resource_data(negotiator_resource.id, directory_resource.id,
+                                                       directory_resource.name,
                                                        directory_resource.description, directory_resource_contact_email,
                                                        directory_resource.withdrawn)
     if len(resources_to_add) > 0:
@@ -162,7 +165,8 @@ def sync_networks(negotiator_client: NegotiatorAPIClient, directory_networks: li
         if network:
             if (check_fields(network.name, directory_network.name) or
                     check_fields(network.description, directory_network.description)
-                    or check_fields(network.contactEmail, directory_network.contact.email)):
+                    or check_fields(network.contactEmail, directory_network.contact.email) or
+                    check_uri(network.uri)):
                 LOG.info(f'Updating name and/or url and/or contact email for network with external id: {external_id}')
                 negotiator_client.update_network_info(network.id, directory_network.name,
                                                       directory_network.description,
