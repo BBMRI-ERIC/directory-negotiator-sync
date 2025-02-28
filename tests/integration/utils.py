@@ -7,14 +7,14 @@ from models.dto.network import NegotiatorNetworkDTO
 from .conftest import DIRECTORY_API_URL, SESSION_URL
 
 
-def add_or_update_biobank(biobank_id, biobank_pid, biobank_name, biobank_description, biobank_contact, biobank_url,
-                          operation=Literal['insert', 'update']):
+def add_or_update_biobank(biobank_id, biobank_pid, biobank_name, biobank_description, biobank_contact,
+                          biobank_withdrawn, operation=Literal['insert', 'update']):
     session = pytest.directory_session
     query = f'mutation {operation}($value:[BiobanksInput]){{{operation}(Biobanks:$value){{message}}}}'
     variables = {
         "value": [
             {
-                "withdrawn": "false",
+                "withdrawn": biobank_withdrawn,
                 "id": biobank_id,
 
                 "pid": biobank_pid,
@@ -29,7 +29,6 @@ def add_or_update_biobank(biobank_id, biobank_pid, biobank_name, biobank_descrip
                 "juridical_person": {
                     "id": "bbmri-eric:contactID:NL_person1",
                 },
-                "url": biobank_url,
                 "national_node": {
                     "id": "NL",
                     "description": "Netherlands"
@@ -49,7 +48,7 @@ def add_or_update_biobank(biobank_id, biobank_pid, biobank_name, biobank_descrip
 
 
 def add_or_update_collection(collection_id, collection_name, collection_description, network, collection_contact,
-                             collection_url,
+                             collection_withdrawn,
                              operation=Literal['insert', 'update']):
     session = pytest.directory_session
     query = f'mutation {operation}($value:[CollectionsInput]){{{operation}(Collections:$value){{message}}}}'
@@ -65,7 +64,7 @@ def add_or_update_collection(collection_id, collection_name, collection_descript
                 "contact": {
                     "id": collection_contact
                 },
-                'url': collection_url,
+                'withdrawn': collection_withdrawn,
                 "national_node": {
                     "id": "NL",
                     "description": "Netherlands"
@@ -100,7 +99,7 @@ def add_or_update_collection(collection_id, collection_name, collection_descript
             f'Impossible to complete the test, erroor when adding the new collection. Status code: {response.status_code} . Error: {response.text}')
 
 
-def add_or_update_network(network_id, network_name, network_description, network_url, contact_id,
+def add_or_update_network(network_id, network_name, network_description, contact_id,
                           operation=Literal['insert', 'update']):
     session = pytest.directory_session
     query = f'mutation {operation}($value:[NetworksInput]){{{operation}(Networks:$value){{message}}}}'
@@ -117,7 +116,6 @@ def add_or_update_network(network_id, network_name, network_description, network
                     "id": "NL",
                     "description": "Netherlands"
                 },
-                "url": network_url,
                 "contact": {
                     "id": contact_id
                 },

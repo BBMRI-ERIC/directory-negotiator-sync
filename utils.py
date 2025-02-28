@@ -4,6 +4,8 @@ from pydantic import BaseModel
 
 from models.dto.resource import ResourceDirectoryDTO
 
+DIRECTORY_BASE_URI = 'https://directory.bbmri-eric.eu/ERIC/directory/#/'
+
 
 def dump(entities: list[BaseModel]):
     return json.dumps([entity.dict(by_alias=True) for entity in entities], indent=4)
@@ -27,4 +29,22 @@ def check_fields(negotiator_field, directory_field):
     else:
         if negotiator_field is None:
             return True
-    return negotiator_field.strip() != directory_field.strip()
+    if isinstance(negotiator_field, str) and isinstance(directory_field, str):
+        return negotiator_field.strip() != directory_field.strip()
+    else:
+        return negotiator_field != directory_field
+
+def check_uri(uri_field):
+    if uri_field is None or uri_field =='' or not uri_field.startswith(DIRECTORY_BASE_URI):
+        return True
+    else:
+        return False
+
+def create_biobank_production_uri(biobank_id):
+    return f'{DIRECTORY_BASE_URI}biobank/{biobank_id}'
+
+def create_collection_production_uri(collection_id):
+    return f'{DIRECTORY_BASE_URI}collection/{collection_id}'
+
+def create_network_production_uri(network_id):
+    return f'{DIRECTORY_BASE_URI}network/{network_id}'

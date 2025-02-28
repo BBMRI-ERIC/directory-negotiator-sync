@@ -1,13 +1,16 @@
+import requests
+
 from auth import renew_access_token
 from clients.directory_client import (get_all_biobanks, get_all_collections, get_all_directory_networks,
                                       get_all_directory_services)
 from clients.negotiator_client import resource_create_dto, network_create_dto, NegotiatorAPIClient, \
     get_resource_id_by_source_id, organization_create_dto
 from config import LOG
+from exceptions import NegotiatorAPIException, DirectoryAPIException
 from models.dto.network import NetworkDirectoryDTO, NegotiatorNetworkDTO
 from models.dto.organization import OrganizationDirectoryDTO, NegotiatorOrganizationDTO
 from models.dto.resource import ResourceDirectoryDTO, NegotiatorResourceDTO
-from utils import get_all_directory_resources_networks_links, check_fields
+from utils import get_all_directory_resources_networks_links, check_fields, check_uri
 
 
 def get_negotiator_organization_by_external_id(negotiator_organizations: list[NegotiatorOrganizationDTO],
@@ -44,18 +47,41 @@ def get_negotiator_network_by_external_id(negotiator_networks: list[NegotiatorNe
 
 @renew_access_token
 def sync_all(negotiator_client: NegotiatorAPIClient):
-    job_id = (negotiator_client.add_sync_job()).json()['id']
-    directory_organizations = get_all_biobanks()
-    negotiator_organizations = negotiator_client.get_all_organizations()
-    directory_resources = get_all_collections() + get_all_directory_services(directory_organizations)
-    sync_organizations(negotiator_client, directory_organizations, negotiator_organizations)
-    directory_network_resources_links = get_all_directory_resources_networks_links(directory_resources)
-    negotiator_resources = negotiator_client.get_all_resources()
-    sync_resources(negotiator_client, directory_resources, negotiator_resources)
-    directory_networks = get_all_directory_networks()
-    negotiator_networks = negotiator_client.get_all_negotiator_networks()
-    sync_networks(negotiator_client, directory_networks, negotiator_networks,
-                  directory_network_resources_links)
+    job_id = None
+    try:
+        job_id = (negotiator_client.add_sync_job()).json()['id']
+        directory_organizations = get_all_biobanks()
+        negotiator_organizations = negotiator_client.get_all_organizations()
+        directory_resources = get_all_collections() + get_all_directory_services(directory_organizations)
+        sync_organizations(negotiator_client, directory_organizations, negotiator_organizations)
+        directory_network_resources_links = get_all_directory_resources_networks_links(directory_resources)
+        negotiator_resources = negotiator_client.get_all_resources()
+        sync_resources(negotiator_client, directory_resources, negotiator_resources)
+        directory_networks = get_all_directory_networks()
+        negotiator_networks = negotiator_client.get_all_negotiator_networks()
+        sync_networks(negotiator_client, directory_networks, negotiator_networks,
+                      directory_network_resources_links)
+
+    except requests.exceptions.ConnectionError as e:
+        LOG.error(
+            f'Error occurred while trying to connect to one f the dependent services required for sync (Negotiator, Lifescience AAI, Directory): {e}')
+        if job_id:
+            negotiator_client.update_sync_job(job_id, 'FAILED')
+
+    except DirectoryAPIException as e:
+        LOG.error(f'Error occurred while calling Directory API for resources sync: {e}')
+        if job_id:
+            negotiator_client.update_sync_job(job_id, 'FAILED')
+
+    except NegotiatorAPIException as e:
+        LOG.error(f'Error occurred while calling Negotiator API for resources sync: {e}')
+        if job_id:
+            negotiator_client.update_sync_job(job_id, 'FAILED')
+
+    except Exception as e:
+        LOG.error(f'Error occurred while trying to sync all resources: {e}')
+        if job_id:
+            negotiator_client.update_sync_job(job_id, 'FAILED')
 
 
 @renew_access_token
@@ -72,15 +98,16 @@ def sync_organizations(negotiator_client: NegotiatorAPIClient, directory_organzi
                     check_fields(negotiation_organization.description, directory_organization.description) or
                     (directory_organization.contact is not None and check_fields(negotiation_organization.contactEmail,
                                                                                  directory_organization.contact.email)) or
-                    check_fields(negotiation_organization.uri, directory_organization.url)):
+                    check_fields(negotiation_organization.withdrawn, directory_organization.withdrawn) or
+                    check_uri(negotiation_organization.uri)):
                 LOG.info(
-                    f'Updating name and/or description and/or contact email and/or uri for organization: {external_id}')
+                    f'Updating name and/or description and/or contact email and/or uri and/or withdrawn for organization: {external_id}')
                 LOG.info(f'Current organization name is: {negotiation_organization.name}')
                 LOG.info(f'New organization name is: {directory_organization.name}')
                 negotiator_client.update_organization_info(negotiation_organization.id, directory_organization.name,
                                                            external_id, directory_organization.description,
                                                            directory_organization.contact.email,
-                                                           directory_organization.url)
+                                                           directory_organization.withdrawn)
         else:
             LOG.info(
                 f'Organization with external id {external_id} not found, including it to the list of organizations to add')
@@ -113,13 +140,15 @@ def sync_resources(negotiator_client: NegotiatorAPIClient, directory_resources: 
                     check_fields(negotiator_resource.description, directory_resource.description) or
                     (directory_resource.contact is not None and check_fields(negotiator_resource.contactEmail,
                                                                              directory_resource.contact.email)) or
-                    check_fields(negotiator_resource.uri, directory_resource.url)
+                    check_fields(negotiator_resource.withdrawn, directory_resource.withdrawn) or
+                    check_uri(negotiator_resource.uri)
             ):
-                LOG.info(f'Updating name and/or description for resource {directory_resource.id}')
+                LOG.info(f'Updating name and/or description and/or url for resource {directory_resource.id}')
                 directory_resource_contact_email = directory_resource.contact.email if directory_resource.contact is not None else ''
-                negotiator_client.update_resource_data(negotiator_resource.id, directory_resource.name,
+                negotiator_client.update_resource_data(negotiator_resource.id, directory_resource.id,
+                                                       directory_resource.name,
                                                        directory_resource.description, directory_resource_contact_email,
-                                                       directory_resource.url)
+                                                       directory_resource.withdrawn)
     if len(resources_to_add) > 0:
         negotiator_client.add_resources(resources_to_add)
 
@@ -135,13 +164,12 @@ def sync_networks(negotiator_client: NegotiatorAPIClient, directory_networks: li
         network = get_negotiator_network_by_external_id(negotiator_networks, external_id)
         if network:
             if (check_fields(network.name, directory_network.name) or
-                    check_fields(network.description, directory_network.description) or
-                    check_fields(network.uri, directory_network.url)
-                    or check_fields(network.contactEmail, directory_network.contact.email)):
+                    check_fields(network.description, directory_network.description)
+                    or check_fields(network.contactEmail, directory_network.contact.email) or
+                    check_uri(network.uri)):
                 LOG.info(f'Updating name and/or url and/or contact email for network with external id: {external_id}')
                 negotiator_client.update_network_info(network.id, directory_network.name,
                                                       directory_network.description,
-                                                      directory_network.url,
                                                       directory_network.contact.email, external_id)
             LOG.info(f'Updating linked resources for network: {network.id}')
             update_network_resources(negotiator_client, network.id, network.externalId,
@@ -172,6 +200,7 @@ def update_network_resources(negotiator_client: NegotiatorAPIClient, network_id,
     if set(directory_network_resources) == set(negotiator_network_resources_external_ids):
         LOG.info(f'No resources to update for network: {network_id}')
     else:
+        LOG.info(f'Updating resources for network: {network_id}')
         resources_to_unlink = set(negotiator_network_resources_external_ids) - set(directory_network_resources)
         resources_to_add = set(directory_network_resources) - set(negotiator_network_resources_external_ids)
         negotiator_resources = negotiator_client.get_all_resources()

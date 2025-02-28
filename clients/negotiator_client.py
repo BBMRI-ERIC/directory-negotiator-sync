@@ -2,16 +2,18 @@ import json
 
 import requests
 
-from exceptions import TokenExpiredException
+from exceptions import TokenExpiredException, NegotiatorAPIException
 from models.dto.network import NegotiatorNetworkDTO, NetworkDirectoryDTO
 from models.dto.organization import NegotiatorOrganizationDTO, OrganizationDirectoryDTO
 from models.dto.resource import NegotiatorResourceDTO, ResourceDirectoryDTO
+from utils import create_biobank_production_uri, create_collection_production_uri, create_network_production_uri
 
 
 class NegotiatorAPIClient:
     def __init__(self, base_url, token):
         self._base_url = base_url
         self._token = token
+        self.success_codes = [200, 201, 204]
 
     def get_headers(self):
         return {
@@ -58,40 +60,65 @@ class NegotiatorAPIClient:
         return response  # Return the JSON response
 
     def get_all_organizations(self):
-        return NegotiatorOrganizationDTO.parse(
-            self.get('organizations?size=10000').json()['_embedded']['organizations'])
+        response = self.get('organizations?size=10000')
+        if response.status_code not in self.success_codes:
+            raise NegotiatorAPIException(
+                f'Error occurred while trying to get organizations from Negotiator: {response.text}')
+        return NegotiatorOrganizationDTO.parse(response.json()['_embedded']['organizations'])
 
     def get_all_resources(self):
-        return NegotiatorResourceDTO.parse(self.get('resources?size=10000').json()['_embedded']['resources'])
+        response = self.get('resources?size=10000')
+        if response.status_code not in self.success_codes:
+            raise NegotiatorAPIException(
+                f'Error occurred while trying to get resources from Negotiator: {response.text}')
+        return NegotiatorResourceDTO.parse(response.json()['_embedded']['resources'])
 
     def get_all_negotiator_networks(self):
-        return NegotiatorNetworkDTO.parse(self.get('networks?size=10000').json()['_embedded']['networks'])
+        response = self.get('networks?size=10000')
+        if response.status_code not in self.success_codes:
+            raise NegotiatorAPIException(
+                f'Error occurred while trying to get networks from Negotiator: {response.text}')
+        return NegotiatorNetworkDTO.parse(response.json()['_embedded']['networks'])
 
     def add_organizations(self, organizations: list[OrganizationDirectoryDTO]):
-        self.post('organizations', data=json.dumps(organizations))
+        response = self.post('organizations', data=json.dumps(organizations))
+        if response.status_code not in self.success_codes:
+            raise NegotiatorAPIException(f'Error occurred while trying to add organizations: {response.text}')
 
-    def update_organization_info(self, id, name, external_id, description, contact_email, uri):
-        self.put(f'organizations/{id}', data=json.dumps({'name': name, 'externalId': external_id,
-                                                         'description': description, 'contactEmail': contact_email,
-                                                         'uri': uri}))
+    def update_organization_info(self, id, name, external_id, description, contact_email, withdrawn):
+        response = self.put(f'organizations/{id}', data=json.dumps({'name': name, 'externalId': external_id,
+                                                                    'description': description,
+                                                                    'contactEmail': contact_email,
+                                                                    'withdrawn': withdrawn,
+                                                                    'uri': create_biobank_production_uri(external_id)}))
+        if response.status_code not in self.success_codes:
+            raise NegotiatorAPIException(f'Error occurred while trying to update organization: {response.text}')
 
     def add_resources(self, resources: list):
-        added_resources = self.post('resources', data=json.dumps(resources))
-        return added_resources.json()
+        response = self.post('resources', data=json.dumps(resources))
+        if response.status_code not in self.success_codes:
+            raise NegotiatorAPIException(f'Error occurred while trying to add resources: {response.text}')
+        return response.json()
 
-    def update_resource_data(self, id, name, description, contact_email, uri):
-        self.patch(f'resources/{id}',
-                   data=json.dumps(
-                       {'name': name, 'description': description, 'contactEmail': contact_email, 'uri': uri}))
+    def update_resource_data(self, id, source_id, name, description, contact_email, withdrawn):
+        response = self.patch(f'resources/{id}',
+                              data=json.dumps(
+                                  {'name': name, 'description': description, 'contactEmail': contact_email,
+                                   'withdrawn': withdrawn, 'uri': create_collection_production_uri(source_id)}))
+        if response.status_code not in self.success_codes:
+            raise NegotiatorAPIException(f'Error occurred while trying to update resource: {response.text}')
 
     def add_networks(self, networks: list):
-        added_networks = self.post('networks', data=json.dumps(networks))
-        return added_networks.json()
+        response = self.post('networks', data=json.dumps(networks))
+        if response.status_code not in self.success_codes:
+            raise NegotiatorAPIException(f'Error occurred while trying to add networks: {response.text}')
+        return response.json()
 
     def add_resources_to_network(self, network_id, resources: list):
         response = self.post(f'networks/{network_id}/resources', data=json.dumps(resources))
-        if response.status_code != 204:
-            raise Exception(f'Error occurred while trying to link network {network_id} with resources {resources}')
+        if response.status_code not in self.success_codes:
+            raise NegotiatorAPIException(
+                f'Error occurred while trying to link network {network_id} with resources {resources}')
 
     def delete_resource_from_network(self, network_id, resource_id):
         self.delete(f'networks/{network_id}/resources/{resource_id}')
@@ -104,16 +131,27 @@ class NegotiatorAPIClient:
         except KeyError:
             return []
 
-    def update_network_info(self, id, name, description, url, email, external_id):
-        self.put(f'networks/{id}',
-                 data=json.dumps({'name': name, 'description': description, 'uri': url, 'contactEmail': email,
-                                  'externalId': external_id}))
+    def update_network_info(self, id, name, description, email, external_id):
+        response = self.put(f'networks/{id}',
+                            data=json.dumps(
+                                {'name': name, 'description': description,
+                                 'uri': create_network_production_uri(external_id),
+                                 'contactEmail': email,
+                                 'externalId': external_id}))
+        if response.status_code not in self.success_codes:
+            raise NegotiatorAPIException(f'Error occurred while trying to update network: {response.text}')
 
     def add_sync_job(self):
-        return self.post('discovery-services/1/sync-jobs')
+        response = self.post('discovery-services/1/sync-jobs')
+        if response.status_code not in self.success_codes:
+            raise NegotiatorAPIException(f'Error occurred while trying to add a sync job: {response.text}')
+        return response
 
     def update_sync_job(self, job_id, job_status):
-        return self.patch(f'discovery-services/1/sync-jobs/{job_id}', data=json.dumps({'jobStatus': job_status}))
+        response = self.patch(f'discovery-services/1/sync-jobs/{job_id}', data=json.dumps({'jobStatus': job_status}))
+        if response.status_code not in self.success_codes:
+            raise NegotiatorAPIException(f'Error occurred while trying to update sync job: {response.text}')
+        return response
 
 
 def organization_create_dto(organization: OrganizationDirectoryDTO):
@@ -122,7 +160,7 @@ def organization_create_dto(organization: OrganizationDirectoryDTO):
         'name': organization.name,
         'description': organization.description,
         'contactEmail': organization.contact.email,
-        'uri': organization.url,
+        'uri': create_biobank_production_uri(organization.id),
         'withdrawn': organization.withdrawn
     }
 
@@ -133,7 +171,8 @@ def resource_create_dto(resource: ResourceDirectoryDTO, organization_id):
         'sourceId': resource.id,
         'description': resource.description,
         'contactEmail': resource.contact.email if resource.contact else '',
-        'uri': resource.url,
+        'uri': create_collection_production_uri(resource.id),
+        'withdrawn': resource.withdrawn,
         'organizationId': organization_id,
         'accessFormId': 1,
         'discoveryServiceId': 1
@@ -147,7 +186,7 @@ def network_create_dto(network: NetworkDirectoryDTO):
         'name': network.name,
         'description': network.description,
         'contactEmail': network.contact.email,
-        'uri': network.url
+        'uri': create_network_production_uri(network.id)
     }
 
 
