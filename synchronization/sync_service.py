@@ -114,6 +114,7 @@ def sync_organizations(negotiator_client: NegotiatorAPIClient, directory_organzi
             organizations_to_add.append(organization_create_dto(directory_organization))
     if len(organizations_to_add) > 0:
         negotiator_client.add_organizations(organizations_to_add)
+    check_directory_missing_organizations(negotiator_client, directory_organziations, negotiator_organizations)
 
 
 @renew_access_token
@@ -151,6 +152,8 @@ def sync_resources(negotiator_client: NegotiatorAPIClient, directory_resources: 
                                                        directory_resource.withdrawn)
     if len(resources_to_add) > 0:
         negotiator_client.add_resources(resources_to_add)
+
+    check_directory_missing_resources(directory_resources, negotiator_resources, negotiator_client)
 
 
 @renew_access_token
@@ -213,3 +216,33 @@ def update_network_resources(negotiator_client: NegotiatorAPIClient, network_id,
                                            resources_to_add]
             LOG.info(f'Adding resources {resources_to_add} to network {network_external_id}')
             negotiator_client.add_resources_to_network(network_id, negotiator_resources_to_add)
+
+
+@renew_access_token
+def check_directory_missing_resources(directory_resources: list[ResourceDirectoryDTO],
+                                      negotiator_resources: list[NegotiatorResourceDTO],
+                                      negotiator_client: NegotiatorAPIClient):
+    for negotiator_resource in negotiator_resources:
+        if not any(resource.id == negotiator_resource.sourceId for resource in directory_resources):
+            if not negotiator_resource.withdrawn:
+                LOG.info(f'Resource with external id {negotiator_resource.sourceId} is missing in the Directory'
+                         f'and has not been withdrawn, marking it as withdrawn')
+                negotiator_client.update_resource_data(negotiator_resource.id, negotiator_resource.sourceId,
+                                                       negotiator_resource.name, negotiator_resource.description,
+                                                       negotiator_resource.contactEmail, True)
+
+
+@renew_access_token
+def check_directory_missing_organizations(negotiator_client: NegotiatorAPIClient,
+                                          directory_organziations: list[OrganizationDirectoryDTO],
+                                          negotiator_organizations: list[NegotiatorOrganizationDTO]):
+    for negotiator_organization in negotiator_organizations:
+        if not any(organization.id == negotiator_organization.externalId for organization in directory_organziations):
+            if not negotiator_organization.withdrawn:
+                LOG.info(
+                    f'Organization with external id {negotiator_organization.externalId} is missing in the Directory'
+                    f'and has not been withdrawn, marking it as withdrawn')
+                negotiator_client.update_organization_info(negotiator_organization.id, negotiator_organization.name,
+                                                           negotiator_organization.externalId,
+                                                           negotiator_organization.description,
+                                                           negotiator_organization.contactEmail, True)
