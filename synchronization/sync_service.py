@@ -228,8 +228,10 @@ def check_directory_missing_resources(directory_resources: list[ResourceDirector
                 LOG.info(f'Resource with external id {negotiator_resource.sourceId} is missing in the Directory'
                          f'and has not been withdrawn, marking it as withdrawn')
                 negotiator_client.update_resource_data(negotiator_resource.id, negotiator_resource.sourceId,
-                                                       negotiator_resource.name, negotiator_resource.description,
-                                                       negotiator_resource.contactEmail, True)
+                                                       negotiator_resource.name if negotiator_resource.name else '',
+                                                       negotiator_resource.description if negotiator_resource.description else '',
+                                                       negotiator_resource.contactEmail if negotiator_resource.contactEmail else '',
+                                                       True)
 
 
 @renew_access_token
