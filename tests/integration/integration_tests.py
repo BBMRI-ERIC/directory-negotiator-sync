@@ -14,18 +14,43 @@ from .utils import add_or_update_biobank, delete_object_from_directory, add_or_u
 
 
 def test_organizations_initial_sync_ok():
+    initial_organization_1_id = 'bbmri-eric:ID:SE_890'
+    initial_organization_2_id = 'bbmri-eric:ID:CZ_MMCI'
+    negotiator_organizations = pytest.negotiator_client.get_all_organizations()
+    initial_organization_1 = [org for org in negotiator_organizations if org.externalId == initial_organization_1_id][0]
+    initial_organization_2 = [org for org in negotiator_organizations if org.externalId == initial_organization_2_id][0]
+    assert initial_organization_1.withdrawn == False
+    assert initial_organization_2.withdrawn == False
     sync_organizations(pytest.negotiator_client, pytest.directory_organizations,
                        pytest.initial_negotiator_organizations)
     negotiator_organizations_after_sync = pytest.negotiator_client.get_all_organizations()
     assert len(pytest.directory_organizations) == len(negotiator_organizations_after_sync) - len(
         pytest.initial_negotiator_organizations)
+    updated_initial_organization_1 = \
+        [org for org in negotiator_organizations_after_sync if org.externalId == initial_organization_1_id][0]
+    updated_initial_organization_2 = \
+        [org for org in negotiator_organizations_after_sync if org.externalId == initial_organization_2_id][0]
+    assert updated_initial_organization_1.withdrawn == True
+    assert updated_initial_organization_2.withdrawn == True
 
 
 def test_resources_initial_sync_ok():
+    initial_resource_1_id = 'bbmri-eric:ID:SE_890:collection:dummy_collection'
+    initial_resource_2_id = 'bbmri-eric:ID:CZ_MMCI:collection:LTS'
+    negotiator_resources = pytest.negotiator_client.get_all_resources()
+    initial_resource_1 = [r for r in negotiator_resources if r.sourceId == initial_resource_1_id][0]
+    initial_resource_2 = [r for r in negotiator_resources if r.sourceId == initial_resource_2_id][0]
+    assert initial_resource_1.withdrawn == False
+    assert initial_resource_2.withdrawn == False
     sync_resources(pytest.negotiator_client, pytest.directory_resources, pytest.initial_negotiator_resources)
     negotiator_resources_after_sync = pytest.negotiator_client.get_all_resources()
     assert len(pytest.directory_resources) == len(negotiator_resources_after_sync) - len(
         pytest.initial_negotiator_resources)
+    updated_initial_resource_1 = \
+        [r for r in negotiator_resources_after_sync if r.sourceId == initial_resource_1_id][0]
+    updated_initial_resource_2 = [r for r in negotiator_resources_after_sync if r.sourceId == initial_resource_2_id][0]
+    assert updated_initial_resource_1.withdrawn == True
+    assert updated_initial_resource_2.withdrawn == True
 
 
 def test_networks_initial_sync_ok():
