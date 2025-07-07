@@ -2,7 +2,7 @@ import requests
 
 from auth import renew_access_token
 from clients.directory_client import (get_all_biobanks, get_all_collections, get_all_directory_networks,
-                                      get_all_directory_services)
+                                      get_all_directory_services, get_all_directory_national_nodes)
 from clients.negotiator_client import resource_create_dto, network_create_dto, NegotiatorAPIClient, \
     get_resource_id_by_source_id, organization_create_dto
 from config import LOG
@@ -57,7 +57,7 @@ def sync_all(negotiator_client: NegotiatorAPIClient):
         directory_network_resources_links = get_all_directory_resources_networks_links(directory_resources)
         negotiator_resources = negotiator_client.get_all_resources()
         sync_resources(negotiator_client, directory_resources, negotiator_resources)
-        directory_networks = get_all_directory_networks()
+        directory_networks = get_all_directory_networks() + get_all_directory_national_nodes()
         negotiator_networks = negotiator_client.get_all_negotiator_networks()
         sync_networks(negotiator_client, directory_networks, negotiator_networks,
                       directory_network_resources_links)
