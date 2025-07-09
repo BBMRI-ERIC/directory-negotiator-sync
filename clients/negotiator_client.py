@@ -185,7 +185,7 @@ def network_create_dto(network: NetworkDirectoryDTO):
         'externalId': network.id,
         'name': network.name,
         'description': network.description,
-        'contactEmail': network.contact.email if network.contact else '',
+        'contactEmail': network.contact.email if (network.contact and not isinstance(network.contact, str)) else '',
         'uri': create_network_production_uri(network.id) if len(network.id) > 3 else '',
     }
 

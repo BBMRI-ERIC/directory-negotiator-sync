@@ -10,7 +10,8 @@ from synchronization.sync_service import sync_organizations, sync_resources, syn
     sync_all
 from utils import get_all_directory_resources_networks_links
 from .utils import add_or_update_biobank, delete_object_from_directory, add_or_update_collection, \
-    add_or_update_network, update_person_email_contact, get_negotiator_network_id_by_external_id, add_or_update_service
+    add_or_update_network, update_person_email_contact, get_negotiator_network_id_by_external_id, add_or_update_service, \
+    add_or_update_national_node
 
 
 def test_organizations_initial_sync_ok():
@@ -481,3 +482,11 @@ def test_service_sync():
     resources_after_sync = pytest.negotiator_client.get_all_resources()
     service_after_sync = get_resource_by_source_id('bbmri-eric:serviceID:DE_1234', resources_after_sync)
     assert service_after_sync.name == 'Biobank service_newname'
+
+
+def test_national_nodes_sync():
+    networks_before_sync = pytest.negotiator_client.get_all_negotiator_networks()
+    add_or_update_national_node("TT", "Test", "insert")
+    sync_all(pytest.negotiator_client)
+    networks_after_sync = pytest.negotiator_client.get_all_negotiator_networks()
+    assert len(networks_after_sync) == len(networks_before_sync) + 1
