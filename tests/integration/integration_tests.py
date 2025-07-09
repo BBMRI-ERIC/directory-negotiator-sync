@@ -490,3 +490,10 @@ def test_national_nodes_sync():
     sync_all(pytest.negotiator_client)
     networks_after_sync = pytest.negotiator_client.get_all_negotiator_networks()
     assert len(networks_after_sync) == len(networks_before_sync) + 1
+    add_or_update_national_node("TT", "TestUpdated", "update")
+    sync_all(pytest.negotiator_client)
+    networks_after_update = pytest.negotiator_client.get_all_negotiator_networks()
+    updated_network_from_nn = [n for n in networks_after_update if n.externalId == "TT"][0]
+    assert updated_network_from_nn.name == "TestUpdated National Node Network"
+    assert updated_network_from_nn.description == "TestUpdated National Node Network"
+
