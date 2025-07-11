@@ -26,6 +26,10 @@ def get_emx2_biobank_query():
                           id 
                           name 
                           description
+                          national_node {
+                            id
+                            description
+                            }
                         }
                     }
   
@@ -139,7 +143,11 @@ def get_all_directory_services(biobanks: list[OrganizationDirectoryDTO]):
                 description
                 contactInformation {
                     email
-                }             
+                } 
+                national_node {
+                    id       
+                    description
+                }
             }  
     }       
     '''
@@ -155,7 +163,8 @@ def get_all_directory_services(biobanks: list[OrganizationDirectoryDTO]):
                                                               description=service['description'],
                                                               biobank=service_biobank,
                                                               contactEmail=service['contactInformation'][
-                                                                  'email'] if 'contactInformation' in service else '')
+                                                                  'email'] if 'contactInformation' in service else '',
+                                                              national_node=service['national_node'])
             parsed_services.append(service_resource_directory)
         return parsed_services
     return []

@@ -496,4 +496,15 @@ def test_national_nodes_sync():
     updated_network_from_nn = [n for n in networks_after_update if n.externalId == "TT"][0]
     assert updated_network_from_nn.name == "TestUpdated National Node Network"
     assert updated_network_from_nn.description == "TestUpdated National Node Network"
+    add_or_update_collection("test_negotiator_sync_coll", "test negotiator sync collection",
+                             "test negotiator sync collection", [],
+                             'bbmri-eric:contactID:EU_network',
+                             False, 'insert', nn_id='TT', nn_description='TestUpdated National Node Network')
 
+    sync_all(pytest.negotiator_client)
+    negotiator_networks = pytest.negotiator_client.get_all_negotiator_networks()
+    tt_network_id = get_negotiator_network_id_by_external_id(
+        "TT", negotiator_networks)
+    tt_resources_links = pytest.negotiator_client.get_network_resources(
+        tt_network_id)
+    assert len(tt_resources_links) == 1

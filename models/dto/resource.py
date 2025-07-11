@@ -2,17 +2,13 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
+from .national_node import NationalNode
 from .network import NetworkDirectoryDTO
 from ..dto.organization import OrganizationDirectoryDTO
 
 
 class Contact(BaseModel):
     email: str
-
-
-class NationalNode(BaseModel):
-    id: str
-    description: str
 
 
 class ResourceDirectoryDTO(BaseModel):
