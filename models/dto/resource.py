@@ -10,6 +10,11 @@ class Contact(BaseModel):
     email: str
 
 
+class NationalNode(BaseModel):
+    id: str
+    description: str
+
+
 class ResourceDirectoryDTO(BaseModel):
     id: str
     name: str
@@ -19,6 +24,7 @@ class ResourceDirectoryDTO(BaseModel):
     biobank: OrganizationDirectoryDTO
     network: Optional[list[NetworkDirectoryDTO]] = None
     withdrawn: bool = Field(default=False)
+    national_node: Optional[NationalNode]
 
     @staticmethod
     def parse(directory_data):

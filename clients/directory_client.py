@@ -89,7 +89,11 @@ def get_all_collections():
                         email
                         }
                 }
-                }  
+                national_node {
+                    id
+                    description
+                }
+            }  
     }
     
     '''
