@@ -49,7 +49,7 @@ def add_or_update_biobank(biobank_id, biobank_pid, biobank_name, biobank_descrip
 
 def add_or_update_collection(collection_id, collection_name, collection_description, network, collection_contact,
                              collection_withdrawn,
-                             operation=Literal['insert', 'update']):
+                             operation=Literal['insert', 'update'], nn_id='NL', nn_description='Netherlands'):
     session = pytest.directory_session
     query = f'mutation {operation}($value:[CollectionsInput]){{{operation}(Collections:$value){{message}}}}'
     variables = {
@@ -66,8 +66,8 @@ def add_or_update_collection(collection_id, collection_name, collection_descript
                 },
                 'withdrawn': collection_withdrawn,
                 "national_node": {
-                    "id": "NL",
-                    "description": "Netherlands"
+                    "id": nn_id,
+                    "description": nn_description
                 },
                 "network": network,
                 "biobank": {
@@ -222,3 +222,21 @@ def add_or_update_service(service_id, service_name, service_description, operati
     if response.status_code != 200:
         raise Exception(
             f'Impossible to complete the test, erroor when adding the new Service. Status code: {response.status_code} . Error: {response.text}')
+
+
+def add_or_update_national_node(nn_id, nn_description, operation=Literal['insert', 'update']):
+    session = pytest.directory_session
+    query = f'mutation {operation}($value:[NationalNodesInput]){{{operation}(NationalNodes:$value){{message}}}}'
+    national_node = {"id": nn_id,
+                     "description": nn_description,
+                     "data_refresh": {"name": "manual"},
+                     "mg_draft": False
+                     }
+    variables = {
+        "value": [national_node]
+    }
+    response = session.post(DIRECTORY_API_URL, json={'query': query, 'variables': variables},
+                            auth=HTTPBasicAuth('admin', 'admin'))
+    if response.status_code != 200:
+        raise Exception(
+            f'Impossible to complete the test, error when adding the new National Node. Status code: {response.status_code} . Error: {response.text}')

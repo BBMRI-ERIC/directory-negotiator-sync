@@ -2,15 +2,11 @@ from typing import Optional
 
 from pydantic import BaseModel, Field, ConfigDict
 
+from models.dto.service import ServiceDirectoryDTO
+
 
 class Contact(BaseModel):
     email: str
-
-
-class ServiceDirectoryDTO(BaseModel):
-    id: str
-    name: str
-    description: Optional[str]
 
 
 class OrganizationDirectoryDTO(BaseModel):

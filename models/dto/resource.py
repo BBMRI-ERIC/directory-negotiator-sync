@@ -2,6 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
+from .national_node import NationalNode
 from .network import NetworkDirectoryDTO
 from ..dto.organization import OrganizationDirectoryDTO
 
@@ -19,6 +20,7 @@ class ResourceDirectoryDTO(BaseModel):
     biobank: OrganizationDirectoryDTO
     network: Optional[list[NetworkDirectoryDTO]] = None
     withdrawn: bool = Field(default=False)
+    national_node: Optional[NationalNode]
 
     @staticmethod
     def parse(directory_data):

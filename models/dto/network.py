@@ -12,7 +12,7 @@ class NetworkDirectoryDTO(BaseModel):
     name: str
     description: str
     url: Optional[str] = ''
-    contact: Contact
+    contact: Optional[Contact] = ''
 
     @staticmethod
     def parse(directory_data):

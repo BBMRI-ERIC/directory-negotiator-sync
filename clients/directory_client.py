@@ -26,6 +26,10 @@ def get_emx2_biobank_query():
                           id 
                           name 
                           description
+                          national_node {
+                            id
+                            description
+                            }
                         }
                     }
   
@@ -89,7 +93,11 @@ def get_all_collections():
                         email
                         }
                 }
-                }  
+                national_node {
+                    id
+                    description
+                }
+            }  
     }
     
     '''
@@ -135,7 +143,11 @@ def get_all_directory_services(biobanks: list[OrganizationDirectoryDTO]):
                 description
                 contactInformation {
                     email
-                }             
+                } 
+                national_node {
+                    id       
+                    description
+                }
             }  
     }       
     '''
@@ -151,7 +163,8 @@ def get_all_directory_services(biobanks: list[OrganizationDirectoryDTO]):
                                                               description=service['description'],
                                                               biobank=service_biobank,
                                                               contactEmail=service['contactInformation'][
-                                                                  'email'] if 'contactInformation' in service else '')
+                                                                  'email'] if 'contactInformation' in service else '',
+                                                              national_node=service['national_node'])
             parsed_services.append(service_resource_directory)
         return parsed_services
     return []
@@ -162,3 +175,34 @@ def get_biobank_by_service(biobanks: list[OrganizationDirectoryDTO], service_id)
         for service in b.services:
             if service.id == service.id:
                 return b
+
+
+def get_all_directory_national_nodes():
+    em2x_national_nodes_query = '''
+    {
+        NationalNodes{
+            id
+            description
+            dns
+            contact_persons{
+                id
+                email
+            }
+        }
+    }
+    '''
+    response = requests.post(DIRECTORY_API_URL, json={'query': em2x_national_nodes_query})
+    if response.status_code not in SUCCESS_CODES:
+        raise DirectoryAPIException(
+            f'Error occurred while trying to get National Nodes from the Directory API: {response.text}')
+    results = response.json()
+    parsed_networks_from_national_nodes = list()
+    nn_network_label = 'National Node Network'
+    for national_node in results['data']['NationalNodes']:
+        national_node_network_directory = NetworkDirectoryDTO(
+            id=national_node['id'],
+            name=f'{national_node['description']} {nn_network_label}',
+            description=f'{national_node['description']} {nn_network_label}',
+        )
+        parsed_networks_from_national_nodes.append(national_node_network_directory)
+    return parsed_networks_from_national_nodes
