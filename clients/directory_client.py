@@ -99,14 +99,31 @@ def get_all_collections():
                 }
             }  
     }
-    
     '''
     response = requests.post(DIRECTORY_API_URL, json={'query': emx2_collections_query})
     if response.status_code not in SUCCESS_CODES:
         raise DirectoryAPIException(
             f'Error occurred while trying to get Collections from the Directory API: {response.text}')
     results = response.json()
-    return ResourceDirectoryDTO.parse(results['data']['Collections'])
+    collections = results['data']['Collections']
+    # Treat national_node as network
+    from models.dto.network import NetworkDirectoryDTO
+    for collection in collections:
+        if collection.get('national_node'):
+            # Convert national_node to NetworkDirectoryDTO and add to network list
+            nn = collection['national_node']
+            network_entry = {
+                'id': nn.get('id', ''),
+                'name': nn.get('description', 'National Node'),
+                'description': nn.get('description', ''),
+                'url': '',
+                'contact': {'email': ''}
+            }
+            if collection.get('network') is None:
+                collection['network'] = []
+            collection['network'].append(network_entry)
+            collection['national_node'] = None
+    return ResourceDirectoryDTO.parse(collections)
 
 
 def get_all_directory_networks():
