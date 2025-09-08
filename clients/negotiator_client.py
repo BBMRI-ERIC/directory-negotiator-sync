@@ -86,7 +86,7 @@ class NegotiatorAPIClient:
             raise NegotiatorAPIException(f'Error occurred while trying to add organizations: {response.text}')
 
     def update_organization_info(self, id, name, external_id, description, contact_email, withdrawn):
-        response = self.put(f'organizations/{id}', data=json.dumps({'name': name, 'externalId': external_id,
+        response = self.patch(f'organizations/{id}', data=json.dumps({'name': name, 'externalId': external_id,
                                                                     'description': description,
                                                                     'contactEmail': contact_email,
                                                                     'withdrawn': withdrawn,
