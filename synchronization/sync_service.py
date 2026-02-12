@@ -1,8 +1,6 @@
 import requests
 
 from auth import renew_access_token
-from clients.directory_client import (get_all_biobanks, get_all_collections, get_all_directory_networks,
-                                      get_all_directory_services, get_all_directory_national_nodes)
 from clients.negotiator_client import resource_create_dto, network_create_dto, NegotiatorAPIClient, \
     get_resource_id_by_source_id, organization_create_dto
 from config import LOG
@@ -46,18 +44,17 @@ def get_negotiator_network_by_external_id(negotiator_networks: list[NegotiatorNe
 
 
 @renew_access_token
-def sync_all(negotiator_client: NegotiatorAPIClient):
+def sync_all(negotiator_client: NegotiatorAPIClient, directory_organizations, directory_resources, directory_networks,
+             directory_national_nodes):
     job_id = None
     try:
         job_id = (negotiator_client.add_sync_job()).json()['id']
-        directory_organizations = get_all_biobanks()
         negotiator_organizations = negotiator_client.get_all_organizations()
-        directory_resources = get_all_collections() + get_all_directory_services(directory_organizations)
         sync_organizations(negotiator_client, directory_organizations, negotiator_organizations)
         directory_network_resources_links = get_all_directory_resources_networks_links(directory_resources)
         negotiator_resources = negotiator_client.get_all_resources()
         sync_resources(negotiator_client, directory_resources, negotiator_resources)
-        directory_networks = get_all_directory_networks() + get_all_directory_national_nodes()
+        directory_networks = directory_networks + directory_national_nodes
         negotiator_networks = negotiator_client.get_all_negotiator_networks()
         sync_networks(negotiator_client, directory_networks, negotiator_networks,
                       directory_network_resources_links)

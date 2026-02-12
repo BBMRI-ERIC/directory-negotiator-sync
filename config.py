@@ -1,15 +1,16 @@
 import logging
-import os
 
-import requests
+import yaml
 
-DIRECTORY_API_URL = os.getenv('DIRECTORY_EMX2_ENDPOINT',
-                              'https://directory-emx2-acc.molgenis.net/ERIC/directory/graphql')
-NEGOTIATOR_API_URL = os.getenv('NEGOTIATOR_ENDPOINT', 'http://localhost:8081/api/v3')
-AUTH_CLIENT_ID = os.getenv('NEGOTIATOR_CLIENT_AUTH_CLIENT_ID', '123')
-AUTH_CLIENT_SECRET = os.getenv('NEGOTIATOR_CLIENT_AUTH_CLIENT_SECRET', '123')
-AUTH_OIDC_TOKEN_URI = os.getenv('NEGOTIATOR_CLIENT_AUTH_OIDC_TOKEN_ENDPOINT', 'http://localhost:4011/connect/token')
-JOB_SCHEDULE_INTERVAL = os.getenv('SYNC_JOB_SCHEDULE_INTERVAL', '20')
+with open('./config.yaml', 'r') as ymlfile:
+    cfg = yaml.safe_load(ymlfile)
+
+DIRECTORY_SOURCES = cfg['sources_endpoint']
+NEGOTIATOR_API_URL = cfg['negotiator_endpoint']['url']
+AUTH_CLIENT_ID = cfg['negotiator_endpoint']['auth_client_id']
+AUTH_CLIENT_SECRET = cfg['negotiator_endpoint']['auth_client_secret']
+AUTH_OIDC_TOKEN_URI = cfg['negotiator_endpoint']['auth_oidc_token_uri']
+JOB_SCHEDULE_INTERVAL = cfg['sync_job_schedule_interval']
 
 logging.getLogger(__name__).addHandler(logging.StreamHandler())
 
@@ -33,24 +34,5 @@ def setup_logger(log_level=logging.INFO):
     return logger
 
 
-def check_services_support():
-    query = '''
-    query {
-            Biobanks
-            {   services {
-                          id 
-                          name 
-                          description
-                        }
-                }
-
-            }
-    '''
-    results = requests.post(DIRECTORY_API_URL, json={'query': query})
-    if results.status_code == 200:
-        return True
-    return False
-
-
 LOG = setup_logger(logging.DEBUG)
-CHECK_SERVICES_SUPPORT = check_services_support()
+# CHECK_SERVICES_SUPPORT = check_services_support()
