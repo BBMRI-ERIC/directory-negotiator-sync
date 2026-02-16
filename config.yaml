@@ -1,7 +1,7 @@
 sources_endpoint:
     - url: 'http://localhost:8080/ERIC/directory/graphql'
       priority: 1
-    - url: 'https://localhost:8080/ERIC/directory/graphql'
+    - url: 'http://localhost:8082/ERIC/directory/graphql'
       priority: 2
 negotiator_endpoint:
     url: 'http://localhost:8081/api/v3'
