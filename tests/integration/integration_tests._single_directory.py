@@ -15,6 +15,7 @@ from .utils import add_or_update_biobank, delete_object_from_directory, add_or_u
 
 directory_client = DirectoryClient(DIRECTORY_API_URL)
 
+
 def test_organizations_initial_sync_ok():
     initial_organization_1_id = 'bbmri-eric:ID:SE_890'
     initial_organization_2_id = 'bbmri-eric:ID:CZ_MMCI'
@@ -135,12 +136,12 @@ def test_organization_sync_when_new_added_and_then_updated():
     # Change URI in the negotiator organization  and check that it has been re-set to the directory value
     # case 1: URI empty
     pytest.negotiator_client.patch(f'organizations/{organization_with_withdrawn_upd.id}',
-                                 data=json.dumps(
-                                     {'name': organization_with_withdrawn_upd.name,
-                                      'externalId': organization_with_withdrawn_upd.externalId,
-                                      'description': organization_with_withdrawn_upd.description,
-                                      'contactEmail': organization_with_withdrawn_upd.contactEmail,
-                                      'withdrawn': False, 'uri': ''}))
+                                   data=json.dumps(
+                                       {'name': organization_with_withdrawn_upd.name,
+                                        'externalId': organization_with_withdrawn_upd.externalId,
+                                        'description': organization_with_withdrawn_upd.description,
+                                        'contactEmail': organization_with_withdrawn_upd.contactEmail,
+                                        'withdrawn': False, 'uri': ''}))
     negotiator_organizations_after_uri_empty = pytest.negotiator_client.get_all_organizations()
     organization_with_uri_empty = \
         [org for org in negotiator_organizations_after_uri_empty if org.externalId == "test_negotiator_sync"][0]
@@ -153,12 +154,12 @@ def test_organization_sync_when_new_added_and_then_updated():
     assert organization_with_uri_sync.uri == 'https://directory.bbmri-eric.eu/ERIC/directory/#/biobank/test_negotiator_sync'
     # case 2: URI not starting with the directory URI
     pytest.negotiator_client.patch(f'organizations/{organization_with_withdrawn_upd.id}',
-                                 data=json.dumps(
-                                     {'name': organization_with_withdrawn_upd.name,
-                                      'externalId': organization_with_withdrawn_upd.externalId,
-                                      'description': organization_with_withdrawn_upd.description,
-                                      'contactEmail': organization_with_withdrawn_upd.contactEmail,
-                                      'withdrawn': False, 'uri': 'https://www.test.com'}))
+                                   data=json.dumps(
+                                       {'name': organization_with_withdrawn_upd.name,
+                                        'externalId': organization_with_withdrawn_upd.externalId,
+                                        'description': organization_with_withdrawn_upd.description,
+                                        'contactEmail': organization_with_withdrawn_upd.contactEmail,
+                                        'withdrawn': False, 'uri': 'https://www.test.com'}))
     negotiator_organizations_after_uri_not_directory = pytest.negotiator_client.get_all_organizations()
     organization_with_uri_not_directory = \
         [org for org in negotiator_organizations_after_uri_not_directory if org.externalId == "test_negotiator_sync"][0]
@@ -387,11 +388,12 @@ def test_network_resource_links():
                              'bbmri-eric:contactID:EU_network', False, 'insert')
 
     LOGGER.info("Syncing all for limnks...")
-    directory_organizations= directory_client.get_all_biobanks()
+    directory_organizations = directory_client.get_all_biobanks()
     directory_resources = directory_client.get_all_collections()
     directory_networks = directory_client.get_all_directory_networks()
     directory_national_nodes = directory_client.get_all_directory_national_nodes()
-    sync_all(pytest.negotiator_client, directory_organizations, directory_resources, directory_networks, directory_national_nodes)
+    sync_all(pytest.negotiator_client, directory_organizations, directory_resources, directory_networks,
+             directory_national_nodes)
     LOGGER.info("END Syncing all for limnks...")
     negotiator_networks = pytest.negotiator_client.get_all_negotiator_networks()
     test_negotiator_sync_network_resource_links_id = get_negotiator_network_id_by_external_id(
@@ -463,7 +465,8 @@ def test_service_sync():
                           'update')
 
     directory_organizations = directory_client.get_all_biobanks()
-    directory_resources = directory_client.get_all_collections() + directory_client.get_all_directory_services(directory_organizations)
+    directory_resources = directory_client.get_all_collections() + directory_client.get_all_directory_services(
+        directory_organizations)
     sync_all(pytest.negotiator_client, directory_organizations, directory_resources, directory_networks,
              directory_national_nodes)
     resources_after_sync = pytest.negotiator_client.get_all_resources()
