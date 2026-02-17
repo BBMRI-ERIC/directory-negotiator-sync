@@ -1,8 +1,12 @@
 import logging
+import os
 
 import yaml
 
-with open('./config.yaml', 'r') as ymlfile:
+base_dir = os.path.dirname(os.path.abspath(__file__))
+config_path = os.path.join(base_dir, "config.yaml")
+
+with open(config_path, "r") as ymlfile:
     cfg = yaml.safe_load(ymlfile)
 
 DIRECTORY_SOURCES = cfg['sources_endpoint']

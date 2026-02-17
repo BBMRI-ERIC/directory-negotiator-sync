@@ -3,6 +3,8 @@ import os
 import pytest
 import requests
 
+from clients.directory_client import DirectoryClient
+
 NEGOTIATOR_API_URL = "http://localhost:8081/api/v3"
 DIRECTORY_API_URL = "http://localhost:8080/ERIC/directory/graphql"
 AUTH_CLIENT_ID = "123"
@@ -21,8 +23,6 @@ SESSION_URL = 'http://localhost:8080/api/graphql'
 
 from clients.negotiator_client import NegotiatorAPIClient
 from auth import get_token
-from clients.directory_client import get_all_biobanks, get_all_collections, \
-    get_all_directory_networks
 from .utils import delete_all_directory_test_data
 
 
@@ -47,16 +47,17 @@ def get_session():
 
 def pytest_configure(config):
     pytest.directory_session = get_session()
+    directory_client = DirectoryClient(DIRECTORY_API_URL)
     pytest.negotiator_client = NegotiatorAPIClient(NEGOTIATOR_API_URL, get_token())
     pytest.initial_negotiator_organizations = pytest.negotiator_client.get_all_organizations()
     pytest.initial_negotiator_resources = pytest.negotiator_client.get_all_resources()
     pytest.initial_negotiator_networks = pytest.negotiator_client.get_all_negotiator_networks()
-    pytest.directory_organizations = get_all_biobanks()
-    pytest.directory_resources = get_all_collections()
-    pytest.directory_networks = get_all_directory_networks()
+    pytest.directory_organizations = directory_client.get_all_biobanks()
+    pytest.directory_resources = directory_client.get_all_collections()
+    pytest.directory_networks = directory_client.get_all_directory_networks()
+
 
 @pytest.hookimpl()
 def pytest_sessionfinish(session, exitstatus):
     print('Deleting test data...')
     delete_all_directory_test_data()
-

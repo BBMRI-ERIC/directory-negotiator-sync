@@ -43,6 +43,6 @@ def app_container():
 
 
 def test_run_tests_from_container(app_container):
-    output = app_container.exec_run("pytest tests/integration_tests.py")
+    output = app_container.exec_run("pytest tests/integration_tests._single_directory.py")
     print(output)
     assert str(output).__contains__("6 passed")

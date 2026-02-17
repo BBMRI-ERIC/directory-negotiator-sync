@@ -3,16 +3,17 @@ import json
 import pytest
 from markdown_it.parser_block import LOGGER
 
-from clients.directory_client import get_all_biobanks, get_all_collections, \
-    get_all_directory_networks
+from clients.directory_client import DirectoryClient
 from models.dto.resource import NegotiatorResourceDTO
 from synchronization.sync_service import sync_organizations, sync_resources, sync_networks, \
     sync_all
 from utils import get_all_directory_resources_networks_links
+from .conftest import DIRECTORY_API_URL
 from .utils import add_or_update_biobank, delete_object_from_directory, add_or_update_collection, \
     add_or_update_network, update_person_email_contact, get_negotiator_network_id_by_external_id, add_or_update_service, \
     add_or_update_national_node
 
+directory_client = DirectoryClient(DIRECTORY_API_URL)
 
 def test_organizations_initial_sync_ok():
     initial_organization_1_id = 'bbmri-eric:ID:SE_890'
@@ -68,7 +69,7 @@ def test_organization_sync_when_new_added_and_then_updated():
                           "test negotiator sync", 'bbmri-eric:contactID:EU_network',
                           'false', 'insert')
 
-    biobanks_after_add = get_all_biobanks()
+    biobanks_after_add = directory_client.get_all_biobanks()
     assert len(biobanks_after_add) == len(pytest.directory_organizations) + 1
     negotiator_organizations_before_add = pytest.negotiator_client.get_all_organizations()
     sync_organizations(pytest.negotiator_client, biobanks_after_add,
@@ -85,7 +86,7 @@ def test_organization_sync_when_new_added_and_then_updated():
     add_or_update_biobank("test_negotiator_sync", "test_negotiator_sync", "test negotiator sync newname",
                           "test negotiator sync", 'bbmri-eric:contactID:EU_network',
                           'false', 'update')
-    biobanks_after_update_name = get_all_biobanks()
+    biobanks_after_update_name = directory_client.get_all_biobanks()
     sync_organizations(pytest.negotiator_client, biobanks_after_update_name,
                        negotiator_organizations_after_bb_add_and_sync)
     negotiator_organizations_after_update_name = pytest.negotiator_client.get_all_organizations()
@@ -96,7 +97,7 @@ def test_organization_sync_when_new_added_and_then_updated():
     add_or_update_biobank("test_negotiator_sync", "test_negotiator_sync", "test negotiator sync newname",
                           "test negotiator sync newdesc", 'bbmri-eric:contactID:EU_network',
                           'false', 'update')
-    biobanks_after_update_desc = get_all_biobanks()
+    biobanks_after_update_desc = directory_client.get_all_biobanks()
     sync_organizations(pytest.negotiator_client, biobanks_after_update_desc,
                        negotiator_organizations_after_update_name)
     negotiator_organizations_after_update_desc = pytest.negotiator_client.get_all_organizations()
@@ -109,7 +110,7 @@ def test_organization_sync_when_new_added_and_then_updated():
                           "test negotiator sync newdesc", 'bbmri-eric:contactID:EU_network',
                           'false', 'update')
     update_person_email_contact('sabrina.kralnew@medunigraz.at')
-    biobanks_after_update_email = get_all_biobanks()
+    biobanks_after_update_email = directory_client.get_all_biobanks()
 
     sync_organizations(pytest.negotiator_client, biobanks_after_update_email,
                        negotiator_organizations_after_update_desc)
@@ -123,7 +124,7 @@ def test_organization_sync_when_new_added_and_then_updated():
     add_or_update_biobank("test_negotiator_sync", "test_negotiator_sync", "test negotiator sync newname",
                           "test negotiator sync newdesc", 'bbmri-eric:contactID:EU_network',
                           'true', 'update')
-    biobanks_after_update_withdrawn = get_all_biobanks()
+    biobanks_after_update_withdrawn = directory_client.get_all_biobanks()
     sync_organizations(pytest.negotiator_client, biobanks_after_update_withdrawn,
                        negotiator_organizations_after_update_email)
     negotiator_organizations_after_update_withdrawn = pytest.negotiator_client.get_all_organizations()
@@ -187,7 +188,7 @@ def test_resources_sync_when_new_added_and_then_updated():
                              "test negotiator sync collection", network,
                              'bbmri-eric:contactID:EU_network',
                              False, 'insert')
-    collections_after_add = get_all_collections()
+    collections_after_add = directory_client.get_all_collections()
     assert len(collections_after_add) == len(pytest.directory_resources) + 1
     negotiator_resources_before_add = pytest.negotiator_client.get_all_resources()
     sync_resources(pytest.negotiator_client, collections_after_add, negotiator_resources_before_add)
@@ -202,7 +203,7 @@ def test_resources_sync_when_new_added_and_then_updated():
     add_or_update_collection("test_negotiator_sync_coll", "test negotiator sync collection newname",
                              "test negotiator sync collection", network, 'bbmri-eric:contactID:EU_network',
                              False, 'update')
-    collections_after_update_name = get_all_collections()
+    collections_after_update_name = directory_client.get_all_collections()
     sync_resources(pytest.negotiator_client, collections_after_update_name,
                    negotiator_resources_after_coll_add_and_sync)
     negotiator_resources_after_update_name = pytest.negotiator_client.get_all_resources()
@@ -214,7 +215,7 @@ def test_resources_sync_when_new_added_and_then_updated():
     add_or_update_collection("test_negotiator_sync_coll", "test negotiator sync collection newname",
                              "test negotiator sync collection newdesc", network, 'bbmri-eric:contactID:EU_network',
                              False, 'update')
-    collections_after_update_desc = get_all_collections()
+    collections_after_update_desc = directory_client.get_all_collections()
     sync_resources(pytest.negotiator_client, collections_after_update_desc,
                    negotiator_resources_after_update_name)
     negotiator_resources_after_update_desc = pytest.negotiator_client.get_all_resources()
@@ -223,7 +224,7 @@ def test_resources_sync_when_new_added_and_then_updated():
         [res for res in negotiator_resources_after_update_desc if res.sourceId == "test_negotiator_sync_coll"][0]
     assert resource_with_desc_upd.description == "test negotiator sync collection newdesc"
     update_person_email_contact('sabrina.kralnew@medunigraz.at')
-    collections_after_update_email = get_all_collections()
+    collections_after_update_email = directory_client.get_all_collections()
     sync_resources(pytest.negotiator_client, collections_after_update_email,
                    negotiator_resources_after_update_desc)
     negotiator_resources_after_update_email = pytest.negotiator_client.get_all_resources()
@@ -234,7 +235,7 @@ def test_resources_sync_when_new_added_and_then_updated():
     add_or_update_collection("test_negotiator_sync_coll", "test negotiator sync collection newname",
                              "test negotiator sync collection newdesc", network, 'bbmri-eric:contactID:EU_network',
                              True, 'update')
-    collections_after_update_withdrawn = get_all_collections()
+    collections_after_update_withdrawn = directory_client.get_all_collections()
     sync_resources(pytest.negotiator_client, collections_after_update_withdrawn,
                    negotiator_resources_after_update_email)
     negotiator_resources_after_update_withdrawn = pytest.negotiator_client.get_all_resources()
@@ -287,7 +288,7 @@ def test_networks_sync_when_new_added_and_then_updated():
     add_or_update_network("test_negotiator_sync_network", "test negotiator sync network",
                           "test negotiator sync network", 'bbmri-eric:contactID:EU_network',
                           'insert')
-    networks_after_add = get_all_directory_networks()
+    networks_after_add = directory_client.get_all_directory_networks()
     assert len(networks_after_add) == len(pytest.directory_networks) + 1
     negotiator_networks_before_add = pytest.negotiator_client.get_all_negotiator_networks()
     directory_network_resources_links = get_all_directory_resources_networks_links(pytest.directory_resources)
@@ -304,7 +305,7 @@ def test_networks_sync_when_new_added_and_then_updated():
     add_or_update_network("test_negotiator_sync_network", "test negotiator sync network newname",
                           "test negotiator sync network", 'bbmri-eric:contactID:EU_network',
                           'update')
-    networks_after_update_name = get_all_directory_networks()
+    networks_after_update_name = directory_client.get_all_directory_networks()
     sync_networks(pytest.negotiator_client, networks_after_update_name, negotiator_networks_after_ntw_add_and_sync,
                   directory_network_resources_links)
     networks_after_update_name = pytest.negotiator_client.get_all_negotiator_networks()
@@ -314,7 +315,7 @@ def test_networks_sync_when_new_added_and_then_updated():
     assert network_with_name_upd.name == "test negotiator sync network newname"
     # now update the email contact of the person related to the network
     update_person_email_contact('sabrina.kralnew@medunigraz.at')
-    networks_after_update_email = get_all_directory_networks()
+    networks_after_update_email = directory_client.get_all_directory_networks()
     sync_networks(pytest.negotiator_client, networks_after_update_email, negotiator_networks_after_ntw_add_and_sync,
                   directory_network_resources_links)
     negotiator_networks_after_update_email = pytest.negotiator_client.get_all_negotiator_networks()
@@ -327,7 +328,7 @@ def test_networks_sync_when_new_added_and_then_updated():
                           'bbmri-eric:contactID:EU_network',
                           'update')
 
-    networks_after_update_desc = get_all_directory_networks()
+    networks_after_update_desc = directory_client.get_all_directory_networks()
     sync_networks(pytest.negotiator_client, networks_after_update_desc, negotiator_networks_after_update_email,
                   directory_network_resources_links)
     negotiator_networks_after_update_desc = pytest.negotiator_client.get_all_negotiator_networks()
@@ -338,7 +339,7 @@ def test_networks_sync_when_new_added_and_then_updated():
                           "test negotiator sync network newdesc",
                           'bbmri-eric:contactID:EU_network',
                           'update')
-    networks_after_update_uri = get_all_directory_networks()
+    networks_after_update_uri = directory_client.get_all_directory_networks()
     sync_networks(pytest.negotiator_client, networks_after_update_uri, negotiator_networks_after_update_desc,
                   directory_network_resources_links)
     negotiator_networks_after_update_uri = pytest.negotiator_client.get_all_negotiator_networks()
@@ -386,7 +387,11 @@ def test_network_resource_links():
                              'bbmri-eric:contactID:EU_network', False, 'insert')
 
     LOGGER.info("Syncing all for limnks...")
-    sync_all(pytest.negotiator_client)
+    directory_organizations= directory_client.get_all_biobanks()
+    directory_resources = directory_client.get_all_collections()
+    directory_networks = directory_client.get_all_directory_networks()
+    directory_national_nodes = directory_client.get_all_directory_national_nodes()
+    sync_all(pytest.negotiator_client, directory_organizations, directory_resources, directory_networks, directory_national_nodes)
     LOGGER.info("END Syncing all for limnks...")
     negotiator_networks = pytest.negotiator_client.get_all_negotiator_networks()
     test_negotiator_sync_network_resource_links_id = get_negotiator_network_id_by_external_id(
@@ -411,7 +416,12 @@ def test_network_resource_links():
                              "test negotiator sync collection network resource links",
                              "test negotiator sync collection network resource links", new_networks_with_added,
                              'bbmri-eric:contactID:EU_network', False, 'update')
-    sync_all(pytest.negotiator_client)
+    directory_organizations = directory_client.get_all_biobanks()
+    directory_resources = directory_client.get_all_collections()
+    directory_networks = directory_client.get_all_directory_networks()
+    directory_national_nodes = directory_client.get_all_directory_national_nodes()
+    sync_all(pytest.negotiator_client, directory_organizations, directory_resources, directory_networks,
+             directory_national_nodes)
     network_to_add_new_resources = pytest.negotiator_client.get_network_resources(network_to_add_id)
     assert len(network_to_add_new_resources) == len(network_to_add_resources) + 1
     new_networks_with_deleted = [
@@ -425,7 +435,9 @@ def test_network_resource_links():
                              "test negotiator sync collection network resource links", new_networks_with_deleted,
                              'bbmri-eric:contactID:EU_network', False, 'update')
 
-    sync_all(pytest.negotiator_client)
+    directory_resources = directory_client.get_all_collections()
+    sync_all(pytest.negotiator_client, directory_organizations, directory_resources, directory_networks,
+             directory_national_nodes)
     network_deleted_new_resources = pytest.negotiator_client.get_network_resources(
         test_negotiator_sync_network_resource_links_id)
     assert len(network_deleted_new_resources) == len(test_negotiator_sync_network_resource_links_resources) - 1
@@ -437,12 +449,23 @@ def test_service_sync():
             if r.sourceId == source_id:
                 return r
 
-    resources_before_sync = pytest.negotiator_client.get_all_resources()
-    service_before_sync = get_resource_by_source_id('bbmri-eric:serviceID:DE_1234', resources_before_sync)
-    assert service_before_sync.name == 'Biobank Service'
+    directory_organizations = directory_client.get_all_biobanks()
+    directory_resources = directory_client.get_all_collections() + directory_client.get_all_directory_services(
+        directory_organizations)
+    directory_networks = directory_client.get_all_directory_networks()
+    directory_national_nodes = directory_client.get_all_directory_national_nodes()
+    sync_all(pytest.negotiator_client, directory_organizations, directory_resources, directory_networks,
+             directory_national_nodes)
+    resources_before_service_update = pytest.negotiator_client.get_all_resources()
+    service_before_update = get_resource_by_source_id('bbmri-eric:serviceID:DE_1234', resources_before_service_update)
+    assert service_before_update.name == 'Biobank Service'
     add_or_update_service('bbmri-eric:serviceID:DE_1234', 'Biobank service_newname', 'Service provided by this biobank',
                           'update')
-    sync_all(pytest.negotiator_client)
+
+    directory_organizations = directory_client.get_all_biobanks()
+    directory_resources = directory_client.get_all_collections() + directory_client.get_all_directory_services(directory_organizations)
+    sync_all(pytest.negotiator_client, directory_organizations, directory_resources, directory_networks,
+             directory_national_nodes)
     resources_after_sync = pytest.negotiator_client.get_all_resources()
     service_after_sync = get_resource_by_source_id('bbmri-eric:serviceID:DE_1234', resources_after_sync)
     assert service_after_sync.name == 'Biobank service_newname'
@@ -451,11 +474,18 @@ def test_service_sync():
 def test_national_nodes_sync():
     networks_before_sync = pytest.negotiator_client.get_all_negotiator_networks()
     add_or_update_national_node("TT", "Test", "insert")
-    sync_all(pytest.negotiator_client)
+    directory_organizations = directory_client.get_all_biobanks()
+    directory_resources = directory_client.get_all_collections()
+    directory_networks = directory_client.get_all_directory_networks()
+    directory_national_nodes = directory_client.get_all_directory_national_nodes()
+    sync_all(pytest.negotiator_client, directory_organizations, directory_resources, directory_networks,
+             directory_national_nodes)
     networks_after_sync = pytest.negotiator_client.get_all_negotiator_networks()
     assert len(networks_after_sync) == len(networks_before_sync) + 1
     add_or_update_national_node("TT", "TestUpdated", "update")
-    sync_all(pytest.negotiator_client)
+    directory_national_nodes = directory_client.get_all_directory_national_nodes()
+    sync_all(pytest.negotiator_client, directory_organizations, directory_resources, directory_networks,
+             directory_national_nodes)
     networks_after_update = pytest.negotiator_client.get_all_negotiator_networks()
     updated_network_from_nn = [n for n in networks_after_update if n.externalId == "TT"][0]
     assert updated_network_from_nn.name == "TestUpdated National Node Network"
@@ -465,7 +495,9 @@ def test_national_nodes_sync():
                              'bbmri-eric:contactID:EU_network',
                              False, 'insert', nn_id='TT', nn_description='TestUpdated National Node Network')
 
-    sync_all(pytest.negotiator_client)
+    directory_resources = directory_client.get_all_collections()
+    sync_all(pytest.negotiator_client, directory_organizations, directory_resources, directory_networks,
+             directory_national_nodes)
     negotiator_networks = pytest.negotiator_client.get_all_negotiator_networks()
     tt_network_id = get_negotiator_network_id_by_external_id(
         "TT", negotiator_networks)

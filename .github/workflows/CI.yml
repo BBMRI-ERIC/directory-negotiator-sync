@@ -37,10 +37,10 @@ jobs:
          cd $GITHUB_WORKSPACE/tests/scripts
          python load_directory_data.py
          sleep 120
-      - name: Run Integration tests
+      - name: Run Integration tests with one source directory
         run: | 
          cd $GITHUB_WORKSPACE/tests/integration
-         pytest integration_tests.py
+         pytest integration_tests_single_directory.py
       - name: Down compose
         run: |
           cd $GITHUB_WORKSPACE/compose
