@@ -9,7 +9,6 @@ COPY ./tests /opt/directory-negotiator-sync/tests
 COPY ./__init__.py /opt/directory-negotiator-sync/__init__.py
 COPY ./auth.py /opt/directory-negotiator-sync/auth.py
 COPY ./config.py /opt/directory-negotiator-sync/config.py
-COPY ./config.yaml /opt/directory-negotiator-sync/config.yaml
 COPY ./exceptions.py /opt/directory-negotiator-sync/exceptions.py
 COPY ./utils.py /opt/directory-negotiator-sync/utils.py
 COPY ./main.py /opt/directory-negotiator-sync/main.py
