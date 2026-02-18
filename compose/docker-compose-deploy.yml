@@ -5,7 +5,7 @@ services:
     build:
       context: ..
     volumes:
-      - ./local_config.yml:/opt/directory-negotiator-sync/config.yml:ro
+      - ./local_config.yaml:/opt/directory-negotiator-sync/config.yaml:ro
     networks:
       - directory-negotiator-sync-network
 networks:
