@@ -1,6 +1,6 @@
 import requests
 
-from ..config.loader import DIRECTORY_SOURCES
+from tests.config.loader import DIRECTORY_SOURCES
 
 
 def get_session(session_url):
