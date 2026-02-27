@@ -11,9 +11,8 @@ SESSION_URL = DIRECTORY_SOURCES[0]['session_url']
 
 
 
-def add_or_update_biobank(biobank_id, biobank_pid, biobank_name, biobank_description, biobank_contact,
+def add_or_update_biobank(session, directory_url, biobank_id, biobank_pid, biobank_name, biobank_description, biobank_contact,
                           biobank_withdrawn, operation=Literal['insert', 'update']):
-    session = pytest.directory_session
     query = f'mutation {operation}($value:[BiobanksInput]){{{operation}(Biobanks:$value){{message}}}}'
     variables = {
         "value": [
@@ -44,17 +43,16 @@ def add_or_update_biobank(biobank_id, biobank_pid, biobank_name, biobank_descrip
         ]
     }
 
-    response = session.post(DIRECTORY_API_URL, json={'query': query, 'variables': variables},
+    response = session.post(directory_url, json={'query': query, 'variables': variables},
                             auth=HTTPBasicAuth('admin', 'admin'))
     if response.status_code != 200:
         raise Exception(
             f'Impossible to complete the test, erroor when adding the new biobank. Status code: {response.status_code} . Error: {response.text}')
 
 
-def add_or_update_collection(collection_id, collection_name, collection_description, network, collection_contact,
+def add_or_update_collection(session, directory_url, collection_id, collection_name, collection_description, network, collection_contact,
                              collection_withdrawn,
                              operation=Literal['insert', 'update'], nn_id='NL', nn_description='Netherlands'):
-    session = pytest.directory_session
     query = f'mutation {operation}($value:[CollectionsInput]){{{operation}(Collections:$value){{message}}}}'
     variables = {
         "value": [
@@ -96,16 +94,15 @@ def add_or_update_collection(collection_id, collection_name, collection_descript
         ]
     }
 
-    response = session.post(DIRECTORY_API_URL, json={'query': query, 'variables': variables},
+    response = session.post(directory_url, json={'query': query, 'variables': variables},
                             auth=HTTPBasicAuth('admin', 'admin'))
     if response.status_code != 200:
         raise Exception(
             f'Impossible to complete the test, erroor when adding the new collection. Status code: {response.status_code} . Error: {response.text}')
 
 
-def add_or_update_network(network_id, network_name, network_description, contact_id,
+def add_or_update_network(session, directory_url, network_id, network_name, network_description, contact_id,
                           operation=Literal['insert', 'update']):
-    session = pytest.directory_session
     query = f'mutation {operation}($value:[NetworksInput]){{{operation}(Networks:$value){{message}}}}'
     variables = {
         "value": [
@@ -127,25 +124,23 @@ def add_or_update_network(network_id, network_name, network_description, contact
         ]
     }
 
-    response = session.post(DIRECTORY_API_URL, json={'query': query, 'variables': variables},
+    response = session.post(directory_url, json={'query': query, 'variables': variables},
                             auth=HTTPBasicAuth('admin', 'admin'))
     if response.status_code != 200:
         raise Exception(
             f'Impossible to complete the test, erroor when adding the new Network. Status code: {response.status_code} . Error: {response.text}')
 
 
-def delete_object_from_directory(object_id, objects_input_type=Literal['Biobanks', 'Collections', 'Networks']):
-    session = pytest.directory_session
+def delete_object_from_directory(session, directory_url, object_id, objects_input_type=Literal['Biobanks', 'Collections', 'Networks']):
     query = f'mutation delete($pkey:[{objects_input_type}Input]){{delete({objects_input_type}:$pkey){{message}}}}'
     variables = {'pkey': [{'id': object_id}]}
-    response = session.post(DIRECTORY_API_URL, json={'query': query, 'variables': variables})
+    response = session.post(directory_url, json={'query': query, 'variables': variables})
     if response.status_code != 200:
         raise Exception(
             f'Impossible to complete the test, erroor when delting the new {objects_input_type[:-1]}. Status code: {response.status_code} . Error: {response.text}')
 
 
-def update_person_email_contact(new_email_contact):
-    session = pytest.directory_session
+def update_person_email_contact(session, directory_url,new_email_contact):
     query = 'mutation update($value:[PersonsInput]){update(Persons:$value){message}}'
     variables = {"value": [
         {"id": "bbmri-eric:contactID:EU_network",
@@ -163,35 +158,35 @@ def update_person_email_contact(new_email_contact):
          }
     ]
     }
-    response = session.post(DIRECTORY_API_URL, json={'query': query, 'variables': variables})
+    response = session.post(directory_url, json={'query': query, 'variables': variables})
     if response.status_code != 200:
         raise Exception(
             'Impossible to complete the test, error when updating email contact for person related to network')
 
 
-def load_all_directory_test_data():
-    session = pytest.directory_session
-    query = 'mutation createSchema($name:String, $description:String, $template: String, $includeDemoData: Boolean){createSchema(name:$name, description:$description, template: $template, includeDemoData: $includeDemoData){message, taskId}}'
-    variables = {
-        "name": "ERIC",
-        "description": None,
-        "template": "BIOBANK_DIRECTORY",
-        "includeDemoData": True
-    }
-    response = session.post(SESSION_URL, json={'query': query, 'variables': variables})
-    if response.status_code != 200:
-        raise Exception(
-            'Impossible to load test Directory data')
+# def load_all_directory_test_data():
+#     session = pytest.directory_session
+#     query = 'mutation createSchema($name:String, $description:String, $template: String, $includeDemoData: Boolean){createSchema(name:$name, description:$description, template: $template, includeDemoData: $includeDemoData){message, taskId}}'
+#     variables = {
+#         "name": "ERIC",
+#         "description": None,
+#         "template": "BIOBANK_DIRECTORY",
+#         "includeDemoData": True
+#     }
+#     response = session.post(SESSION_URL, json={'query': query, 'variables': variables})
+#     if response.status_code != 200:
+#         raise Exception(
+#             'Impossible to load test Directory data')
 
 
-def delete_all_directory_test_data():
-    session = pytest.directory_session
-    query = "mutation deleteSchema($id:String){deleteSchema(id:$id){message}}"
-    variables = {"id": "ERIC"}
-    response = session.post(SESSION_URL, json={'query': query, 'variables': variables})
-    if response.status_code != 200:
-        raise Exception(
-            f'Impossible to delete test Directory data:{response.content}')
+# def delete_all_directory_test_data():
+#     session = pytest.directory_session
+#     query = "mutation deleteSchema($id:String){deleteSchema(id:$id){message}}"
+#     variables = {"id": "ERIC"}
+#     response = session.post(SESSION_URL, json={'query': query, 'variables': variables})
+#     if response.status_code != 200:
+#         raise Exception(
+#             f'Impossible to delete test Directory data:{response.content}')
 
 
 def get_negotiator_network_id_by_external_id(external_id, negotiator_networks: [NegotiatorNetworkDTO]):
@@ -200,8 +195,7 @@ def get_negotiator_network_id_by_external_id(external_id, negotiator_networks: [
             return n.id
 
 
-def add_or_update_service(service_id, service_name, service_description, operation=Literal['insert', 'update']):
-    session = pytest.directory_session
+def add_or_update_service(session, directory_url,service_id, service_name, service_description, operation=Literal['insert', 'update']):
     query = f'mutation {operation}($value:[ServicesInput]){{{operation}(Services:$value){{message}}}}'
     service = {
         'id': service_id,
@@ -221,15 +215,14 @@ def add_or_update_service(service_id, service_name, service_description, operati
     variables = {
         "value": [service]
     }
-    response = session.post(DIRECTORY_API_URL, json={'query': query, 'variables': variables},
+    response = session.post(directory_url, json={'query': query, 'variables': variables},
                             auth=HTTPBasicAuth('admin', 'admin'))
     if response.status_code != 200:
         raise Exception(
             f'Impossible to complete the test, erroor when adding the new Service. Status code: {response.status_code} . Error: {response.text}')
 
 
-def add_or_update_national_node(nn_id, nn_description, operation=Literal['insert', 'update']):
-    session = pytest.directory_session
+def add_or_update_national_node(session, directory_url, nn_id, nn_description, operation=Literal['insert', 'update']):
     query = f'mutation {operation}($value:[NationalNodesInput]){{{operation}(NationalNodes:$value){{message}}}}'
     national_node = {"id": nn_id,
                      "description": nn_description,
@@ -239,7 +232,7 @@ def add_or_update_national_node(nn_id, nn_description, operation=Literal['insert
     variables = {
         "value": [national_node]
     }
-    response = session.post(DIRECTORY_API_URL, json={'query': query, 'variables': variables},
+    response = session.post(directory_url, json={'query': query, 'variables': variables},
                             auth=HTTPBasicAuth('admin', 'admin'))
     if response.status_code != 200:
         raise Exception(

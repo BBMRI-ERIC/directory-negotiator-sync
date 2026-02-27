@@ -3,8 +3,10 @@ sources_endpoint:
       session_url: 'http://localhost:8080/api/graphql'
       priority: 1
     - url: 'http://localhost:8082/ERIC/directory/graphql'
+      session_url: 'http://localhost:8082/api/graphql'
       priority: 2
     - url: 'http://localhost:8083/ERIC/directory/graphql'
+      session_url: 'http://localhost:8083/api/graphql'
       priority: 3
 negotiator_endpoint:
     url: 'http://localhost:8081/api/v3'
