@@ -191,7 +191,7 @@ def delete_all_directory_test_data():
     response = session.post(SESSION_URL, json={'query': query, 'variables': variables})
     if response.status_code != 200:
         raise Exception(
-            'Impossible to delete test Directory data')
+            f'Impossible to delete test Directory data:{response.content}')
 
 
 def get_negotiator_network_id_by_external_id(external_id, negotiator_networks: [NegotiatorNetworkDTO]):
