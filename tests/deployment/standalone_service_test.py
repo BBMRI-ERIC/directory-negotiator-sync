@@ -6,7 +6,7 @@ import docker
 import pytest
 import requests
 
-from ..scripts.load_directory_data import load_all_directory_test_data
+from ..scripts.load_directory_data import load_all_sources_test_data
 
 client = docker.from_env()
 
@@ -51,7 +51,7 @@ def wait_for_service(url):
 def setup_docker_compose():
     run_compose(COMPOSE_FILE_SERVICES)
     wait_for_service('http://localhost:8080/api/graphql')
-    load_all_directory_test_data()
+    load_all_sources_test_data()
     print('wait for data to be loaded...')
     time.sleep(60)
     run_compose(COMPOSE_FILE_APP)
