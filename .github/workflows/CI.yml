@@ -34,8 +34,8 @@ jobs:
           python wait_for_service.py
       - name: Load test data for Directory
         run: |
-         cd $GITHUB_WORKSPACE/tests/scripts
-         python load_directory_data.py
+         cd $GITHUB_WORKSPACE
+         python -m tests.scripts.load_directory_data
          sleep 120
       - name: Run Integration tests with one source directory
         run: | 
