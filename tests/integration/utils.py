@@ -7,7 +7,7 @@ from models.dto.network import NegotiatorNetworkDTO
 from tests.config.loader import DIRECTORY_SOURCES
 
 DIRECTORY_API_URL = DIRECTORY_SOURCES[0]['url']
-SESSION_URL = DIRECTORY_SOURCES[0]['url']
+SESSION_URL = DIRECTORY_SOURCES[0]['session_url']
 
 
 
