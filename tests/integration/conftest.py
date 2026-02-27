@@ -6,6 +6,8 @@ from tests.config.loader import DIRECTORY_SOURCES, NEGOTIATOR_API_URL
 
 
 FIRST_DIRECTORY_SESSION_URL = DIRECTORY_SOURCES[0]['url']
+SESSION_URL = DIRECTORY_SOURCES[0]['session_url']
+
 
 from clients.negotiator_client import NegotiatorAPIClient
 from auth import get_token
@@ -23,7 +25,7 @@ def get_session():
       }
     }
     '''
-    response = session.post(FIRST_DIRECTORY_SESSION_URL, json={'query': signin_mutation},
+    response = session.post(SESSION_URL, json={'query': signin_mutation},
                             headers={'Content-Type': 'application/json'})
     if response.status_code != 200:
         raise Exception('Impossible to complete the test, authentication failed for EMX2 ')
