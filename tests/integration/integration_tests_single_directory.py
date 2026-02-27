@@ -8,11 +8,12 @@ from models.dto.resource import NegotiatorResourceDTO
 from synchronization.sync_service import sync_organizations, sync_resources, sync_networks, \
     sync_all
 from utils import get_all_directory_resources_networks_links
-from .conftest import DIRECTORY_API_URL
+from tests.config.loader import DIRECTORY_SOURCES, NEGOTIATOR_API_URL
 from .utils import add_or_update_biobank, delete_object_from_directory, add_or_update_collection, \
     add_or_update_network, update_person_email_contact, get_negotiator_network_id_by_external_id, add_or_update_service, \
     add_or_update_national_node
 
+DIRECTORY_API_URL = DIRECTORY_SOURCES[0]['url']
 directory_client = DirectoryClient(DIRECTORY_API_URL)
 
 

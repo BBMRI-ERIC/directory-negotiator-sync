@@ -4,7 +4,11 @@ import pytest
 from requests.auth import HTTPBasicAuth
 
 from models.dto.network import NegotiatorNetworkDTO
-from .conftest import DIRECTORY_API_URL, SESSION_URL
+from tests.config.loader import DIRECTORY_SOURCES
+
+DIRECTORY_API_URL = DIRECTORY_SOURCES[0]['url']
+SESSION_URL = DIRECTORY_SOURCES[0]['url']
+
 
 
 def add_or_update_biobank(biobank_id, biobank_pid, biobank_name, biobank_description, biobank_contact,

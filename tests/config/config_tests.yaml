@@ -1,5 +1,6 @@
 sources_endpoint:
     - url: 'http://localhost:8080/ERIC/directory/graphql'
+      session_url: 'http://localhost:8080/api/graphql'
       priority: 1
     - url: 'http://localhost:8082/ERIC/directory/graphql'
       priority: 2
