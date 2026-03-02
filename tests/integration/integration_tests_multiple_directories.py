@@ -56,7 +56,7 @@ def test_common_biobank_all_sources_updated_by_source_2():
 
 def test_biobank_all_sources_updated_by_source_3():
     add_or_update_biobank(source_3_session, source_3_url, "bbmri-eric:ID:NL_biobank_source_3_exclusive", "pid_biobank_2_s3_exclusive",
-                          "biobank_2_updated_source_2_source_3_name",
+                          "pid_biobank_2_s3_exclusive",
                           "biobank source 3 exclusive description", 'bbmri-eric:contactID:EU_network',
                           'false', 'insert')
 
