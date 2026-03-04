@@ -1,6 +1,5 @@
 from typing import Literal
 
-import pytest
 from requests.auth import HTTPBasicAuth
 
 from models.dto.network import NegotiatorNetworkDTO
@@ -117,9 +116,6 @@ def add_or_update_network(
                 "id": network_id,
                 "name": network_name,
                 "description": network_description,
-                "contact": {
-                    "id": "bbmri-eric:contactID:EU_network",
-                },
                 "national_node": {"id": "NL", "description": "Netherlands"},
                 "contact": {"id": contact_id},
             }
@@ -207,11 +203,12 @@ def update_person_email_contact(session, directory_url, new_email_contact):
 
 
 def get_negotiator_network_id_by_external_id(
-    external_id, negotiator_networks: [NegotiatorNetworkDTO]
+    external_id, negotiator_networks: list[NegotiatorNetworkDTO]
 ):
     for n in negotiator_networks:
         if n.externalId == external_id:
             return n.id
+    return None
 
 
 def add_or_update_service(
@@ -278,7 +275,10 @@ def add_or_update_national_node(
         )
 
 
-def get_resource_by_source_id(source_id, negotiator_resources: [NegotiatorResourceDTO]):
+def get_resource_by_source_id(
+    source_id, negotiator_resources: list[NegotiatorResourceDTO]
+):
     for r in negotiator_resources:
         if r.sourceId == source_id:
             return r
+    return None

@@ -4,7 +4,6 @@ import pytest
 from markdown_it.parser_block import LOGGER
 
 from clients.directory_client import DirectoryClient
-from models.dto.resource import NegotiatorResourceDTO
 from synchronization.sync_service import (
     sync_organizations,
     sync_resources,

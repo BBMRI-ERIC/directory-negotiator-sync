@@ -4,7 +4,6 @@ from tests.integration.utils import (
     add_or_update_biobank,
     add_or_update_collection,
     add_or_update_network,
-    get_negotiator_network_id_by_external_id,
     add_or_update_service,
     get_resource_by_source_id,
 )
