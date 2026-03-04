@@ -5,6 +5,8 @@ from tests.integration.utils import (
     add_or_update_collection,
     add_or_update_network,
     get_negotiator_network_id_by_external_id,
+    add_or_update_service,
+    get_resource_by_source_id,
 )
 from main import cron_job
 
@@ -20,6 +22,7 @@ source_3_session = pytest.third_source_directory_session
 common_biobank_all_sources_id = "bbmri-eric:ID:NL_biobank2"
 common_collection_all_sources_id = "bbmri-eric:ID:NL_biobank2:collection:coll2a"
 common_network_all_sources_id = "bbmri-eric:networkID:DE_nw_coll1"
+common_service_all_sources_id = "bbmri-eric:serviceID:NL_541"
 
 network = [{"id": "bbmri-eric:networkID:DE_network1", "name": "Network1 Germany"}]
 
@@ -303,7 +306,7 @@ def test_sync_common_network_all_sources_updated_by_source_1():
     assert updated_network.description == "common network source 1 description"
 
 
-def test_sync_common_network_all_sources_updated_by_source_2():
+def test_sync_common_networks_sources_2_3_updated_by_source_2():
     add_or_update_network(
         source_2_session,
         source_2_url,
@@ -362,3 +365,88 @@ def test_sync_network_when_present_in_source_3_only():
     ][0]
     assert updated_network.name == "network source 3 only name"
     assert updated_network.description == "network source 3 only description"
+
+
+def test_sync_common_services_all_sources_updated_by_source_1():
+    add_or_update_service(
+        source_1_session,
+        source_1_url,
+        common_service_all_sources_id,
+        "Biobank service name source 1",
+        "Service provided by this biobank source 1",
+        "update",
+    )
+
+    add_or_update_service(
+        source_2_session,
+        source_2_url,
+        common_service_all_sources_id,
+        "Biobank service name source 2",
+        "Service provided by this biobank source 2",
+        "update",
+    )
+
+    add_or_update_service(
+        source_3_session,
+        source_3_url,
+        common_service_all_sources_id,
+        "Biobank service name source 3",
+        "Service provided by this biobank source 3",
+        "update",
+    )
+
+    cron_job()
+    resources_after_sync = pytest.negotiator_client.get_all_resources()
+    service_after_sync = get_resource_by_source_id(
+        common_service_all_sources_id, resources_after_sync
+    )
+    assert service_after_sync.name == "Biobank service name source 1"
+    assert service_after_sync.description == "Service provided by this biobank source 1"
+
+
+def test_sync_common_services_sources_2_3_updated_by_source_2():
+    add_or_update_service(
+        source_2_session,
+        source_2_url,
+        "common_service_sources_2_3",
+        "Common service sources 2 and 3 name source 2",
+        "Common service sources 2 and 3 description source 2",
+        "insert",
+    )
+
+    add_or_update_service(
+        source_3_session,
+        source_3_url,
+        "common_service_sources_2_3",
+        "Common service sources 2 and 3 name source 3",
+        "Common service sources 2 and 3 description source 3",
+        "insert",
+    )
+    cron_job()
+    resources_after_sync = pytest.negotiator_client.get_all_resources()
+    service_after_sync = get_resource_by_source_id(
+        "common_service_sources_2_3", resources_after_sync
+    )
+    assert service_after_sync.name == "Common service sources 2 and 3 name source 2"
+    assert (
+        service_after_sync.description
+        == "Common service sources 2 and 3 description source 2"
+    )
+
+
+def test_sync_service_when_present_in_source_3_only():
+    add_or_update_service(
+        source_3_session,
+        source_3_url,
+        "unique_service_source_3",
+        "Unique service source 3 name",
+        "Unique service source 3 description",
+        "insert",
+    )
+    cron_job()
+    resources_after_sync = pytest.negotiator_client.get_all_resources()
+    service_after_sync = get_resource_by_source_id(
+        "unique_service_source_3", resources_after_sync
+    )
+    assert service_after_sync.name == "Unique service source 3 name"
+    assert service_after_sync.description == "Unique service source 3 description"

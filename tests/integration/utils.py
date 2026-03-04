@@ -4,106 +4,113 @@ import pytest
 from requests.auth import HTTPBasicAuth
 
 from models.dto.network import NegotiatorNetworkDTO
+from models.dto.resource import NegotiatorResourceDTO
 from tests.config.loader import DIRECTORY_SOURCES
 
-DIRECTORY_API_URL = DIRECTORY_SOURCES[0]['url']
-SESSION_URL = DIRECTORY_SOURCES[0]['session_url']
+DIRECTORY_API_URL = DIRECTORY_SOURCES[0]["url"]
+SESSION_URL = DIRECTORY_SOURCES[0]["session_url"]
 
 
-
-def add_or_update_biobank(session, directory_url, biobank_id, biobank_pid, biobank_name, biobank_description, biobank_contact,
-                          biobank_withdrawn, operation=Literal['insert', 'update']):
-    query = f'mutation {operation}($value:[BiobanksInput]){{{operation}(Biobanks:$value){{message}}}}'
+def add_or_update_biobank(
+    session,
+    directory_url,
+    biobank_id,
+    biobank_pid,
+    biobank_name,
+    biobank_description,
+    biobank_contact,
+    biobank_withdrawn,
+    operation=Literal["insert", "update"],
+):
+    query = f"mutation {operation}($value:[BiobanksInput]){{{operation}(Biobanks:$value){{message}}}}"
     variables = {
         "value": [
             {
                 "withdrawn": biobank_withdrawn,
                 "id": biobank_id,
-
                 "pid": biobank_pid,
                 "name": biobank_name,
                 "description": biobank_description,
-                "country": {
-                    "name": "NL"
-                },
+                "country": {"name": "NL"},
                 "contact": {
                     "id": biobank_contact,
                 },
                 "juridical_person": {
                     "id": "bbmri-eric:contactID:NL_person1",
                 },
-                "national_node": {
-                    "id": "NL",
-                    "description": "Netherlands"
-                },
-                'services': [
-                    {'id': 'bbmri-eric:serviceID:DE_1234'}
-                ]
+                "national_node": {"id": "NL", "description": "Netherlands"},
+                "services": [{"id": "bbmri-eric:serviceID:DE_1234"}],
             }
         ]
     }
 
-    response = session.post(directory_url, json={'query': query, 'variables': variables},
-                            auth=HTTPBasicAuth('admin', 'admin'))
+    response = session.post(
+        directory_url,
+        json={"query": query, "variables": variables},
+        auth=HTTPBasicAuth("admin", "admin"),
+    )
     if response.status_code != 200:
         raise Exception(
-            f'Impossible to complete the test, erroor when adding the new biobank. Status code: {response.status_code} . Error: {response.text}')
+            f"Impossible to complete the test, erroor when adding the new biobank. Status code: {response.status_code} . Error: {response.text}"
+        )
 
 
-def add_or_update_collection(session, directory_url, collection_id, collection_name, collection_description, network, collection_contact,
-                             collection_withdrawn,
-                             operation=Literal['insert', 'update'], nn_id='NL', nn_description='Netherlands'):
-    query = f'mutation {operation}($value:[CollectionsInput]){{{operation}(Collections:$value){{message}}}}'
+def add_or_update_collection(
+    session,
+    directory_url,
+    collection_id,
+    collection_name,
+    collection_description,
+    network,
+    collection_contact,
+    collection_withdrawn,
+    operation=Literal["insert", "update"],
+    nn_id="NL",
+    nn_description="Netherlands",
+):
+    query = f"mutation {operation}($value:[CollectionsInput]){{{operation}(Collections:$value){{message}}}}"
     variables = {
         "value": [
             {
                 "id": collection_id,
                 "name": collection_name,
                 "description": collection_description,
-                "country": {
-                    "name": "NL"
-                },
-                "contact": {
-                    "id": collection_contact
-                },
-                'withdrawn': collection_withdrawn,
-                "national_node": {
-                    "id": nn_id,
-                    "description": nn_description
-                },
+                "country": {"name": "NL"},
+                "contact": {"id": collection_contact},
+                "withdrawn": collection_withdrawn,
+                "national_node": {"id": nn_id, "description": nn_description},
                 "network": network,
-                "biobank": {
-                    'id': "bbmri-eric:ID:NL_biobank2"
-                },
+                "biobank": {"id": "bbmri-eric:ID:NL_biobank2"},
                 "biobank_label": "Biobank2",
-                "type": {
-                    "name": "OTHER"
-                },
-                "order_of_magnitude": {
-                    "name": 0
-                },
-                "order_of_magnitude_donors": {
-                    "label": "10 - 100"
-                },
-                "data_categories":
-                    {
-                        "name": "OTHER"
-                    },
-
+                "type": {"name": "OTHER"},
+                "order_of_magnitude": {"name": 0},
+                "order_of_magnitude_donors": {"label": "10 - 100"},
+                "data_categories": {"name": "OTHER"},
             }
         ]
     }
 
-    response = session.post(directory_url, json={'query': query, 'variables': variables},
-                            auth=HTTPBasicAuth('admin', 'admin'))
+    response = session.post(
+        directory_url,
+        json={"query": query, "variables": variables},
+        auth=HTTPBasicAuth("admin", "admin"),
+    )
     if response.status_code != 200:
         raise Exception(
-            f'Impossible to complete the test, erroor when adding the new collection. Status code: {response.status_code} . Error: {response.text}')
+            f"Impossible to complete the test, erroor when adding the new collection. Status code: {response.status_code} . Error: {response.text}"
+        )
 
 
-def add_or_update_network(session, directory_url, network_id, network_name, network_description, contact_id,
-                          operation=Literal['insert', 'update']):
-    query = f'mutation {operation}($value:[NetworksInput]){{{operation}(Networks:$value){{message}}}}'
+def add_or_update_network(
+    session,
+    directory_url,
+    network_id,
+    network_name,
+    network_description,
+    contact_id,
+    operation=Literal["insert", "update"],
+):
+    query = f"mutation {operation}($value:[NetworksInput]){{{operation}(Networks:$value){{message}}}}"
     variables = {
         "value": [
             {
@@ -113,55 +120,65 @@ def add_or_update_network(session, directory_url, network_id, network_name, netw
                 "contact": {
                     "id": "bbmri-eric:contactID:EU_network",
                 },
-                "national_node": {
-                    "id": "NL",
-                    "description": "Netherlands"
-                },
-                "contact": {
-                    "id": contact_id
-                },
+                "national_node": {"id": "NL", "description": "Netherlands"},
+                "contact": {"id": contact_id},
             }
         ]
     }
 
-    response = session.post(directory_url, json={'query': query, 'variables': variables},
-                            auth=HTTPBasicAuth('admin', 'admin'))
+    response = session.post(
+        directory_url,
+        json={"query": query, "variables": variables},
+        auth=HTTPBasicAuth("admin", "admin"),
+    )
     if response.status_code != 200:
         raise Exception(
-            f'Impossible to complete the test, erroor when adding the new Network. Status code: {response.status_code} . Error: {response.text}')
+            f"Impossible to complete the test, erroor when adding the new Network. Status code: {response.status_code} . Error: {response.text}"
+        )
 
 
-def delete_object_from_directory(session, directory_url, object_id, objects_input_type=Literal['Biobanks', 'Collections', 'Networks']):
-    query = f'mutation delete($pkey:[{objects_input_type}Input]){{delete({objects_input_type}:$pkey){{message}}}}'
-    variables = {'pkey': [{'id': object_id}]}
-    response = session.post(directory_url, json={'query': query, 'variables': variables})
+def delete_object_from_directory(
+    session,
+    directory_url,
+    object_id,
+    objects_input_type=Literal["Biobanks", "Collections", "Networks"],
+):
+    query = f"mutation delete($pkey:[{objects_input_type}Input]){{delete({objects_input_type}:$pkey){{message}}}}"
+    variables = {"pkey": [{"id": object_id}]}
+    response = session.post(
+        directory_url, json={"query": query, "variables": variables}
+    )
     if response.status_code != 200:
         raise Exception(
-            f'Impossible to complete the test, erroor when delting the new {objects_input_type[:-1]}. Status code: {response.status_code} . Error: {response.text}')
+            f"Impossible to complete the test, erroor when delting the new {objects_input_type[:-1]}. Status code: {response.status_code} . Error: {response.text}"
+        )
 
 
-def update_person_email_contact(session, directory_url,new_email_contact):
-    query = 'mutation update($value:[PersonsInput]){update(Persons:$value){message}}'
-    variables = {"value": [
-        {"id": "bbmri-eric:contactID:EU_network",
-         "first_name": "EU",
-         "last_name": "network Person",
-         "title_after_name": "",
-         "email": new_email_contact,
-         "phone": "",
-         "address": "",
-         "zip": "",
-         "country": {"name": "EU",
-                     "label": "Europe"},
-         "national_node": {"id": "EU",
-                           "description": "European Union"}
-         }
-    ]
+def update_person_email_contact(session, directory_url, new_email_contact):
+    query = "mutation update($value:[PersonsInput]){update(Persons:$value){message}}"
+    variables = {
+        "value": [
+            {
+                "id": "bbmri-eric:contactID:EU_network",
+                "first_name": "EU",
+                "last_name": "network Person",
+                "title_after_name": "",
+                "email": new_email_contact,
+                "phone": "",
+                "address": "",
+                "zip": "",
+                "country": {"name": "EU", "label": "Europe"},
+                "national_node": {"id": "EU", "description": "European Union"},
+            }
+        ]
     }
-    response = session.post(directory_url, json={'query': query, 'variables': variables})
+    response = session.post(
+        directory_url, json={"query": query, "variables": variables}
+    )
     if response.status_code != 200:
         raise Exception(
-            'Impossible to complete the test, error when updating email contact for person related to network')
+            "Impossible to complete the test, error when updating email contact for person related to network"
+        )
 
 
 # def load_all_directory_test_data():
@@ -189,51 +206,79 @@ def update_person_email_contact(session, directory_url,new_email_contact):
 #             f'Impossible to delete test Directory data:{response.content}')
 
 
-def get_negotiator_network_id_by_external_id(external_id, negotiator_networks: [NegotiatorNetworkDTO]):
+def get_negotiator_network_id_by_external_id(
+    external_id, negotiator_networks: [NegotiatorNetworkDTO]
+):
     for n in negotiator_networks:
         if n.externalId == external_id:
             return n.id
 
 
-def add_or_update_service(session, directory_url,service_id, service_name, service_description, operation=Literal['insert', 'update']):
-    query = f'mutation {operation}($value:[ServicesInput]){{{operation}(Services:$value){{message}}}}'
+def add_or_update_service(
+    session,
+    directory_url,
+    service_id,
+    service_name,
+    service_description,
+    operation=Literal["insert", "update"],
+):
+    query = f"mutation {operation}($value:[ServicesInput]){{{operation}(Services:$value){{message}}}}"
     service = {
-        'id': service_id,
-        'name': service_name,
-        'description': service_description,
+        "id": service_id,
+        "name": service_name,
+        "description": service_description,
         "serviceTypes": [
-            {"name": "PET-Scans",
-             "label": "PET Scans",
-             "serviceCategory": {
-                 "name": "imagingServices", "label": "Imaging Services"
-             }
-             }
+            {
+                "name": "PET-Scans",
+                "label": "PET Scans",
+                "serviceCategory": {
+                    "name": "imagingServices",
+                    "label": "Imaging Services",
+                },
+            }
         ],
         "accessDescription": "https://biobank2-service-access.nl",
-        "national_node": {"id": "NL", "description": "Netherlands", "dns": "https://external_server.nl"},
+        "national_node": {
+            "id": "NL",
+            "description": "Netherlands",
+            "dns": "https://external_server.nl",
+        },
     }
-    variables = {
-        "value": [service]
-    }
-    response = session.post(directory_url, json={'query': query, 'variables': variables},
-                            auth=HTTPBasicAuth('admin', 'admin'))
+    variables = {"value": [service]}
+    response = session.post(
+        directory_url,
+        json={"query": query, "variables": variables},
+        auth=HTTPBasicAuth("admin", "admin"),
+    )
     if response.status_code != 200:
         raise Exception(
-            f'Impossible to complete the test, erroor when adding the new Service. Status code: {response.status_code} . Error: {response.text}')
+            f"Impossible to complete the test, erroor when adding the new Service. Status code: {response.status_code} . Error: {response.text}"
+        )
 
 
-def add_or_update_national_node(session, directory_url, nn_id, nn_description, operation=Literal['insert', 'update']):
-    query = f'mutation {operation}($value:[NationalNodesInput]){{{operation}(NationalNodes:$value){{message}}}}'
-    national_node = {"id": nn_id,
-                     "description": nn_description,
-                     "data_refresh": {"name": "manual"},
-                     "mg_draft": False
-                     }
-    variables = {
-        "value": [national_node]
+def add_or_update_national_node(
+    session, directory_url, nn_id, nn_description, operation=Literal["insert", "update"]
+):
+    query = f"mutation {operation}($value:[NationalNodesInput]){{{operation}(NationalNodes:$value){{message}}}}"
+    national_node = {
+        "id": nn_id,
+        "description": nn_description,
+        "data_refresh": {"name": "manual"},
+        "mg_draft": False,
     }
-    response = session.post(directory_url, json={'query': query, 'variables': variables},
-                            auth=HTTPBasicAuth('admin', 'admin'))
+    variables = {"value": [national_node]}
+    response = session.post(
+        directory_url,
+        json={"query": query, "variables": variables},
+        auth=HTTPBasicAuth("admin", "admin"),
+    )
     if response.status_code != 200:
         raise Exception(
-            f'Impossible to complete the test, error when adding the new National Node. Status code: {response.status_code} . Error: {response.text}')
+            f"Impossible to complete the test, error when adding the new National Node. Status code: {response.status_code} . Error: {response.text}"
+        )
+
+
+def get_resource_by_source_id(source_id, negotiator_resources: [NegotiatorResourceDTO]):
+    for r in negotiator_resources:
+        if r.sourceId == source_id:
+            return r
