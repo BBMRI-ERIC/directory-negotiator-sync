@@ -8,6 +8,9 @@ from exceptions import TokenExpiredException
 
 
 def get_token():
+    """
+    Get an authorization token, needed to perform API  calls to the Negotiator.
+    """
     LOG.info("Getting or refreshing a new token")
     token_req_payload = {"grant_type": "client_credentials"}
 
@@ -29,6 +32,9 @@ def get_token():
 
 
 def renew_access_token(func):
+    """
+    Decorator to renew an authorization token.
+    """
     def wrapper(negotiator_client: NegotiatorAPIClient, *args, **kwargs):
         try:
             LOG.info("Checking if the token needs to be renewed")

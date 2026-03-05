@@ -8,44 +8,23 @@ from exceptions import NegotiatorAPIException, DirectoryAPIException
 from models.dto.network import NetworkDirectoryDTO, NegotiatorNetworkDTO
 from models.dto.organization import OrganizationDirectoryDTO, NegotiatorOrganizationDTO
 from models.dto.resource import ResourceDirectoryDTO, NegotiatorResourceDTO
-from utils import get_all_directory_resources_networks_links, check_fields, check_uri
-
-
-def get_negotiator_organization_by_external_id(negotiator_organizations: list[NegotiatorOrganizationDTO],
-                                               external_id: str):
-    organization = list(filter(lambda item: item.externalId == external_id, negotiator_organizations))
-    if len(organization) == 1:
-        return organization[0]
-    elif len(organization) == 0:
-        return None
-    else:
-        raise Exception(f'More than one organization with the externalId {external_id} found in the Negotiator')
-
-
-def get_negotiator_resource_by_external_id(negotiator_resources: list[NegotiatorResourceDTO], external_id: str):
-    resource = list(filter(lambda item: item.sourceId == external_id, negotiator_resources))
-    if len(resource) == 1:
-        return resource[0]
-    elif len(resource) == 0:
-        return None
-    else:
-        raise Exception(f'More than one resource with the externalId {external_id} found in the Negotiator')
-
-
-def get_negotiator_network_by_external_id(negotiator_networks: list[NegotiatorNetworkDTO],
-                                          external_id: str):
-    network = list(filter(lambda item: item.externalId == external_id, negotiator_networks))
-    if len(network) == 1:
-        return network[0]
-    elif len(network) == 0:
-        return None
-    else:
-        raise Exception(f'More than one network with the externalId {external_id} found in the Negotiator')
+from utils import get_all_directory_resources_networks_links, check_fields, check_uri, \
+    get_negotiator_organization_by_external_id, get_negotiator_resource_by_external_id, \
+    get_negotiator_network_by_external_id
 
 
 @renew_access_token
 def sync_all(negotiator_client: NegotiatorAPIClient, directory_organizations, directory_resources, directory_networks,
              directory_national_nodes):
+    """
+    Main method to sync all resources in the negotiator.
+    Parameters:
+        negotiator_client: Negotiator client connection object
+        directory_organizations: list of Organizations to be synced
+        directory_resources: list of Resources to be synced
+        directory_networks: list of Networks to be synced
+        directory_national_nodes: list of National Nodes to be synced
+    """
     job_id = None
     try:
         job_id = (negotiator_client.add_sync_job()).json()['id']
@@ -82,12 +61,19 @@ def sync_all(negotiator_client: NegotiatorAPIClient, directory_organizations, di
 
 
 @renew_access_token
-def sync_organizations(negotiator_client: NegotiatorAPIClient, directory_organziations: list[OrganizationDirectoryDTO],
+def sync_organizations(negotiator_client: NegotiatorAPIClient, directory_organizations: list[OrganizationDirectoryDTO],
                        negotiator_organizations: list[NegotiatorOrganizationDTO]):
+    """
+    Sync all the Organizations coming from the source(s) Directory with the Negotiator.
+    Parameters:
+        negotiator_client: Negotiator client connection object
+        directory_organizations: list of Organizations to be synced
+        negotiator_organizations: list of Negotiator Organizations already present in the Negotiator
+    """
     organizations_to_add = list()
     LOG.info("Starting sync for organizations")
 
-    for directory_organization in directory_organziations:
+    for directory_organization in directory_organizations:
         external_id = directory_organization.id
         negotiation_organization = get_negotiator_organization_by_external_id(negotiator_organizations, external_id)
         if negotiation_organization:
@@ -111,12 +97,19 @@ def sync_organizations(negotiator_client: NegotiatorAPIClient, directory_organzi
             organizations_to_add.append(organization_create_dto(directory_organization))
     if len(organizations_to_add) > 0:
         negotiator_client.add_organizations(organizations_to_add)
-    check_directory_missing_organizations(negotiator_client, directory_organziations, negotiator_organizations)
+    check_directory_missing_organizations(negotiator_client, directory_organizations, negotiator_organizations)
 
 
 @renew_access_token
 def sync_resources(negotiator_client: NegotiatorAPIClient, directory_resources: list[ResourceDirectoryDTO],
                    negotiator_resources: list[NegotiatorResourceDTO]):
+    """
+    Sync all the Resources coming from the source(s) Directory with the Negotiator.
+    Parameters:
+        negotiator_client: Negotiator client connection object
+        directory_resources: list of Resources to be synced
+        negotiator_resources: list of Negotiator Resources already present in the Negotiator
+    """
     resources_to_add = list()
     negotiator_organizations = negotiator_client.get_all_organizations()  # redone after organization sync
     LOG.info("Starting sync for resources")
@@ -156,6 +149,15 @@ def sync_resources(negotiator_client: NegotiatorAPIClient, directory_resources: 
 @renew_access_token
 def sync_networks(negotiator_client: NegotiatorAPIClient, directory_networks: list[NetworkDirectoryDTO],
                   negotiator_networks: list[NegotiatorNetworkDTO], directory_network_resources_links: dict):
+    """
+    Sync all the Networks coming from the source(s) Directory with the Negotiator.
+    Parameters:
+        negotiator_client: Negotiator client connection object
+        directory_networks: list of NetworkDirectoryDTO
+        negotiator_networks: list of Negotiator Networks already present in the Negotiator
+    Returns:
+         A list of the synced networks
+    """
     networks_to_add = list()
     added_networks = None
     LOG.info("Starting sync for networks")
@@ -193,6 +195,15 @@ def sync_networks(negotiator_client: NegotiatorAPIClient, directory_networks: li
 @renew_access_token
 def update_network_resources(negotiator_client: NegotiatorAPIClient, network_id, network_external_id,
                              directory_network_resources_links):
+    """
+    Update the resources associated with the network. According to the sync of the two entities (Resources and Networks)
+    also their relations have to be updated accordingly.
+    Parameters:
+        negotiator_client: Negotiator client connection object
+        network_id: the id of the target network (Negotiator ID)
+        network_external_id: the external id of the target network (Directory ID)
+        directory_network_resources_links; the list of the links to be updated
+    """
     negotiator_network_resources = negotiator_client.get_network_resources(network_id)
     negotiator_network_resources_external_ids = [r['sourceId'] for r in negotiator_network_resources]
     try:
@@ -221,6 +232,14 @@ def update_network_resources(negotiator_client: NegotiatorAPIClient, network_id,
 def check_directory_missing_resources(directory_resources: list[ResourceDirectoryDTO],
                                       negotiator_resources: list[NegotiatorResourceDTO],
                                       negotiator_client: NegotiatorAPIClient):
+    """
+    Checks if there are Resources that are present in the Negotiator, but not in the Directory that were not
+    already been withdrawn.
+    Parameters:
+        directory_resources; the list of the Directory resources to be checked
+        negotiator_resources; the list of the Negotiator resources to be checked
+        negotiator_client; the client connection object
+    """
     for negotiator_resource in negotiator_resources:
         if not any(resource.id == negotiator_resource.sourceId for resource in directory_resources):
             if not negotiator_resource.withdrawn:
@@ -235,10 +254,18 @@ def check_directory_missing_resources(directory_resources: list[ResourceDirector
 
 @renew_access_token
 def check_directory_missing_organizations(negotiator_client: NegotiatorAPIClient,
-                                          directory_organziations: list[OrganizationDirectoryDTO],
+                                          directory_organizations: list[OrganizationDirectoryDTO],
                                           negotiator_organizations: list[NegotiatorOrganizationDTO]):
+    """
+    Checks if there are Organizations that are present in the Negotiator, but not in the Directory that were not
+    already been withdrawn.
+    Parameters:
+        negotiator_client; the client connection object
+        directory_organizations; the list of the Organization directories to be checked
+        negotiator_organizations; the list of the Negotiator organizations to be checked
+    """
     for negotiator_organization in negotiator_organizations:
-        if not any(organization.id == negotiator_organization.externalId for organization in directory_organziations):
+        if not any(organization.id == negotiator_organization.externalId for organization in directory_organizations):
             if not negotiator_organization.withdrawn:
                 LOG.info(
                     f'Organization with external id {negotiator_organization.externalId} is missing in the Directory'

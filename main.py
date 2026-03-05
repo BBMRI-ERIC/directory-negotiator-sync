@@ -10,6 +10,9 @@ from utils import get_entities_to_be_updated, get_services_to_be_updated
 
 
 def cron_job():
+    """
+    Defines a chron job. A job performs the overall sync and it is periodically called.
+    """
     LOG.info(f"Starting cron job at: {datetime.now()}")
     negotiator_client = NegotiatorAPIClient(NEGOTIATOR_API_URL, get_token())
     directory_organizations_to_sync = get_entities_to_be_updated(
@@ -49,10 +52,16 @@ def cron_job():
 
 
 def sync_directory():
+    """
+    Schedules a new chron job, every JOB_SCHEDULE_INTERVAL seconds.
+    """
     schedule.every(int(JOB_SCHEDULE_INTERVAL)).seconds.do(cron_job)
 
 
 def run_microservice():
+    """
+    Main method to run the microservice.
+    """
     cron_job()
     sync_directory()
     while True:

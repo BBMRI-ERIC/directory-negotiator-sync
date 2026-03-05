@@ -6,10 +6,16 @@ from models.dto.service import ServiceDirectoryDTO
 
 
 class Contact(BaseModel):
+    """
+    Class representing a Contact related to the Network.
+    """
     email: str
 
 
 class OrganizationDirectoryDTO(BaseModel):
+    """
+    Class representing an Organization in the Directory.
+    """
     id: str = Field(..., alias='externalId')
     name: str
     description: str
@@ -24,6 +30,13 @@ class OrganizationDirectoryDTO(BaseModel):
 
     @staticmethod
     def parse(directory_data):
+        """
+        Parse the Organization data coming from the Directory into an array of OrganizationDirectoryDTO objects.
+        Parameters:
+            directory_data: the Organizations Directory data
+        Returns:
+            A list of the Organizations Directory data with each Organization directory parsed into an OrganizationDirectoryDTO object
+        """
         return [OrganizationDirectoryDTO(id=organization.get('id'), name=organization.get('name'),
                                          description=organization.get('description'),
                                          contact=organization.get('contact'),
@@ -34,6 +47,9 @@ class OrganizationDirectoryDTO(BaseModel):
 
 
 class NegotiatorOrganizationDTO(BaseModel):
+    """
+    Class representing an Organization in the Negotiator.
+    """
     id: int
     externalId: str
     name: str
@@ -44,4 +60,11 @@ class NegotiatorOrganizationDTO(BaseModel):
 
     @staticmethod
     def parse(negotiator_data):
+        """
+        Parse the Organization data coming from the Negotiator into an array of NegotiatorOrganizationDTO objects.
+        Parameters:
+            negotiator_data: the Organization Negotiator data
+        Returns:
+            A list of the Organizations data with each Organization  parsed into a NegotiatorOrganizationDTO object
+        """
         return [NegotiatorOrganizationDTO(**organization) for organization in negotiator_data]

@@ -242,6 +242,14 @@ class DirectoryClient:
         return []
 
     def get_biobank_by_service(self, biobanks: list[OrganizationDirectoryDTO], service_id):
+        """
+        Gets the Biobank that is linked to a Service.
+        Parameters:
+            biobanks: the list of all biobanks
+            service_id: The id of the reference service
+        Returns:
+            The service matching object, or none if the sSrvice is not linked to any Biobank
+        """
         for b in biobanks:
             for service in b.services:
                 if service.id == service_id:
@@ -249,6 +257,12 @@ class DirectoryClient:
         return None
 
     def get_all_directory_national_nodes(self):
+        """
+        Gets all the National Nodes from the current Directory.
+
+        Returns:
+            A list od all National Node; each National Node is in the format of NetworkDirectoryDTO object.
+        """
         em2x_national_nodes_query = '''
         {
             NationalNodes{
