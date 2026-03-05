@@ -7,11 +7,22 @@ from models.dto.resource import ResourceDirectoryDTO
 
 
 class DirectoryClient:
+    """
+    Class that implements a Directory client, used to connect the sync service to the BBMRI Directories (sources).
+    To instantiate a client, the connection url must be provided.
+    """
     def __init__(self, url):
         self.url = url
         self.success_codes = [200, 201, 204]
 
     def check_services_support(self):
+        """
+        Checks if the Diretory source implements Services
+
+        Returns:
+            True: if the Directory source implements Services, False otherwise
+
+        """
         query = '''
         query {
                 Biobanks
@@ -30,6 +41,9 @@ class DirectoryClient:
         return False
 
     def get_emx2_biobank_query(self):
+        """
+        Returns the Graphql query needed to get Biobanks entities to the source Directory
+        """
         if self.check_services_support():
             return '''
         query {
@@ -71,6 +85,12 @@ class DirectoryClient:
         '''
 
     def get_all_biobanks(self):
+        """
+        Gets all the Biobanks from the current Directory
+
+        Returns:
+            A list od all Biobanks; each Biobank is in the format of OrganizationDirectoryDTO object.
+        """
         emx2_biobanks_query = self.get_emx2_biobank_query()
         response = requests.post(self.url, json={'query': emx2_biobanks_query})
         if response.status_code not in self.success_codes:
@@ -80,6 +100,12 @@ class DirectoryClient:
         return OrganizationDirectoryDTO.parse(results['data']['Biobanks'])
 
     def get_all_collections(self):
+        """
+        Gets all the Collections from the current Directory
+
+        Returns:
+            A list od all Collections; each Collection is in the format of ResourceDirectoryDTO object.
+         """
         emx2_collections_query = '''
         query {
             Collections
@@ -143,6 +169,12 @@ class DirectoryClient:
         return ResourceDirectoryDTO.parse(collections)
 
     def get_all_directory_networks(self):
+        """
+        Gets all the Networks from the current Directory
+
+        Returns:
+            A list od all Networks; each Network is in the format of ResourceNetworkDTO object.
+        """
         emx2_networks_query = '''
         query {
             Networks
@@ -164,6 +196,12 @@ class DirectoryClient:
         return NetworkDirectoryDTO.parse(results['data']['Networks'])
 
     def get_all_directory_services(self, biobanks: list[OrganizationDirectoryDTO]):
+        """
+        Gets all the Services from the current Directory.
+
+        Returns:
+            A list od all Services; each Service is in the format of ResourceDirectoryDTO object.
+        """
         parsed_services = list()
         if not self.check_services_support():
             return []
@@ -188,24 +226,27 @@ class DirectoryClient:
             raise DirectoryAPIException(
                 f'Error occurred while trying to get Services from the Directory API: {response.text}')
         results = response.json()
-        if ('Services' in results['data'].keys()):
+        if 'Services' in results['data'].keys():
             for service in results['data']['Services']:
                 service_biobank = self.get_biobank_by_service(biobanks, service['id'])
-                service_resource_directory = ResourceDirectoryDTO(id=service['id'], name=service['name'],
-                                                                  description=service['description'],
-                                                                  biobank=service_biobank,
-                                                                  contactEmail=service['contactInformation'][
-                                                                      'email'] if 'contactInformation' in service else '',
-                                                                  national_node=service['national_node'])
-                parsed_services.append(service_resource_directory)
+                #It is possible that a service is not referenced by any Biobank
+                if service_biobank:
+                    service_resource_directory = ResourceDirectoryDTO(id=service['id'], name=service['name'],
+                                                                      description=service['description'],
+                                                                      biobank=service_biobank,
+                                                                      contactEmail=service['contactInformation'][
+                                                                          'email'] if 'contactInformation' in service else '',
+                                                                      national_node=service['national_node'])
+                    parsed_services.append(service_resource_directory)
             return parsed_services
         return []
 
     def get_biobank_by_service(self, biobanks: list[OrganizationDirectoryDTO], service_id):
         for b in biobanks:
             for service in b.services:
-                if service.id == service.id:
+                if service.id == service_id:
                     return b
+        return None
 
     def get_all_directory_national_nodes(self):
         em2x_national_nodes_query = '''

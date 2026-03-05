@@ -21,7 +21,8 @@ source_3_session = pytest.third_source_directory_session
 common_biobank_all_sources_id = "bbmri-eric:ID:NL_biobank2"
 common_collection_all_sources_id = "bbmri-eric:ID:NL_biobank2:collection:coll2a"
 common_network_all_sources_id = "bbmri-eric:networkID:DE_nw_coll1"
-common_service_all_sources_id = "bbmri-eric:serviceID:NL_541"
+common_service_all_sources_id = "bbmri-eric:serviceID:DE_1234"
+
 
 network = [{"id": "bbmri-eric:networkID:DE_network1", "name": "Network1 Germany"}]
 
@@ -36,6 +37,7 @@ def test_sync_common_biobank_all_sources_updated_by_source_1():
         "biobank 2 source 1 description",
         "bbmri-eric:contactID:EU_network",
         "false",
+        "bbmri-eric:serviceID:DE_1234",
         "update",
     )
 
@@ -48,6 +50,7 @@ def test_sync_common_biobank_all_sources_updated_by_source_1():
         "biobank 2 source 2 description",
         "bbmri-eric:contactID:EU_network",
         "false",
+        "bbmri-eric:serviceID:DE_1234",
         "update",
     )
 
@@ -60,6 +63,7 @@ def test_sync_common_biobank_all_sources_updated_by_source_1():
         "biobank 2 source 3 description",
         "bbmri-eric:contactID:EU_network",
         "true",
+        "bbmri-eric:serviceID:DE_1234",
         "update",
     )
 
@@ -88,6 +92,7 @@ def test_sync_common_biobank_sources_2_3_updated_by_source_2():
         "biobank upd source 2 source 2 description",
         "bbmri-eric:contactID:EU_network",
         "false",
+        "bbmri-eric:serviceID:DE_1234",
         "insert",
     )
 
@@ -100,6 +105,7 @@ def test_sync_common_biobank_sources_2_3_updated_by_source_2():
         "biobank 2 source 3 description",
         "bbmri-eric:contactID:EU_network",
         "false",
+        "bbmri-eric:serviceID:DE_1234",
         "update",
     )
 
@@ -132,6 +138,7 @@ def test_sync_biobank_when_present_in_source_3_only():
         "biobank source 3 exclusive description",
         "bbmri-eric:contactID:EU_network",
         "false",
+        "bbmri-eric:serviceID:DE_1234",
         "insert",
     )
 
@@ -280,7 +287,7 @@ def test_sync_common_network_all_sources_updated_by_source_1():
         "common network source 2 name",
         "common network source 2 description",
         "bbmri-eric:contactID:EU_network",
-        "update",
+        "update"
     )
 
     add_or_update_network(
@@ -290,7 +297,7 @@ def test_sync_common_network_all_sources_updated_by_source_1():
         "common network source 3 name",
         "common network source 3 description",
         "bbmri-eric:contactID:EU_network",
-        "update",
+        "update"
     )
     cron_job()
     negotiator_networks_after_sync = (
@@ -313,7 +320,7 @@ def test_sync_common_networks_sources_2_3_updated_by_source_2():
         "common network source 2 and 3 updated by source 2 name",
         "common network source 2 and 3 updated by source 2 description",
         "bbmri-eric:contactID:EU_network",
-        "insert",
+        "insert"
     )
     add_or_update_network(
         source_3_session,
@@ -322,7 +329,7 @@ def test_sync_common_networks_sources_2_3_updated_by_source_2():
         "common network source 2 and 3 updated by source 2 name source 3",
         "common network source 2 and 3 updated by source 2 description source 3",
         "bbmri-eric:contactID:EU_network",
-        "insert",
+        "insert"
     )
 
     cron_job()
@@ -351,7 +358,7 @@ def test_sync_network_when_present_in_source_3_only():
         "network source 3 only name",
         "network source 3 only description",
         "bbmri-eric:contactID:EU_network",
-        "insert",
+        "insert"
     )
     cron_job()
     negotiator_networks_after_sync = (
@@ -373,7 +380,7 @@ def test_sync_common_services_all_sources_updated_by_source_1():
         common_service_all_sources_id,
         "Biobank service name source 1",
         "Service provided by this biobank source 1",
-        "update",
+        "update"
     )
 
     add_or_update_service(
@@ -382,7 +389,7 @@ def test_sync_common_services_all_sources_updated_by_source_1():
         common_service_all_sources_id,
         "Biobank service name source 2",
         "Service provided by this biobank source 2",
-        "update",
+        "update"
     )
 
     add_or_update_service(
@@ -391,7 +398,7 @@ def test_sync_common_services_all_sources_updated_by_source_1():
         common_service_all_sources_id,
         "Biobank service name source 3",
         "Service provided by this biobank source 3",
-        "update",
+        "update"
     )
 
     cron_job()
@@ -410,7 +417,7 @@ def test_sync_common_services_sources_2_3_updated_by_source_2():
         "common_service_sources_2_3",
         "Common service sources 2 and 3 name source 2",
         "Common service sources 2 and 3 description source 2",
-        "insert",
+        "insert"
     )
 
     add_or_update_service(
@@ -419,8 +426,34 @@ def test_sync_common_services_sources_2_3_updated_by_source_2():
         "common_service_sources_2_3",
         "Common service sources 2 and 3 name source 3",
         "Common service sources 2 and 3 description source 3",
-        "insert",
+        "insert"
     )
+    add_or_update_biobank(
+        source_2_session,
+        source_2_url,
+        "bbmri-eric:ID:NL_biobank_upd_source_2",
+        "pid_biobank_2_upd_s2_source_2",
+        "biobank_2_updated_source_2_source_2_name",
+        "biobank upd source 2 source 2 description",
+        "bbmri-eric:contactID:EU_network",
+        "false",
+        "common_service_sources_2_3",
+        "update"
+    )
+
+    add_or_update_biobank(
+        source_3_session,
+        source_3_url,
+        "bbmri-eric:ID:NL_biobank_upd_source_2",
+        "pid_biobank_2_upd_s2_source_2",
+        "biobank_2_updated_source_2_source_3_name",
+        "biobank 2 source 3 description",
+        "bbmri-eric:contactID:EU_network",
+        "false",
+        "common_service_sources_2_3",
+        "update"
+    )
+
     cron_job()
     resources_after_sync = pytest.negotiator_client.get_all_resources()
     service_after_sync = get_resource_by_source_id(
@@ -440,7 +473,19 @@ def test_sync_service_when_present_in_source_3_only():
         "unique_service_source_3",
         "Unique service source 3 name",
         "Unique service source 3 description",
-        "insert",
+        "insert"
+    )
+    add_or_update_biobank(
+        source_3_session,
+        source_3_url,
+        "bbmri-eric:ID:NL_biobank_source_3_exclusive",
+        "pid_biobank_2_s3_exclusive",
+        "pid_biobank_2_s3_exclusive",
+        "biobank source 3 exclusive description",
+        "bbmri-eric:contactID:EU_network",
+        "false",
+        "unique_service_source_3",
+        "update",
     )
     cron_job()
     resources_after_sync = pytest.negotiator_client.get_all_resources()

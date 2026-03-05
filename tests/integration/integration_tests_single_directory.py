@@ -133,7 +133,8 @@ def test_organization_sync_when_new_added_and_then_updated():
         "test negotiator sync",
         "bbmri-eric:contactID:EU_network",
         "false",
-        "insert",
+        "bbmri-eric:serviceID:DE_1234",
+        "insert"
     )
 
     biobanks_after_add = directory_client.get_all_biobanks()
@@ -174,6 +175,7 @@ def test_organization_sync_when_new_added_and_then_updated():
         "test negotiator sync",
         "bbmri-eric:contactID:EU_network",
         "false",
+        "bbmri-eric:serviceID:DE_1234",
         "update",
     )
     biobanks_after_update_name = directory_client.get_all_biobanks()
@@ -203,6 +205,7 @@ def test_organization_sync_when_new_added_and_then_updated():
         "test negotiator sync newdesc",
         "bbmri-eric:contactID:EU_network",
         "false",
+        "bbmri-eric:serviceID:DE_1234",
         "update",
     )
     biobanks_after_update_desc = directory_client.get_all_biobanks()
@@ -233,6 +236,7 @@ def test_organization_sync_when_new_added_and_then_updated():
         "test negotiator sync newdesc",
         "bbmri-eric:contactID:EU_network",
         "false",
+        "bbmri-eric:serviceID:DE_1234",
         "update",
     )
     update_person_email_contact(session, directory_url, "sabrina.kralnew@medunigraz.at")
@@ -266,6 +270,7 @@ def test_organization_sync_when_new_added_and_then_updated():
         "test negotiator sync newdesc",
         "bbmri-eric:contactID:EU_network",
         "true",
+        "bbmri-eric:serviceID:DE_1234",
         "update",
     )
     biobanks_after_update_withdrawn = directory_client.get_all_biobanks()

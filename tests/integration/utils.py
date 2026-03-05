@@ -19,7 +19,8 @@ def add_or_update_biobank(
     biobank_description,
     biobank_contact,
     biobank_withdrawn,
-    operation=Literal["insert", "update"],
+    service_id,
+    operation
 ):
     query = f"mutation {operation}($value:[BiobanksInput]){{{operation}(Biobanks:$value){{message}}}}"
     variables = {
@@ -38,7 +39,7 @@ def add_or_update_biobank(
                     "id": "bbmri-eric:contactID:NL_person1",
                 },
                 "national_node": {"id": "NL", "description": "Netherlands"},
-                "services": [{"id": "bbmri-eric:serviceID:DE_1234"}],
+                "services": [{"id": service_id}],
             }
         ]
     }
