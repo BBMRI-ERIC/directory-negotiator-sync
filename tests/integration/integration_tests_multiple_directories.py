@@ -1,4 +1,15 @@
+import importlib
+
 import pytest
+import os
+import config
+import utils
+
+#override configuration for the test
+base_dir = os.path.dirname(os.path.abspath(__file__))
+test_yaml = os.path.join(base_dir, "../config/config_tests.yaml")
+config.load_config(test_yaml)
+
 from tests.config.loader import DIRECTORY_SOURCES
 from tests.integration.utils import (
     add_or_update_biobank,
@@ -7,6 +18,8 @@ from tests.integration.utils import (
     add_or_update_service,
     get_resource_by_source_id,
 )
+#reload modules to override configuration
+importlib.reload(utils)
 from main import cron_job
 
 source_1_url = DIRECTORY_SOURCES[0]["url"]
