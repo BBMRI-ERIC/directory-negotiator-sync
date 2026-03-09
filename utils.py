@@ -162,6 +162,7 @@ def get_entities_to_be_updated(
         entities = fetch_entities(directory_client)
 
         for entity in entities:
+            entity.sync_source_url = source_url
             if (
                 entity.id not in entities_to_be_updated
                 or entities_to_be_updated[entity.id]["last_update_priority"]

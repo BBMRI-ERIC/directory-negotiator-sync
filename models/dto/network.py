@@ -19,6 +19,8 @@ class NetworkDirectoryDTO(BaseModel):
     description: str
     url: Optional[str] = ''
     contact: Optional[Contact] = ''
+    sync_source_url: Optional[str] = Field(default='')
+
 
     @staticmethod
     def parse(directory_data):

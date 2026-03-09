@@ -27,6 +27,8 @@ class ResourceDirectoryDTO(BaseModel):
     network: Optional[list[NetworkDirectoryDTO]] = None
     withdrawn: bool = Field(default=False)
     national_node: Optional[NationalNode]
+    sync_source_url: Optional[str] = Field(default='')
+
 
     @staticmethod
     def parse(directory_data):

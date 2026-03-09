@@ -23,6 +23,7 @@ class OrganizationDirectoryDTO(BaseModel):
     url: Optional[str] = Field(default='')
     withdrawn: bool = Field(default=False)
     services: Optional[list[ServiceDirectoryDTO]] = Field(default=[])
+    sync_source_url: Optional[str] = Field(default='')
 
     model_config = ConfigDict(
         populate_by_name=True,

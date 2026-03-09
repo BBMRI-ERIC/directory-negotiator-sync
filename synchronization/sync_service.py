@@ -75,6 +75,7 @@ def sync_organizations(negotiator_client: NegotiatorAPIClient, directory_organiz
 
     for directory_organization in directory_organizations:
         external_id = directory_organization.id
+        source = directory_organization.sync_source_url
         negotiation_organization = get_negotiator_organization_by_external_id(negotiator_organizations, external_id)
         if negotiation_organization:
             if (check_fields(negotiation_organization.name, directory_organization.name) or
@@ -84,7 +85,8 @@ def sync_organizations(negotiator_client: NegotiatorAPIClient, directory_organiz
                     check_fields(negotiation_organization.withdrawn, directory_organization.withdrawn) or
                     check_uri(negotiation_organization.uri)):
                 LOG.info(
-                    f'Updating name and/or description and/or contact email and/or uri and/or withdrawn for organization: {external_id}')
+                    f'Updating name and/or description and/or contact email and/or uri and/or withdrawn for organization: {external_id}'
+                    f' from source: {source}')
                 LOG.info(f'Current organization name is: {negotiation_organization.name}')
                 LOG.info(f'New organization name is: {directory_organization.name}')
                 negotiator_client.update_organization_info(negotiation_organization.id, directory_organization.name,
@@ -93,7 +95,7 @@ def sync_organizations(negotiator_client: NegotiatorAPIClient, directory_organiz
                                                            directory_organization.withdrawn)
         else:
             LOG.info(
-                f'Organization with external id {external_id} not found, including it to the list of organizations to add')
+                f'Organization with external id {external_id} coming from source {source} not found, including it to the list of organizations to add')
             organizations_to_add.append(organization_create_dto(directory_organization))
     if len(organizations_to_add) > 0:
         negotiator_client.add_organizations(organizations_to_add)
@@ -115,9 +117,10 @@ def sync_resources(negotiator_client: NegotiatorAPIClient, directory_resources: 
     LOG.info("Starting sync for resources")
     for directory_resource in directory_resources:
         external_id = directory_resource.id
+        source = directory_resource.sync_source_url
         negotiator_resource = get_negotiator_resource_by_external_id(negotiator_resources, external_id)
         if not negotiator_resource:
-            LOG.info(f'Resource with external id {external_id} not found, including it to the list of resources to add')
+            LOG.info(f'Resource with external id {external_id} coming from source {source} not found, including it to the list of resources to add')
             negotiator_organization = get_negotiator_organization_by_external_id(negotiator_organizations,
                                                                                  directory_resource.biobank.id)
             if not negotiator_organization:
@@ -134,7 +137,7 @@ def sync_resources(negotiator_client: NegotiatorAPIClient, directory_resources: 
                     check_fields(negotiator_resource.withdrawn, directory_resource.withdrawn) or
                     check_uri(negotiator_resource.uri)
             ):
-                LOG.info(f'Updating name and/or description and/or url for resource {directory_resource.id}')
+                LOG.info(f'Updating name and/or description and/or url for resource {directory_resource.id} from source {source}')
                 directory_resource_contact_email = directory_resource.contact.email if directory_resource.contact is not None else ''
                 negotiator_client.update_resource_data(negotiator_resource.id, directory_resource.id,
                                                        directory_resource.name,
@@ -163,6 +166,7 @@ def sync_networks(negotiator_client: NegotiatorAPIClient, directory_networks: li
     LOG.info("Starting sync for networks")
     for directory_network in directory_networks:
         external_id = directory_network.id
+        source = directory_network.sync_source_url
         network = get_negotiator_network_by_external_id(negotiator_networks, external_id)
         if network:
             directory_network_contact_email = getattr(directory_network.contact, 'email', None) if hasattr(
@@ -171,7 +175,7 @@ def sync_networks(negotiator_client: NegotiatorAPIClient, directory_networks: li
                     check_fields(network.description, directory_network.description)
                     or check_fields(network.contactEmail, directory_network_contact_email) or
                     check_uri(network.uri)):
-                LOG.info(f'Updating name and/or url and/or contact email for network with external id: {external_id}')
+                LOG.info(f'Updating name and/or url and/or contact email for network with external id: {external_id} from source {source}')
                 negotiator_client.update_network_info(network.id, directory_network.name,
                                                       directory_network.description,
                                                       directory_network_contact_email, external_id)
@@ -179,7 +183,7 @@ def sync_networks(negotiator_client: NegotiatorAPIClient, directory_networks: li
             update_network_resources(negotiator_client, network.id, network.externalId,
                                      directory_network_resources_links)
         else:
-            LOG.info(f'Network with id {external_id} not found, adding it to the list of networks to add')
+            LOG.info(f'Network with id {external_id} coming from source {source} not found, adding it to the list of networks to add')
             networks_to_add.append(network_create_dto(directory_network))
 
     if len(networks_to_add) > 0:
