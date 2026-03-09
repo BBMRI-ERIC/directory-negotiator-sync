@@ -64,34 +64,34 @@ def test_service_logs(setup_docker_compose):
     service_container = client.containers.get("directory-negotiator-sync")
     logs = service_container.logs().decode("utf-8")
     assert (
-        "Organization with external id bbmri-eric:ID:DE_biobank1 not found, including it to the list of organizations to add"
+        "Organization with external id bbmri-eric:ID:DE_biobank1 coming from source http://emx2:8080/ERIC/directory/graphql not found, including it to the list of organizations to add"
         in logs
     )
     assert (
-        "Organization with external id bbmri-eric:ID:NL_biobank2 not found, including it to the list of organizations to add"
+        "Organization with external id bbmri-eric:ID:NL_biobank2 coming from source http://emx2:8080/ERIC/directory/graphql not found, including it to the list of organizations to add"
         in logs
     )
     assert (
-        "Resource with external id bbmri-eric:ID:DE_biobank1:collection:coll1 not found, including it to the list of resources"
+        "Resource with external id bbmri-eric:ID:DE_biobank1:collection:coll1 coming from source http://emx2:8080/ERIC/directory/graphql not found, including it to the list of resources"
         in logs
     )
     assert (
-        "Resource with external id bbmri-eric:ID:NL_biobank2:collection:coll2 not found, including it to the list of resources"
+        "Resource with external id bbmri-eric:ID:NL_biobank2:collection:coll2 coming from source http://emx2:8080/ERIC/directory/graphql not found, including it to the list of resources"
         in logs
     )
     assert (
-        "Resource with external id bbmri-eric:ID:NL_biobank2:collection:coll2a not found, including it to the list of resources"
+        "Resource with external id bbmri-eric:ID:NL_biobank2:collection:coll2a coming from source http://emx2:8080/ERIC/directory/graphql not found, including it to the list of resources"
         in logs
     )
     assert (
-        "Network with id bbmri-eric:networkID:DE_network1 not found, adding it to the list of networks to add"
+        "Network with id bbmri-eric:networkID:DE_network1 coming from source http://emx2:8080/ERIC/directory/graphql not found, adding it to the list of networks to add"
         in logs
     )
     assert (
-        "Network with id bbmri-eric:networkID:DE_nw_coll1 not found, adding it to the list of networks to add"
+        "Network with id bbmri-eric:networkID:DE_nw_coll1 coming from source http://emx2:8080/ERIC/directory/graphql not found, adding it to the list of networks to add"
         in logs
     )
     assert (
-        "Network with id bbmri-eric:networkID:EU_network not found, adding it to the list of networks to add"
+        "Network with id bbmri-eric:networkID:EU_network coming from source http://emx2:8080/ERIC/directory/graphql not found, adding it to the list of networks to add"
         in logs
     )
