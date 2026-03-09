@@ -33,7 +33,7 @@ Notice that multiple directory sources are allowed, if needed. This is the list 
 
 ## Multiple Directories support
 
-Since version 1.3.5 multiples directory sync is supported. The service is able to read Directory data from multiple
+Since version 1.3 multiple directories sync is supported. The service is able to read Directory data from multiple
 endpoints, with a priority assigned to each of them. 1 is the highest priority, 2 the immediately lower and so on.
 Priorities are mandatory and are needed to decide which is the master Directory for sync, in case of the same entities (same IDs) are present in more 
 the one resource. For example, if the biobank with ID "test_bb" is present in source A having priority 1 and in source B having priority 2, the sync 
