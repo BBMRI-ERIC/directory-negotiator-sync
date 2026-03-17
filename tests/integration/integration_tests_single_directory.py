@@ -709,7 +709,7 @@ def test_network_resource_links():
 
     LOG.info("Syncing all for links...")
     cron_job()
-    LOG.info("END Syncing all for limnks...")
+    LOG.info("END Syncing all for links...")
     negotiator_networks = pytest.negotiator_client.get_all_negotiator_networks()
     test_negotiator_sync_network_resource_links_id = (
         get_negotiator_network_id_by_external_id(

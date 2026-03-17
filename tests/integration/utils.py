@@ -51,7 +51,7 @@ def add_or_update_biobank(
     )
     if response.status_code != 200:
         raise Exception(
-            f"Impossible to complete the test, erroor when adding the new biobank. Status code: {response.status_code} . Error: {response.text}"
+            f"Impossible to complete the test, error when adding the new biobank. Status code: {response.status_code} . Error: {response.text}"
         )
 
 
