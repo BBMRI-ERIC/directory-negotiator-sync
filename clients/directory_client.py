@@ -14,6 +14,8 @@ class DirectoryClient:
     def __init__(self, url):
         self.url = url
         self.success_codes = [200, 201, 204]
+        # Cache for services support check to avoid repeated HTTP requests
+        self._services_supported = None
 
     def check_services_support(self):
         """
@@ -23,6 +25,10 @@ class DirectoryClient:
             True: if the Directory source implements Services, False otherwise
 
         """
+        # Return cached value if already computed
+        if self._services_supported is not None:
+            return self._services_supported
+
         query = '''
         query {
                 Biobanks
@@ -37,8 +43,10 @@ class DirectoryClient:
         '''
         results = requests.post(self.url, json={'query': query})
         if results.status_code == 200:
-            return True
-        return False
+            self._services_supported = True
+        else:
+            self._services_supported = False
+        return self._services_supported
 
     def get_emx2_biobank_query(self):
         """
