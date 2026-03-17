@@ -234,8 +234,8 @@ class DirectoryClient:
                     service_resource_directory = ResourceDirectoryDTO(id=service['id'], name=service['name'],
                                                                       description=service['description'],
                                                                       biobank=service_biobank,
-                                                                      contactEmail=service['contactInformation'][
-                                                                          'email'] if 'contactInformation' in service else '',
+                                                                      contact={'email': service['contactInformation'][
+                                                                          'email']}if 'contactInformation' in service else None,
                                                                       national_node=service['national_node'])
                     parsed_services.append(service_resource_directory)
             return parsed_services
@@ -286,8 +286,8 @@ class DirectoryClient:
         for national_node in results['data']['NationalNodes']:
             national_node_network_directory = NetworkDirectoryDTO(
                 id=national_node['id'],
-                name=f'{national_node['description']} {nn_network_label}',
-                description=f'{national_node['description']} {nn_network_label}',
+                name=f"{national_node['description']} {nn_network_label}",
+                description=f"{national_node['description']} {nn_network_label}",
             )
             parsed_networks_from_national_nodes.append(national_node_network_directory)
         return parsed_networks_from_national_nodes

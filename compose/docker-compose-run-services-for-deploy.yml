@@ -156,7 +156,7 @@ services:
     ports:
       - "8083:8080"
     depends_on:
-      postgres-second-source:
+      postgres-third-source:
         condition: service_healthy
     restart: on-failure
     networks:

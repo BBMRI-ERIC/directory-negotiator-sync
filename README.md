@@ -5,7 +5,7 @@ The service is composed of a main chron that periodically reads all the resource
 and then checks if there are some resources to add or update.
 The service communicates with the Negotiator by client credentials authentication and authorization (Lifescience-AAI).
 
-This is a list of the attributes of Organization, Resource and Network that are checked and ipdated by the service
+This is a list of the attributes of Organization, Resource and Network that are checked and updated by the service
 (in case of object already present in the negotiator):
 
 + For Organization: Name, Description, Contact Email and Withdrawn attributes
@@ -59,7 +59,7 @@ From ` negotiator_directory_sync/tests/scripts ` run:
 Wait for another minute, then rin the integration tests in case of a single Directory: 
 From ` negotiator_directory_sync/tests/integration ` run:
 
-` pytest integration_tests.py `
+` pytest integration_tests_single_directory.py `
 
 You can also run the integration test in case of multiple Directories: 
 

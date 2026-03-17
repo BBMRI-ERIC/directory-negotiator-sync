@@ -39,7 +39,7 @@ def get_session(session_url):
     return session
 
 
-def pytest_configure():
+def pytest_configure(config):
     pytest.first_source_directory_session = get_session(FIRST_DIRECTORY_SESSION_URL)
     pytest.second_source_directory_session = get_session(SECOND_DIRECTORY_SESSION_URL)
     pytest.third_source_directory_session = get_session(THIRD_DIRECTORY_SESSION_URL)

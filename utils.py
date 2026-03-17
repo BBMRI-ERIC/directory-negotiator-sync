@@ -85,9 +85,9 @@ def check_uri(uri_field):
         or uri_field == ""
         or not uri_field.startswith(DIRECTORY_BASE_URI)
     ):
-        return True
-    else:
         return False
+    else:
+        return True
 
 
 def create_biobank_production_uri(biobank_id):
@@ -183,7 +183,7 @@ def get_services_to_be_updated(synced_biobanks):
     In case of conflicts (different Directory sources that have the same entity) only the entity from the source
     with the highest priority will be kept for Negotiator's Services update.
     IMPORTANT NOTE: Two sources might have the same service in common, even if the linked biobanks are different.
-                    In this case the service to be considered fot update will be the one of the source with
+                    In this case the service to be considered for update will be the one of the source with
                     the highest priority.
     Parameters:
         synced_biobanks: list of the biobanks (already checked among all sources for sync)

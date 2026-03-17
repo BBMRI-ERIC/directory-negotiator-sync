@@ -36,7 +36,7 @@ def load_all_sources_test_data():
         print(response.content)
         if response.status_code != 200:
             raise Exception(
-                f'Impossible to load test Directory data for source "{source['session_url']}": {response.content}')
+                f"Impossible to load test Directory data for source {source['session_url']}: {response.content}")
 
 
 def main():

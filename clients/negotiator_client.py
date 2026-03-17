@@ -20,7 +20,7 @@ class NegotiatorAPIClient:
 
     def get_headers(self):
         """
-        Returns the HTTO headers used for API calls to the Negotiator
+        Returns the HTTP headers used for API calls to the Negotiator
         """
         return {
             'Authorization': f'Bearer {self._token}',
@@ -82,7 +82,7 @@ class NegotiatorAPIClient:
 
     def patch(self, endpoint, data=None):
         """
-        Performs an API PUR request to the Negotiator.
+        Performs an API PATCH request to the Negotiator.
         Parameters:
             endpoint: the endpoint to be queried
             data: the body of the input data

@@ -1,25 +1,24 @@
-import json,os,config,importlib,pytest
+import config
+import importlib
+import json
+import os
 
 import pytest
+
 import utils
-#override configuration for the test
+
+# override configuration for the test
 base_dir = os.path.dirname(os.path.abspath(__file__))
 test_yaml = os.path.join(base_dir, "../config/config_tests_single_directory.yaml")
 
 config.load_config(test_yaml)
-#reload modules to override configuration
+# reload modules to override configuration
 importlib.reload(utils)
 from main import cron_job
 
-from markdown_it.parser_block import LOGGER
+from config import LOG
 
 from clients.directory_client import DirectoryClient
-from synchronization.sync_service import (
-    sync_organizations,
-    sync_resources,
-    sync_networks,
-
-)
 from utils import get_all_directory_resources_networks_links
 from tests.config.loader import DIRECTORY_SOURCES
 from .utils import (
@@ -104,6 +103,7 @@ def test_initial_sync_ok():
     )
     assert len(negotiator_networks_after_sync) > len(pytest.initial_negotiator_networks)
 
+
 def test_organization_sync_when_new_added_and_then_updated():
     add_or_update_biobank(
         session,
@@ -134,12 +134,12 @@ def test_organization_sync_when_new_added_and_then_updated():
         if org.externalId == "bbmri-eric:ID:DE_biobank1"
     ][0]
     assert (
-        organization_added.uri
-        == "https://directory.bbmri-eric.eu/ERIC/directory/#/biobank/bbmri-eric:ID:DE_biobank1"
+            organization_added.uri
+            == "https://directory.bbmri-eric.eu/ERIC/directory/#/biobank/bbmri-eric:ID:DE_biobank1"
     )
     assert (
-        len(negotiator_organizations_after_bb_add_and_sync)
-        == len(negotiator_organizations_before_add) + 1
+            len(negotiator_organizations_after_bb_add_and_sync)
+            == len(negotiator_organizations_before_add) + 1
     )
     # now update the Biobank name and sync again
 
@@ -181,7 +181,6 @@ def test_organization_sync_when_new_added_and_then_updated():
         "bbmri-eric:serviceID:DE_1234",
         "update",
     )
-    biobanks_after_update_desc = directory_client.get_all_biobanks()
     cron_job()
     negotiator_organizations_after_update_desc = (
         pytest.negotiator_client.get_all_organizations()
@@ -209,7 +208,6 @@ def test_organization_sync_when_new_added_and_then_updated():
         "update",
     )
     update_person_email_contact(session, directory_url, "sabrina.kralnew@medunigraz.at")
-    biobanks_after_update_email = directory_client.get_all_biobanks()
 
     cron_job()
 
@@ -238,13 +236,12 @@ def test_organization_sync_when_new_added_and_then_updated():
         "bbmri-eric:serviceID:DE_1234",
         "update",
     )
-    biobanks_after_update_withdrawn = directory_client.get_all_biobanks()
     cron_job()
     negotiator_organizations_after_update_withdrawn = (
         pytest.negotiator_client.get_all_organizations()
     )
     assert len(negotiator_organizations_after_update_withdrawn) == len(
-        negotiator_organizations_after_update_withdrawn
+        negotiator_organizations_after_update_desc
     )
     organization_with_withdrawn_upd = [
         org
@@ -286,8 +283,8 @@ def test_organization_sync_when_new_added_and_then_updated():
         if org.externalId == "test_negotiator_sync"
     ][0]
     assert (
-        organization_with_uri_sync.uri
-        == "https://directory.bbmri-eric.eu/ERIC/directory/#/biobank/test_negotiator_sync"
+            organization_with_uri_sync.uri
+            == "https://directory.bbmri-eric.eu/ERIC/directory/#/biobank/test_negotiator_sync"
     )
     # case 2: URI not starting with the directory URI
     pytest.negotiator_client.patch(
@@ -322,8 +319,8 @@ def test_organization_sync_when_new_added_and_then_updated():
         if org.externalId == "test_negotiator_sync"
     ][0]
     assert (
-        organization_with_uri_sync.uri
-        == "https://directory.bbmri-eric.eu/ERIC/directory/#/biobank/test_negotiator_sync"
+            organization_with_uri_sync.uri
+            == "https://directory.bbmri-eric.eu/ERIC/directory/#/biobank/test_negotiator_sync"
     )
     delete_object_from_directory(
         session, directory_url, "test_negotiator_sync", "Biobanks"
@@ -360,12 +357,12 @@ def test_resources_sync_when_new_added_and_then_updated():
     ][0]
     # check that for one of the collections coming from the directory the url has been successfully transformed
     assert (
-        resource_added.uri
-        == "https://directory.bbmri-eric.eu/ERIC/directory/#/collection/bbmri-eric:ID:DE_biobank1:collection:coll1"
+            resource_added.uri
+            == "https://directory.bbmri-eric.eu/ERIC/directory/#/collection/bbmri-eric:ID:DE_biobank1:collection:coll1"
     )
     assert (
-        len(negotiator_resources_after_coll_add_and_sync)
-        == len(negotiator_resources_before_add) + 1
+            len(negotiator_resources_after_coll_add_and_sync)
+            == len(negotiator_resources_before_add) + 1
     )
     # now update the resource name and sync again
     add_or_update_collection(
@@ -405,7 +402,6 @@ def test_resources_sync_when_new_added_and_then_updated():
         False,
         "update",
     )
-    collections_after_update_desc = directory_client.get_all_collections()
     cron_job()
     negotiator_resources_after_update_desc = (
         pytest.negotiator_client.get_all_resources()
@@ -419,10 +415,9 @@ def test_resources_sync_when_new_added_and_then_updated():
         if res.sourceId == "test_negotiator_sync_coll"
     ][0]
     assert (
-        resource_with_desc_upd.description == "test negotiator sync collection newdesc"
+            resource_with_desc_upd.description == "test negotiator sync collection newdesc"
     )
     update_person_email_contact(session, directory_url, "sabrina.kralnew@medunigraz.at")
-    collections_after_update_email = directory_client.get_all_collections()
     cron_job()
     negotiator_resources_after_update_email = (
         pytest.negotiator_client.get_all_resources()
@@ -491,8 +486,8 @@ def test_resources_sync_when_new_added_and_then_updated():
         if res.sourceId == "test_negotiator_sync_coll"
     ][0]
     assert (
-        resource_with_uri_sync.uri
-        == "https://directory.bbmri-eric.eu/ERIC/directory/#/collection/test_negotiator_sync_coll"
+            resource_with_uri_sync.uri
+            == "https://directory.bbmri-eric.eu/ERIC/directory/#/collection/test_negotiator_sync_coll"
     )
 
     # case 2: URI not starting with the directory URI
@@ -525,8 +520,8 @@ def test_resources_sync_when_new_added_and_then_updated():
         if res.sourceId == "test_negotiator_sync_coll"
     ][0]
     assert (
-        resource_with_uri_sync.uri
-        == "https://directory.bbmri-eric.eu/ERIC/directory/#/collection/test_negotiator_sync_coll"
+            resource_with_uri_sync.uri
+            == "https://directory.bbmri-eric.eu/ERIC/directory/#/collection/test_negotiator_sync_coll"
     )
     delete_object_from_directory(
         session, directory_url, "test_negotiator_sync_coll", "Collections"
@@ -548,9 +543,6 @@ def test_networks_sync_when_new_added_and_then_updated():
     negotiator_networks_before_add = (
         pytest.negotiator_client.get_all_negotiator_networks()
     )
-    directory_network_resources_links = get_all_directory_resources_networks_links(
-        pytest.directory_resources
-    )
     cron_job()
     negotiator_networks_after_ntw_add_and_sync = (
         pytest.negotiator_client.get_all_negotiator_networks()
@@ -562,12 +554,12 @@ def test_networks_sync_when_new_added_and_then_updated():
     ][0]
     # check that for one of the networks coming from the directory the url has been successfylly transformed
     assert (
-        added_network.uri
-        == "https://directory.bbmri-eric.eu/ERIC/directory/#/network/bbmri-eric:networkID:DE_network1"
+            added_network.uri
+            == "https://directory.bbmri-eric.eu/ERIC/directory/#/network/bbmri-eric:networkID:DE_network1"
     )
     assert (
-        len(negotiator_networks_after_ntw_add_and_sync)
-        == len(negotiator_networks_before_add) + 1
+            len(negotiator_networks_after_ntw_add_and_sync)
+            == len(negotiator_networks_before_add) + 1
     )
     # now update the network name and sync again
     add_or_update_network(
@@ -579,7 +571,6 @@ def test_networks_sync_when_new_added_and_then_updated():
         "bbmri-eric:contactID:EU_network",
         "update",
     )
-    networks_after_update_name = directory_client.get_all_directory_networks()
     cron_job()
     networks_after_update_name = pytest.negotiator_client.get_all_negotiator_networks()
     assert len(networks_after_update_name) == len(
@@ -593,7 +584,6 @@ def test_networks_sync_when_new_added_and_then_updated():
     assert network_with_name_upd.name == "test negotiator sync network newname"
     # now update the email contact of the person related to the network
     update_person_email_contact(session, directory_url, "sabrina.kralnew@medunigraz.at")
-    networks_after_update_email = directory_client.get_all_directory_networks()
     cron_job()
     negotiator_networks_after_update_email = (
         pytest.negotiator_client.get_all_negotiator_networks()
@@ -617,7 +607,6 @@ def test_networks_sync_when_new_added_and_then_updated():
         "update",
     )
 
-    networks_after_update_desc = directory_client.get_all_directory_networks()
     cron_job()
     negotiator_networks_after_update_desc = (
         pytest.negotiator_client.get_all_negotiator_networks()
@@ -637,7 +626,6 @@ def test_networks_sync_when_new_added_and_then_updated():
         "bbmri-eric:contactID:EU_network",
         "update",
     )
-    networks_after_update_uri = directory_client.get_all_directory_networks()
     cron_job()
     negotiator_networks_after_update_uri = (
         pytest.negotiator_client.get_all_negotiator_networks()
@@ -680,8 +668,8 @@ def test_networks_sync_when_new_added_and_then_updated():
         if ntw.externalId == "test_negotiator_sync_network"
     ][0]
     assert (
-        network_with_uri_sync.uri
-        == "https://directory.bbmri-eric.eu/ERIC/directory/#/network/test_negotiator_sync_network"
+            network_with_uri_sync.uri
+            == "https://directory.bbmri-eric.eu/ERIC/directory/#/network/test_negotiator_sync_network"
     )
 
     delete_object_from_directory(
@@ -719,13 +707,9 @@ def test_network_resource_links():
         "insert",
     )
 
-    LOGGER.info("Syncing all for limnks...")
-    directory_organizations = directory_client.get_all_biobanks()
-    directory_resources = directory_client.get_all_collections()
-    directory_networks = directory_client.get_all_directory_networks()
-    directory_national_nodes = directory_client.get_all_directory_national_nodes()
+    LOG.info("Syncing all for links...")
     cron_job()
-    LOGGER.info("END Syncing all for limnks...")
+    LOG.info("END Syncing all for limnks...")
     negotiator_networks = pytest.negotiator_client.get_all_negotiator_networks()
     test_negotiator_sync_network_resource_links_id = (
         get_negotiator_network_id_by_external_id(
@@ -762,10 +746,6 @@ def test_network_resource_links():
         False,
         "update",
     )
-    directory_organizations = directory_client.get_all_biobanks()
-    directory_resources = directory_client.get_all_collections()
-    directory_networks = directory_client.get_all_directory_networks()
-    directory_national_nodes = directory_client.get_all_directory_national_nodes()
     cron_job()
     network_to_add_new_resources = pytest.negotiator_client.get_network_resources(
         network_to_add_id
@@ -785,26 +765,18 @@ def test_network_resource_links():
         False,
         "update",
     )
-
-    directory_resources = directory_client.get_all_collections()
     cron_job()
     network_deleted_new_resources = pytest.negotiator_client.get_network_resources(
         test_negotiator_sync_network_resource_links_id
     )
     assert (
-        len(network_deleted_new_resources)
-        == len(test_negotiator_sync_network_resource_links_resources) - 1
+            len(network_deleted_new_resources)
+            == len(test_negotiator_sync_network_resource_links_resources) - 1
     )
 
 
 def test_service_sync():
     directory_organizations = directory_client.get_all_biobanks()
-    directory_resources = (
-        directory_client.get_all_collections()
-        + directory_client.get_all_directory_services(directory_organizations)
-    )
-    directory_networks = directory_client.get_all_directory_networks()
-    directory_national_nodes = directory_client.get_all_directory_national_nodes()
     cron_job()
     resources_before_service_update = pytest.negotiator_client.get_all_resources()
     service_before_update = get_resource_by_source_id(
@@ -821,30 +793,22 @@ def test_service_sync():
     )
 
     directory_organizations = directory_client.get_all_biobanks()
-    directory_resources = (
-        directory_client.get_all_collections()
-        + directory_client.get_all_directory_services(directory_organizations)
-    )
     cron_job()
     resources_after_sync = pytest.negotiator_client.get_all_resources()
     service_after_sync = get_resource_by_source_id(
         "bbmri-eric:serviceID:DE_1234", resources_after_sync
     )
     assert service_after_sync.name == "Biobank service_newname"
+    assert service_after_sync.contactEmail == "contact@bb1.de"
 
 
 def test_national_nodes_sync():
     networks_before_sync = pytest.negotiator_client.get_all_negotiator_networks()
     add_or_update_national_node(session, directory_url, "TT", "Test", "insert")
-    directory_organizations = directory_client.get_all_biobanks()
-    directory_resources = directory_client.get_all_collections()
-    directory_networks = directory_client.get_all_directory_networks()
-    directory_national_nodes = directory_client.get_all_directory_national_nodes()
     cron_job()
     networks_after_sync = pytest.negotiator_client.get_all_negotiator_networks()
     assert len(networks_after_sync) == len(networks_before_sync) + 1
     add_or_update_national_node(session, directory_url, "TT", "TestUpdated", "update")
-    directory_national_nodes = directory_client.get_all_directory_national_nodes()
     cron_job()
     networks_after_update = pytest.negotiator_client.get_all_negotiator_networks()
     updated_network_from_nn = [
@@ -865,8 +829,6 @@ def test_national_nodes_sync():
         nn_id="TT",
         nn_description="TestUpdated National Node Network",
     )
-
-    directory_resources = directory_client.get_all_collections()
     cron_job()
     negotiator_networks = pytest.negotiator_client.get_all_negotiator_networks()
     tt_network_id = get_negotiator_network_id_by_external_id("TT", negotiator_networks)
