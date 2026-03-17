@@ -11,7 +11,7 @@ from utils import get_entities_to_be_updated, get_services_to_be_updated
 
 def cron_job():
     """
-    Defines a chron job. A job performs the overall sync and it is periodically called.
+    Defines a cron job. A job performs the overall sync and it is periodically called.
     """
     LOG.info(f"Starting cron job at: {datetime.now()}")
     negotiator_client = NegotiatorAPIClient(NEGOTIATOR_API_URL, get_token())
@@ -53,7 +53,7 @@ def cron_job():
 
 def sync_directory():
     """
-    Schedules a new chron job, every JOB_SCHEDULE_INTERVAL seconds.
+    Schedules a new cron job, every JOB_SCHEDULE_INTERVAL seconds.
     """
     schedule.every(int(JOB_SCHEDULE_INTERVAL)).seconds.do(cron_job)
 
