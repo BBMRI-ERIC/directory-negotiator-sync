@@ -12,7 +12,7 @@ This is a list of the attributes of Organization, Resource and Network that are 
 + For Resource: Name, Description, Contact Email and Withdrawn attributes
 + For Network: Name, Description and Contact Email attributes
 + For Services: Name, Description, Contact Email (they are added/updated as Resources)
-+ For National Nodes: ame, Description and Contact Email attributes (they are added/updates as Networks in the
++ For National Nodes: Name, Description and Contact Email attributes (they are added/updates as Networks in the
   Negotiator)
 
 ## Configuration parameters
@@ -46,9 +46,9 @@ Prerequisite: a compose file to run negotiator, oidc test service and emx2 testi
 
 First, from this directory run the compose:
 
-`docker-compose -f docker-compose-integation-tests.yml  up -d`
+`docker-compose -f docker-compose-integration-tests.yml  up -d`
 
-Note: Adjiust the build reference to the Negotiator accordingly before run.
+Note: Adjust the build reference to the Negotiator accordingly before run.
 
 Wait for a minute that all the services are up and running, then run the script that adds initial sample data into the test directories: 
 
@@ -56,7 +56,7 @@ From ` negotiator_directory_sync/tests/scripts ` run:
 
 ` python load_directory_data.py `
 
-Wait for another minute, then rin the integration tests in case of a single Directory: 
+Wait for another minute, then run the integration tests in case of a single Directory: 
 From ` negotiator_directory_sync/tests/integration ` run:
 
 ` pytest integration_tests_single_directory.py `
