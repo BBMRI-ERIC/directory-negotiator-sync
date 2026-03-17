@@ -239,11 +239,13 @@ class DirectoryClient:
                 service_biobank = self.get_biobank_by_service(biobanks, service['id'])
                 #It is possible that a service is not referenced by any Biobank
                 if service_biobank:
+                    contact_info = service.get('contactInformation') or {}
+                    contact_email = contact_info.get('email')
+                    contact = {'email': contact_email} if contact_email is not None else None
                     service_resource_directory = ResourceDirectoryDTO(id=service['id'], name=service['name'],
                                                                       description=service['description'],
                                                                       biobank=service_biobank,
-                                                                      contact={'email': service['contactInformation'][
-                                                                          'email']}if 'contactInformation' in service else None,
+                                                                      contact=contact,
                                                                       national_node=service['national_node'])
                     parsed_services.append(service_resource_directory)
             return parsed_services

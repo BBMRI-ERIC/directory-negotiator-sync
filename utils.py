@@ -59,7 +59,7 @@ def check_fields(negotiator_field, directory_field):
         negotiator_field: the field coming from negotiator
         directory_field: the corresponding field coming from the Directory
     Returns:
-        False if the fields differ, True otherwise
+        True if the fields differ, False otherwise
     """
     if directory_field is None:
         return False
@@ -85,9 +85,9 @@ def check_uri(uri_field):
         or uri_field == ""
         or not uri_field.startswith(DIRECTORY_BASE_URI)
     ):
-        return False
-    else:
         return True
+    else:
+        return False
 
 
 def create_biobank_production_uri(biobank_id):
@@ -214,13 +214,14 @@ def get_services_to_be_updated(synced_biobanks):
                         service,
                         get_source_priority()[key],
                     )
-                    services_to_sync.append(service)
                 else:
                     if (
                         get_source_priority()[key]
                         < services_with_current_source[service.id][1]
                     ):
-                        services_to_sync.append(service)
+                        services_with_current_source[service.id] = (service, get_source_priority()[key])
+    for key, item in services_with_current_source.items():
+        services_to_sync.append(item[0])
     return services_to_sync
 
 def get_negotiator_organization_by_external_id(negotiator_organizations: list[NegotiatorOrganizationDTO],
