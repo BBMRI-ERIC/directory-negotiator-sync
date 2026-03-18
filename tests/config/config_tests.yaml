@@ -1,0 +1,16 @@
+sources_endpoint:
+    - url: 'http://localhost:8080/ERIC/directory/graphql'
+      session_url: 'http://localhost:8080/api/graphql'
+      priority: 1
+    - url: 'http://localhost:8082/ERIC/directory/graphql'
+      session_url: 'http://localhost:8082/api/graphql'
+      priority: 2
+    - url: 'http://localhost:8083/ERIC/directory/graphql'
+      session_url: 'http://localhost:8083/api/graphql'
+      priority: 3
+negotiator_endpoint:
+    url: 'http://localhost:8081/api/v3'
+    auth_client_id: '123'
+    auth_client_secret: '123'
+    auth_oidc_token_uri: 'http://localhost:4011/connect/token'
+sync_job_schedule_interval: '20'

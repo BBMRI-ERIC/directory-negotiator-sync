@@ -8,10 +8,16 @@ from ..dto.organization import OrganizationDirectoryDTO
 
 
 class Contact(BaseModel):
+    """
+    Class representing a Contact related to the Resource.
+    """
     email: str
 
 
 class ResourceDirectoryDTO(BaseModel):
+    """
+    Class representing a Resource in the Directory.
+    """
     id: str
     name: str
     description: Optional[str]
@@ -21,6 +27,8 @@ class ResourceDirectoryDTO(BaseModel):
     network: Optional[list[NetworkDirectoryDTO]] = None
     withdrawn: bool = Field(default=False)
     national_node: Optional[NationalNode]
+    sync_source_url: Optional[str] = Field(default='')
+
 
     @staticmethod
     def parse(directory_data):
@@ -28,6 +36,9 @@ class ResourceDirectoryDTO(BaseModel):
 
 
 class NegotiatorResourceDTO(BaseModel):
+    """
+    Class representing a Resource in the Negotiator.
+    """
     id: int
     sourceId: str
     name: str
@@ -38,4 +49,11 @@ class NegotiatorResourceDTO(BaseModel):
 
     @staticmethod
     def parse(negotiator_data):
+        """
+        Parse the Resource data coming from the Negotiator into an array of NegotiatorResourceDTO objects.
+        Parameters:
+            negotiator_data: the Resource Negotiator data
+        Returns:
+            A list of the Resource data with each Resource  parsed into a NegotiatorResourceDTO object
+         """
         return [NegotiatorResourceDTO(**resource) for resource in negotiator_data]
