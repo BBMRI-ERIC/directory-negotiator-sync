@@ -95,3 +95,10 @@ def test_service_logs(setup_docker_compose):
         "Network with id bbmri-eric:networkID:EU_network coming from source http://emx2:8080/ERIC/directory/graphql not found, adding it to the list of networks to add"
         in logs
     )
+
+def test_service_health():
+    health_url = 'http://localhost:8088/api/actuator/health'
+    response  = requests.get(health_url)
+    assert response.status_code == 200
+    assert response.json()["status"] == "UP"
+

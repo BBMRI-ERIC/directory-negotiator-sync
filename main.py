@@ -2,6 +2,7 @@ from datetime import datetime
 
 import schedule
 
+import health
 from auth import get_token
 from clients.negotiator_client import NegotiatorAPIClient
 from config import LOG, NEGOTIATOR_API_URL, JOB_SCHEDULE_INTERVAL, DIRECTORY_SOURCES
@@ -62,6 +63,7 @@ def run_microservice():
     """
     Main method to run the microservice.
     """
+    health.start()
     cron_job()
     sync_directory()
     while True:
