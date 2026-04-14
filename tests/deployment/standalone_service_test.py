@@ -99,7 +99,7 @@ def test_service_logs(setup_docker_compose):
 def test_service_health(setup_docker_compose):
     health_url = 'http://localhost:8088/api/actuator/health'
     wait_for_service(health_url)
-    response  = requests.get(health_url)
+    response = requests.get(health_url)
     assert response.status_code == 200
     assert response.json()["status"] == "UP"
 
