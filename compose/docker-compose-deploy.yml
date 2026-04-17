@@ -6,6 +6,8 @@ services:
       context: ..
     volumes:
       - ./local_config.yaml:/opt/directory-negotiator-sync/config.yaml:ro
+    ports:
+      - "8088:8088"
     networks:
       - directory-negotiator-sync-network
 networks:

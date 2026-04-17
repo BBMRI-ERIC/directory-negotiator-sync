@@ -66,6 +66,14 @@ You can also run the integration test in case of multiple Directories:
 ` pytest integration_tests_multiple_directories.py `
 
 
+## Health endpoint 
 
+An endpoint to check that the microservice is up and running is available on port 8088. The endpoint to call is:
+
+` http://[YOUR_HOST]:8088/api/actuator/health `
+
+In case of healthiness, a GET to the previous endpoint will return 200 with this response: 
+
+` {"status":"UP"} `
 
 

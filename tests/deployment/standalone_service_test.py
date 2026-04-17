@@ -12,7 +12,6 @@ client = docker.from_env()
 # Paths to Docker Compose files
 COMPOSE_FILE_SERVICES = "../../compose/docker-compose-run-services-for-deploy.yml"
 COMPOSE_FILE_APP = "../../compose/docker-compose-deploy.yml"
-WAIT_FOR_SERVICE_START = time.time()
 WAIT_FOR_SERVICE_TIMEOUT = 300
 
 
@@ -28,7 +27,8 @@ def stop_compose(compose_file):
 
 def wait_for_service(url):
     """Waits for the given services to be healthy."""
-    while time.time() - WAIT_FOR_SERVICE_START < WAIT_FOR_SERVICE_TIMEOUT:
+    wait_start = time.time()
+    while time.time() - wait_start < WAIT_FOR_SERVICE_TIMEOUT:
         try:
             response = requests.get(url)
             if response.status_code == 200:
@@ -95,3 +95,11 @@ def test_service_logs(setup_docker_compose):
         "Network with id bbmri-eric:networkID:EU_network coming from source http://emx2:8080/ERIC/directory/graphql not found, adding it to the list of networks to add"
         in logs
     )
+
+def test_service_health(setup_docker_compose):
+    health_url = 'http://localhost:8088/api/actuator/health'
+    wait_for_service(health_url)
+    response = requests.get(health_url)
+    assert response.status_code == 200
+    assert response.json()["status"] == "UP"
+
