@@ -189,9 +189,10 @@ def get_all_directory_services(biobanks: list[OrganizationDirectoryDTO]):
 
 def get_biobank_by_service(biobanks: list[OrganizationDirectoryDTO], service_id):
     for b in biobanks:
-        for service in b.services:
-            if service.id == service.id:
-                return b
+        if b.services:       
+            for service in b.services:
+                if service.id == service.id:
+                    return b
 
 
 def get_all_directory_national_nodes():
