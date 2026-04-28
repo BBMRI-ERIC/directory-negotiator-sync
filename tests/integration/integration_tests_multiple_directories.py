@@ -6,7 +6,7 @@ import config
 import utils
 
 #override configuration for the test
-DIRECTORY_VERSION = os.environ.get('DIRECTORY_VERSION')
+DIRECTORY_VERSION = os.environ.get('DIRECTORY_VERSION', 'latest')
 base_dir = os.path.dirname(os.path.abspath(__file__))
 test_yaml = os.path.join(base_dir, "../config/config_tests.yaml")
 config.load_config(test_yaml)
