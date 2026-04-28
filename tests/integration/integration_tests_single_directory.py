@@ -850,7 +850,7 @@ def test_biobank_sync_when_no_service_added():
         "Biobank with no services",
         "bbmri-eric:contactID:EU_network",
         "false",
-        [],
+        None,
         "insert",
     )
     negotiator_organizations_before_adding_biobank = pytest.negotiator_client.get_all_organizations()
