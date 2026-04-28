@@ -218,13 +218,17 @@ def add_or_update_service(
     service_id,
     service_name,
     service_description,
+    biobank_id,
+    directory_version,
     operation=Literal["insert", "update"],
+
 ):
     query = f"mutation {operation}($value:[ServicesInput]){{{operation}(Services:$value){{message}}}}"
     service = {
         "id": service_id,
         "name": service_name,
         "description": service_description,
+        "biobank": {"id": biobank_id},
         "serviceTypes": [
             {
                 "name": "PET-Scans",
@@ -242,6 +246,8 @@ def add_or_update_service(
             "dns": "https://external_server.nl",
         },
     }
+    if directory_version != 'latest':
+        del service['biobank']
     variables = {"value": [service]}
     response = session.post(
         directory_url,
