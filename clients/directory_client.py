@@ -261,9 +261,10 @@ class DirectoryClient:
             The service matching object, or none if the sSrvice is not linked to any Biobank
         """
         for b in biobanks:
-            for service in b.services:
-                if service.id == service_id:
-                    return b
+            if b.services:
+                for service in b.services:
+                    if service.id == service_id:
+                        return b
         return None
 
     def get_all_directory_national_nodes(self):

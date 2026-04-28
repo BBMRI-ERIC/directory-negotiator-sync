@@ -20,7 +20,7 @@ def add_or_update_biobank(
     biobank_contact,
     biobank_withdrawn,
     service_id,
-    operation
+    operation: Literal["insert", "update"] = "insert",
 ):
     query = f"mutation {operation}($value:[BiobanksInput]){{{operation}(Biobanks:$value){{message}}}}"
     variables = {
@@ -64,7 +64,7 @@ def add_or_update_collection(
     network,
     collection_contact,
     collection_withdrawn,
-    operation=Literal["insert", "update"],
+    operation: Literal["insert", "update"] = "insert",
     nn_id="NL",
     nn_description="Netherlands",
 ):
@@ -108,7 +108,7 @@ def add_or_update_network(
     network_name,
     network_description,
     contact_id,
-    operation=Literal["insert", "update"],
+    operation: Literal["insert", "update"] = "insert",
 ):
     query = f"mutation {operation}($value:[NetworksInput]){{{operation}(Networks:$value){{message}}}}"
     variables = {
@@ -218,13 +218,17 @@ def add_or_update_service(
     service_id,
     service_name,
     service_description,
-    operation=Literal["insert", "update"],
+    biobank_id,
+    directory_version,
+    operation: Literal["insert", "update"] = "insert",
+
 ):
     query = f"mutation {operation}($value:[ServicesInput]){{{operation}(Services:$value){{message}}}}"
     service = {
         "id": service_id,
         "name": service_name,
         "description": service_description,
+        "biobank": {"id": biobank_id},
         "serviceTypes": [
             {
                 "name": "PET-Scans",
@@ -242,6 +246,8 @@ def add_or_update_service(
             "dns": "https://external_server.nl",
         },
     }
+    if directory_version != 'latest':
+        del service['biobank']
     variables = {"value": [service]}
     response = session.post(
         directory_url,
@@ -255,7 +261,7 @@ def add_or_update_service(
 
 
 def add_or_update_national_node(
-    session, directory_url, nn_id, nn_description, operation=Literal["insert", "update"]
+    session, directory_url, nn_id, nn_description, operation: Literal["insert", "update"] = "insert",
 ):
     query = f"mutation {operation}($value:[NationalNodesInput]){{{operation}(NationalNodes:$value){{message}}}}"
     national_node = {

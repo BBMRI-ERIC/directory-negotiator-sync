@@ -7,6 +7,8 @@ import pytest
 
 import utils
 
+DIRECTORY_VERSION = os.environ.get('DIRECTORY_VERSION', 'latest')
+
 # override configuration for the test
 base_dir = os.path.dirname(os.path.abspath(__file__))
 test_yaml = os.path.join(base_dir, "../config/config_tests_single_directory.yaml")
@@ -789,6 +791,8 @@ def test_service_sync():
         "bbmri-eric:serviceID:DE_1234",
         "Biobank service_newname",
         "Service provided by this biobank",
+        'bbmri-eric:ID:DE_biobank1',
+        DIRECTORY_VERSION,
         "update",
     )
 
@@ -834,3 +838,25 @@ def test_national_nodes_sync():
     tt_network_id = get_negotiator_network_id_by_external_id("TT", negotiator_networks)
     tt_resources_links = pytest.negotiator_client.get_network_resources(tt_network_id)
     assert len(tt_resources_links) == 1
+
+
+def test_biobank_sync_when_no_service_added():
+    biobank_with_no_services = add_or_update_biobank(
+        session,
+        directory_url,
+        "test_bb_no_services",
+        "test_bb_no_services",
+        "Biobank with no services",
+        "Biobank with no services",
+        "bbmri-eric:contactID:EU_network",
+        "false",
+        None,
+        "insert",
+    )
+    negotiator_organizations_before_adding_biobank = pytest.negotiator_client.get_all_organizations()
+    cron_job()
+    negotiator_organizations_after_adding_biobank = (
+        pytest.negotiator_client.get_all_organizations()
+    )
+    assert len(negotiator_organizations_after_adding_biobank ) == len(
+        negotiator_organizations_before_adding_biobank) + 1
