@@ -103,11 +103,13 @@ These are set through the yaml configuration file described above. The correspon
 For example, suppose to set up a testing environment, similar to the one used by the integration tests, 
 composed by a Negotiator test instance, an oidc test server and this sync service. The yaml configuration will be: 
 
-` negotiator_endpoint:
+```yaml
+negotiator_endpoint:
     url: 'http://localhost:8081/api/v3'
     auth_client_id: '123'
     auth_client_secret: '123'
-    auth_oidc_token_uri: 'http://localhost:4011/connect/token' `
+    auth_oidc_token_uri: 'http://localhost:4011/connect/token'
+```
 
 In production, that's the same, only the values will change. 
 
@@ -118,18 +120,19 @@ For version < 1.3.0 of the sync service, instead, the three parameters are provi
 for example in a docker compose (these variables nave been replaces by the yaml file in version >=1.3.0).
 This is a snippet of the sync service configuration in a docker compose:
 
-` version: '3.9'
-services:
-  directory-negotiator-sync:
-    build:
-      context: .
-    environment:
-      - DIRECTORY_EMX2_ENDPOINT=https://directory-emx2-acc.molgenis.net/ERIC/directory/graphql
-      - NEGOTIATOR_ENDPOINT=http://negotiator:8081/api/v3
-      - NEGOTIATOR_CLIENT_AUTH_CLIENT_ID=123
-      - NEGOTIATOR_CLIENT_AUTH_CLIENT_SECRET=123
-      - NEGOTIATOR_CLIENT_AUTH_OIDC_TOKEN_ENDPOINT=http://localhost:4011/connect/token
-      - SYNC_JOB_SCHEDULE_INTERVAL=20  `
+```yaml
+version: '3.9'
+  services:
+    directory-negotiator-sync:
+      [...]
+      environment:
+        - DIRECTORY_EMX2_ENDPOINT=https://directory-emx2-acc.molgenis.net/ERIC/directory/graphql
+        - NEGOTIATOR_ENDPOINT=http://negotiator:8081/api/v3
+        - NEGOTIATOR_CLIENT_AUTH_CLIENT_ID=123
+        - NEGOTIATOR_CLIENT_AUTH_CLIENT_SECRET=123
+        - NEGOTIATOR_CLIENT_AUTH_OIDC_TOKEN_ENDPOINT=http://localhost:4011/connect/token
+        - SYNC_JOB_SCHEDULE_INTERVAL=20  
+```
 
 As you can see, the values of the three variables are the same, just the configuration changes
 
