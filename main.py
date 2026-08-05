@@ -67,7 +67,10 @@ def run_microservice():
     cron_job()
     sync_directory()
     while True:
-        schedule.run_pending()
+        try:
+            schedule.run_pending()
+        except Exception as e:
+            LOG.exception(f"Unexpected error in the scheduler loop: {e}")
 
 
 if __name__ == "__main__":
