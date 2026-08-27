@@ -63,7 +63,7 @@ def run_microservice():
     """
     Main method to run the microservice. In case an error occurs, a sleep is raised to prevent log flood.
     """
-    error_sleep_time = max(0.1, min(JOB_SCHEDULE_INTERVAL / 10.0, 60.0))
+    error_sleep_time = max(0.1, min(float(JOB_SCHEDULE_INTERVAL) / 10.0, 60.0))
     health.start()
     cron_job()
     sync_directory()
