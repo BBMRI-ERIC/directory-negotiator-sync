@@ -10,4 +10,5 @@ negotiator_endpoint:
     auth_client_id: '123'
     auth_client_secret: '123'
     auth_oidc_token_uri: 'http://localhost:4011/connect/token'
+    auth_oidc_ssl_verify: false
 sync_job_schedule_interval: '20'
