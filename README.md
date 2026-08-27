@@ -86,7 +86,7 @@ and on the Negotiator's production instance, that uses LifeScience AAI for secur
 The sync service uses Client Credentials to log into the Negotiator, an obtain a valid token to perform update 
 operations on the various resources. So, a Client Id and a Client secret must be provided, together with the 
 reference URL related to the oidc service to obtain the token. 
-The environment variables defined inside the code are (for version >= 1.3.0)
+The environment variables used by the service (for versions >= 1.3.0) are:
 
  - AUTH_CLIENT_ID
  - AUTH_CLIENT_SECRET 
