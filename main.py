@@ -1,6 +1,6 @@
 from datetime import datetime
 
-import schedule
+import schedule, time
 
 import health
 from auth import get_token
@@ -61,8 +61,9 @@ def sync_directory():
 
 def run_microservice():
     """
-    Main method to run the microservice.
+    Main method to run the microservice. In case an error occurs, a sleep is raised to prevent log flood.
     """
+    error_sleep_time = max(0.1, min(JOB_SCHEDULE_INTERVAL / 10.0, 60.0))
     health.start()
     cron_job()
     sync_directory()
@@ -71,6 +72,7 @@ def run_microservice():
             schedule.run_pending()
         except Exception as e:
             LOG.exception(f"Unexpected error in the scheduler loop: {e}")
+            time.sleep(error_sleep_time)
 
 
 if __name__ == "__main__":
