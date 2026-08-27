@@ -3,7 +3,7 @@ import json
 import requests
 
 from clients.negotiator_client import NegotiatorAPIClient
-from config import LOG, AUTH_OIDC_TOKEN_URI, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET
+from config import LOG, AUTH_OIDC_TOKEN_URI, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET, AUTH_OIDC_SSL_VERIFY
 from exceptions import TokenExpiredException
 
 
@@ -21,7 +21,7 @@ def get_token():
         token_response = requests.post(
             AUTH_OIDC_TOKEN_URI,
             data=token_req_payload,
-            verify=False,
+            verify=AUTH_OIDC_SSL_VERIFY,
             allow_redirects=False,
             auth=(AUTH_CLIENT_ID, AUTH_CLIENT_SECRET),
         )
