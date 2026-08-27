@@ -114,9 +114,8 @@ In production, that's the same, only the values will change.
 **WARNING**:
 Keep the client ID and client secret information secret, and never publish them or provide them to anyone.
 
-For version < 1.3.0 of the sync service, instead, the three parameters are provided as environment variables, 
-for example in a docker compose (these variables nave been replaces by the yaml file in version >=1.3.0).
-This is a snippet of the sync service configuration in a docker compose:
+For version < 1.3.0 of the sync service, instead, the three parameters are provided as environment variables, for example in a Docker Compose file (these variables have been replaced by the YAML file in version >= 1.3.0).
+This is a snippet of the sync service configuration in a Docker Compose file:
 
 ```yaml
 version: '3.9'
