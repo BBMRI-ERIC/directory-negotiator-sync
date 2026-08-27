@@ -77,3 +77,62 @@ In case of healthiness, a GET to the previous endpoint will return 200 with this
 ` {"status":"UP"} `
 
 
+## Security
+
+This section describes the OIDC configuration required to enable REST communication between a Negotiator instance and this service. Typically, no security is required to read data from the source (BBMRI) directory because the related API is publicly available.
+Negotiator's API, instead, are protected via oidc, so only the known clients can connect and perform operations
+with the negotiator. This can be either set on a Negotiator's test instance (by setting up an own oidc server)
+and on the Negotiator's production instance, that uses LifeScience AAI for security. 
+The sync service uses Client Credentials to log into the Negotiator, an obtain a valid token to perform update 
+operations on the various resources. So, a Client Id and a Client secret must be provided, together with the 
+reference URL related to the oidc service to obtain the token. 
+The environment variables used by the service (for versions >= 1.3.0) are:
+
+ - AUTH_CLIENT_ID
+ - AUTH_CLIENT_SECRET 
+ - AUTH_OIDC_TOKEN_URI 
+
+These are set through the yaml configuration file described above. The correspondent yaml variables are:
+
+ - negotiator_endpoint.auth_client_id                                                                                                                                  |
+ - negotiator_endpoint.auth_client_secret                                                                                                                              |
+ - negotiator_endpoint.auth_oidc_token_uri
+
+For example, suppose to set up a testing environment, similar to the one used by the integration tests, 
+composed by a Negotiator test instance, an oidc test server and this sync service. The yaml configuration will be: 
+
+```yaml
+negotiator_endpoint:
+    url: 'http://localhost:8081/api/v3'
+    auth_client_id: '123'
+    auth_client_secret: '123'
+    auth_oidc_token_uri: 'http://localhost:4011/connect/token'
+```
+
+In production, that's the same, only the values will change. 
+
+**WARNING**:
+Keep the client ID and client secret information secret, and never publish them or provide them to anyone.
+
+For version < 1.3.0 of the sync service, instead, the three parameters are provided as environment variables, for example in a Docker Compose file (these variables have been replaced by the YAML file in version >= 1.3.0).
+This is a snippet of the sync service configuration in a Docker Compose file:
+
+```yaml
+version: '3.9'
+  services:
+    directory-negotiator-sync:
+      [...]
+      environment:
+        - DIRECTORY_EMX2_ENDPOINT=https://directory-emx2-acc.molgenis.net/ERIC/directory/graphql
+        - NEGOTIATOR_ENDPOINT=http://negotiator:8081/api/v3
+        - NEGOTIATOR_CLIENT_AUTH_CLIENT_ID=123
+        - NEGOTIATOR_CLIENT_AUTH_CLIENT_SECRET=123
+        - NEGOTIATOR_CLIENT_AUTH_OIDC_TOKEN_ENDPOINT=http://localhost:4011/connect/token
+        - SYNC_JOB_SCHEDULE_INTERVAL=20  
+```
+
+As you can see, the values of the three variables are the same, just the configuration changes
+
+The auth.py module is the one that contains the methods to call the oidc service and get the token, given 
+the above url and credentials. An automatic check of the token validity is performed, in a way to automatically 
+refresh the token in case of expiration. 
