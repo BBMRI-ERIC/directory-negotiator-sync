@@ -79,9 +79,7 @@ In case of healthiness, a GET to the previous endpoint will return 200 with this
 
 ## Security
 
-This section describes the oidc configurations and settings required to enable REST communication between 
-a Negotiator instance and this service. Usually, no security is instead required to read data from the 
-Source (BBMRI) directory as the related API is publicly opened. 
+This section describes the OIDC configuration required to enable REST communication between a Negotiator instance and this service. Typically, no security is required to read data from the source (BBMRI) directory because the related API is publicly available.
 Negotiator's API, instead, are protected via oidc, so only the known clients can connect and perform operations
 with the negotiator. This can be either set on a Negotiator's test instance (by setting up an own oidc server)
 and on the Negotiator's production instance, that uses LifeScience AAI for security. 
