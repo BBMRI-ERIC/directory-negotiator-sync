@@ -1,5 +1,6 @@
 import requests
 
+from config import REQ_TIMEOUT
 from exceptions import DirectoryAPIException
 from models.dto.network import NetworkDirectoryDTO
 from models.dto.organization import OrganizationDirectoryDTO
@@ -41,7 +42,7 @@ class DirectoryClient:
 
                 }
         '''
-        results = requests.post(self.url, json={'query': query})
+        results = requests.post(self.url, json={'query': query},timeout=REQ_TIMEOUT)
         if results.status_code == 200:
             self._services_supported = True
         else:
@@ -100,7 +101,7 @@ class DirectoryClient:
             A list od all Biobanks; each Biobank is in the format of OrganizationDirectoryDTO object.
         """
         emx2_biobanks_query = self.get_emx2_biobank_query()
-        response = requests.post(self.url, json={'query': emx2_biobanks_query})
+        response = requests.post(self.url, json={'query': emx2_biobanks_query},timeout=REQ_TIMEOUT)
         if response.status_code not in self.success_codes:
             raise DirectoryAPIException(
                 f'Error occurred while trying to get Biobanks from the Directory API: {response.text}')
@@ -152,7 +153,7 @@ class DirectoryClient:
                 }  
         }
         '''
-        response = requests.post(self.url, json={'query': emx2_collections_query})
+        response = requests.post(self.url, json={'query': emx2_collections_query},timeout=REQ_TIMEOUT)
         if response.status_code not in self.success_codes:
             raise DirectoryAPIException(
                 f'Error occurred while trying to get Collections from the Directory API: {response.text}')
@@ -196,7 +197,7 @@ class DirectoryClient:
                 }
         }   
         '''
-        response = requests.post(self.url, json={'query': emx2_networks_query})
+        response = requests.post(self.url, json={'query': emx2_networks_query},timeout=REQ_TIMEOUT)
         if response.status_code not in self.success_codes:
             raise DirectoryAPIException(
                 f'Error occurred while trying to get Networks from the Directory API: {response.text}')
@@ -229,7 +230,7 @@ class DirectoryClient:
                 }  
         }       
         '''
-        response = requests.post(self.url, json={'query': emx2_services_query})
+        response = requests.post(self.url, json={'query': emx2_services_query},timeout=REQ_TIMEOUT)
         if response.status_code not in self.success_codes:
             raise DirectoryAPIException(
                 f'Error occurred while trying to get Services from the Directory API: {response.text}')
@@ -287,7 +288,7 @@ class DirectoryClient:
             }
         }
         '''
-        response = requests.post(self.url, json={'query': em2x_national_nodes_query})
+        response = requests.post(self.url, json={'query': em2x_national_nodes_query},timeout=REQ_TIMEOUT)
         if response.status_code not in self.success_codes:
             raise DirectoryAPIException(
                 f'Error occurred while trying to get National Nodes from the Directory API: {response.text}')

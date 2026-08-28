@@ -14,6 +14,7 @@ AUTH_CLIENT_SECRET = None
 AUTH_OIDC_TOKEN_URI = None
 AUTH_OIDC_SSL_VERIFY = None
 JOB_SCHEDULE_INTERVAL = None
+REQ_TIMEOUT = None
 
 def load_config(path=config_path):
     global cfg
@@ -27,6 +28,7 @@ def load_config(path=config_path):
     global AUTH_OIDC_TOKEN_URI
     global AUTH_OIDC_SSL_VERIFY
     global JOB_SCHEDULE_INTERVAL
+    global REQ_TIMEOUT
 
     DIRECTORY_SOURCES = cfg['sources_endpoint']
     NEGOTIATOR_API_URL = cfg['negotiator_endpoint']['url']
@@ -35,6 +37,7 @@ def load_config(path=config_path):
     AUTH_OIDC_TOKEN_URI = cfg['negotiator_endpoint']['auth_oidc_token_uri']
     AUTH_OIDC_SSL_VERIFY = cfg['negotiator_endpoint']['auth_oidc_ssl_verify']
     JOB_SCHEDULE_INTERVAL = cfg['sync_job_schedule_interval']
+    REQ_TIMEOUT = 60 #seconds
 
 
 load_config()

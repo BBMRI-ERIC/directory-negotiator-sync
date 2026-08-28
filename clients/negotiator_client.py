@@ -2,6 +2,7 @@ import json
 
 import requests
 
+from config import REQ_TIMEOUT
 from exceptions import TokenExpiredException, NegotiatorAPIException
 from models.dto.network import NegotiatorNetworkDTO, NetworkDirectoryDTO
 from models.dto.organization import NegotiatorOrganizationDTO, OrganizationDirectoryDTO
@@ -45,7 +46,7 @@ class NegotiatorAPIClient:
             The overall response from the Negotiator
         """
         url = f"{self._base_url}/{endpoint}"
-        response = requests.get(url, headers=self.get_headers(), params=params)
+        response = requests.get(url, headers=self.get_headers(), params=params, timeout=REQ_TIMEOUT)
         if response.status_code == 401:
             raise TokenExpiredException()
         return response
@@ -60,7 +61,7 @@ class NegotiatorAPIClient:
             The overall response from the Negotiator
         """
         url = f"{self._base_url}/{endpoint}"
-        response = requests.post(url, headers=self.get_headers(), data=data)
+        response = requests.post(url, headers=self.get_headers(), data=data, timeout=REQ_TIMEOUT)
         if response.status_code == 401:
             raise TokenExpiredException()
         return response
@@ -75,7 +76,7 @@ class NegotiatorAPIClient:
             The overall response from the Negotiator
         """
         url = f"{self._base_url}/{endpoint}"
-        response = requests.put(url, headers=self.get_headers(), data=data)
+        response = requests.put(url, headers=self.get_headers(), data=data, timeout=REQ_TIMEOUT)
         if response.status_code == 401:
             raise TokenExpiredException()
         return response
@@ -90,7 +91,7 @@ class NegotiatorAPIClient:
             The overall response from the Negotiator
         """
         url = f"{self._base_url}/{endpoint}"
-        response = requests.patch(url, headers=self.get_headers(), data=data)
+        response = requests.patch(url, headers=self.get_headers(), data=data, timeout=REQ_TIMEOUT)
         if response.status_code == 401:
             raise TokenExpiredException()
         return response
@@ -105,7 +106,7 @@ class NegotiatorAPIClient:
             The overall response from the Negotiator
         """
         url = f"{self._base_url}/{endpoint}"
-        response = requests.delete(url, headers=self.get_headers(), data=data)
+        response = requests.delete(url, headers=self.get_headers(), data=data,timeout=REQ_TIMEOUT)
         if response.status_code == 401:
             raise TokenExpiredException()
         return response
