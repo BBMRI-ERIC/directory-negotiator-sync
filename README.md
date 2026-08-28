@@ -20,16 +20,17 @@ This is a list of the attributes of Organization, Resource and Network that are 
 The configuration parameters are set through the usage of a .yaml file (see a template under ./conf).
 Notice that multiple directory sources are allowed, if needed. This is the list of the config parameters:
 
-| Parameter Code                          | Parameter Description                                                                                                                                                                  | 
-|-----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| sources_endpoint.url                    | The endpoint of the Directory (EMX2 based) GraphQL API. This is used to read Directory's data, and it points to the Directory Schema                                                   |
-| sources_endpoint.session_url            | The session url of the specific source. This is used to open the DB session needed to get data from the source                                                                         |
-| sources_endpoint.priority               | The priority of the source. In case of presence of more than one source with the same entities (same ID) sync is performed taking the values from the source with highest priority (1) |
-| negotiator_endpoint.url                 | The endpoint of Negotiator's API, used to write data (add/update Organizations, Resources and Networks)                                                                                |
-| negotiator_endpoint.auth_client_id      | The client ID for authentication to the Negotiator                                                                                                                                     |
-| negotiator_endpoint.auth_client_secret  | The client secret for authentication to the Negotiator                                                                                                                                 |
-| negotiator_endpoint.auth_oidc_token_uri | The endpoint of the Lifescience-AAI service authentication to the Negotiator (token request)                                                                                           |
-| sync_job_schedule_interval              | The interval (in seconds) of the Chron main service. The synchronization will be performed every [X] seconds according to this value                                                   |
+| Parameter Code                           | Parameter Description                                                                                                                                                                  | 
+|------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| sources_endpoint.url                     | The endpoint of the Directory (EMX2 based) GraphQL API. This is used to read Directory's data, and it points to the Directory Schema                                                   |
+| sources_endpoint.session_url             | The session url of the specific source. This is used to open the DB session needed to get data from the source                                                                         |
+| sources_endpoint.priority                | The priority of the source. In case of presence of more than one source with the same entities (same ID) sync is performed taking the values from the source with highest priority (1) |
+| negotiator_endpoint.url                  | The endpoint of Negotiator's API, used to write data (add/update Organizations, Resources and Networks)                                                                                |
+| negotiator_endpoint.auth_client_id       | The client ID for authentication to the Negotiator                                                                                                                                     |
+| negotiator_endpoint.auth_client_secret   | The client secret for authentication to the Negotiator                                                                                                                                 |
+| negotiator_endpoint.auth_oidc_token_uri  | The endpoint of the Lifescience-AAI service authentication to the Negotiator (token request)                                                                                           |
+| negotiator_endpoint.auth_oidc_ssl_verify | Boolean parameter to set for SSL verification of oidc service. Recommented to be set to true for production environments                                                               |
+| sync_job_schedule_interval               | The interval (in seconds) of the Chron main service. The synchronization will be performed every [X] seconds according to this value                                                   |
 
 ## Multiple Directories support
 
@@ -91,12 +92,14 @@ The environment variables used by the service (for versions >= 1.3.0) are:
  - AUTH_CLIENT_ID
  - AUTH_CLIENT_SECRET 
  - AUTH_OIDC_TOKEN_URI 
+ - AUTH_OIDC_SSL_VERIFY
 
 These are set through the yaml configuration file described above. The correspondent yaml variables are:
 
  - negotiator_endpoint.auth_client_id                                                                                                                                  |
  - negotiator_endpoint.auth_client_secret                                                                                                                              |
  - negotiator_endpoint.auth_oidc_token_uri
+ - negotiator_endpoint.auth_oidc_ssl_verify
 
 For example, suppose to set up a testing environment, similar to the one used by the integration tests, 
 composed by a Negotiator test instance, an oidc test server and this sync service. The yaml configuration will be: 
@@ -107,9 +110,10 @@ negotiator_endpoint:
     auth_client_id: '123'
     auth_client_secret: '123'
     auth_oidc_token_uri: 'http://localhost:4011/connect/token'
+    auth_oidc_ssl_verify: false
 ```
 
-In production, that's the same, only the values will change. 
+In production, that's the same, only the values will change. It is strongly recommended to set ssl verification to true.
 
 **WARNING**:
 Keep the client ID and client secret information secret, and never publish them or provide them to anyone.
