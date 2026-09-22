@@ -231,11 +231,11 @@ def add_or_update_service(
         "biobank": {"id": biobank_id},
         "serviceTypes": [
             {
-                "name": "Experimental pathology service",
-                "label": "Experimental pathology pervice",
+                "name": "Sample collection service",
+                "label": "Sample collection service",
                 "serviceCategory": {
-                    "name": "imagingServices",
-                    "label": "Imaging Services",
+                    "name": "biobankingElsiServices",
+                    "label": "Biobanking & ELSI Services",
                 },
             }
         ],
