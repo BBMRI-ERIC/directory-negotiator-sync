@@ -231,8 +231,8 @@ def add_or_update_service(
         "biobank": {"id": biobank_id},
         "serviceTypes": [
             {
-                "name": "PET-Scans",
-                "label": "PET Scans",
+                "name": "Experimental pathology service",
+                "label": "Experimental pathology pervice",
                 "serviceCategory": {
                     "name": "imagingServices",
                     "label": "Imaging Services",
