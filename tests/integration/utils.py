@@ -229,9 +229,11 @@ def add_or_update_service(
     service_type_category_name  = "biobankingElsiServices"
     service_type_category_label = "Biobanking & ELSI Services"
 
-    if (directory_version != 'latest'):
-        service_type_name = "sample-collection"
-        service_type_label = "Sample Collection"
+    if directory_version == 'v11.34.0':
+        service_type_name = "PET-Scans"
+        service_type_label = "PET Scans"
+        service_type_category_name = "imagingServices"
+        service_type_category_label = "Imaging Services"
 
     service = {
         "id": service_id,
