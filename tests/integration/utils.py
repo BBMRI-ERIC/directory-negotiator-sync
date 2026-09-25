@@ -224,6 +224,17 @@ def add_or_update_service(
 
 ):
     query = f"mutation {operation}($value:[ServicesInput]){{{operation}(Services:$value){{message}}}}"
+    service_type_name = "Sample collection service"
+    service_type_label = "Sample collection service"
+    service_type_category_name  = "biobankingElsiServices"
+    service_type_category_label = "Biobanking & ELSI Services"
+
+    if directory_version == 'v11.34.0':
+        service_type_name = "PET-Scans"
+        service_type_label = "PET Scans"
+        service_type_category_name = "imagingServices"
+        service_type_category_label = "Imaging Services"
+
     service = {
         "id": service_id,
         "name": service_name,
@@ -231,11 +242,11 @@ def add_or_update_service(
         "biobank": {"id": biobank_id},
         "serviceTypes": [
             {
-                "name": "PET-Scans",
-                "label": "PET Scans",
+                "name": service_type_name,
+                "label": service_type_label,
                 "serviceCategory": {
-                    "name": "imagingServices",
-                    "label": "Imaging Services",
+                    "name": service_type_category_name,
+                    "label": service_type_category_label,
                 },
             }
         ],
