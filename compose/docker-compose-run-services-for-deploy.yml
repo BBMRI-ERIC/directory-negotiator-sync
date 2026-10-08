@@ -11,6 +11,7 @@ services:
       SERVER_OPTIONS_INLINE: |
         {
           "AccessTokenJwtType": "JWT",
+          "EmitScopesAsSpaceDelimitedStringInJwt": true,
           "Discovery": {
             "ShowKeySet": true
           },
