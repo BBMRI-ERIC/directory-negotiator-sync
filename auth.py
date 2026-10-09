@@ -15,7 +15,7 @@ def get_token():
     error is handled by the main run of the sync service.
     """
     LOG.info("Getting or refreshing a new token")
-    token_req_payload = {"grant_type": "client_credentials", "scope" : "negotiator_api negotiator_resource_management"}
+    token_req_payload = {"grant_type": "client_credentials", "scope" : "negotiator_resource_management"}
 
     try:
         token_response = requests.post(
