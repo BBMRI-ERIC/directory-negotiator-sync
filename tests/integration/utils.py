@@ -5,9 +5,12 @@ from requests.auth import HTTPBasicAuth
 from models.dto.network import NegotiatorNetworkDTO
 from models.dto.resource import NegotiatorResourceDTO
 from tests.config.loader import DIRECTORY_SOURCES
+import os
 
 DIRECTORY_API_URL = DIRECTORY_SOURCES[0]["url"]
 SESSION_URL = DIRECTORY_SOURCES[0]["session_url"]
+DIRECTORY_VERSION = os.environ.get('DIRECTORY_VERSION', 'latest')
+
 
 
 def add_or_update_biobank(
@@ -85,7 +88,7 @@ def add_or_update_collection(
                 "type": {"name": "OTHER"},
                 "order_of_magnitude": {"name": 0},
                 "order_of_magnitude_donors": {"label": "10 - 100"},
-                "data_categories": {"name": "OTHER"},
+                "data_categories": {"name": "Other sample-derived dataset" if DIRECTORY_VERSION == 'latest' else 'OTHER'},
             }
         ]
     }
